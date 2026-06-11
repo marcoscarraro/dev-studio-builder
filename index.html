@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Template Builder MVP</title>
+  <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
+  <link rel="stylesheet" href="public/tabler/css/tabler.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-vendors.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-themes.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/demo.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/custom.css">
+  <link rel="stylesheet" href="public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
+  <link rel="stylesheet" href="assets/css/builder.css?v=14">
+</head>
+<body class="layout-fluid" data-page="template-builder">
+  <script src="public/tabler/js/tabler-theme.js"></script>
+  <div class="app-shell" data-preview="false">
+    <header class="topbar navbar navbar-expand-md d-print-none">
+      <div class="brand">
+        <span class="brand-mark avatar avatar-sm bg-primary-lt text-primary" aria-hidden="true">TB</span>
+        <div>
+          <strong>Template Builder</strong>
+          <span>MVP</span>
+        </div>
+      </div>
+
+      <div class="toolbar btn-list" aria-label="Acoes do editor">
+        <button type="button" class="tool-button btn btn-icon btn-outline-secondary" data-action="undo" title="Desfazer" aria-label="Desfazer">
+          <span aria-hidden="true">&#8630;</span>
+        </button>
+        <button type="button" class="tool-button btn btn-icon btn-outline-secondary" data-action="redo" title="Refazer" aria-label="Refazer">
+          <span aria-hidden="true">&#8631;</span>
+        </button>
+        <button type="button" class="tool-button text btn btn-primary" data-action="save">Salvar</button>
+        <button type="button" class="tool-button text btn btn-outline-secondary" data-action="load">Carregar</button>
+        <button type="button" class="tool-button text btn btn-outline-secondary" data-action="import-json">Importar</button>
+        <button type="button" class="tool-button text btn btn-outline-primary" data-action="export-json">JSON</button>
+        <button type="button" class="tool-button text btn btn-outline-primary" data-action="export-html">HTML</button>
+        <button type="button" class="tool-button text btn btn-outline-secondary" data-action="preview">Preview</button>
+        <a href="database_builder.html" target="_blank" class="tool-button text btn btn-outline-secondary">Banco de Dados</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="palette-panel" aria-label="Componentes">
+        <div class="panel-header">
+          <h1>Componentes</h1>
+        </div>
+
+        <div class="palette-scroll">
+          <div class="palette-search">
+            <input id="palette-search" class="form-control" type="search" placeholder="Buscar" autocomplete="off">
+          </div>
+
+          <div id="palette-groups"></div>
+        </div>
+      </aside>
+
+      <section class="canvas-panel" aria-label="Editor">
+        <div class="canvas-toolbar">
+          <div>
+            <input id="page-name" class="page-name-input" type="text" placeholder="Nome da pagina" autocomplete="off" spellcheck="false">
+            <span id="document-summary">0 componentes</span>
+          </div>
+          <div class="segmented-control" aria-label="Largura do preview">
+            <button type="button" data-device="desktop" class="active">Desktop</button>
+            <button type="button" data-device="tablet">Tablet</button>
+            <button type="button" data-device="mobile">Mobile</button>
+          </div>
+        </div>
+
+        <div class="canvas-scroll">
+          <div id="editor-page-header" class="editor-page-header page-header d-print-none"></div>
+          <div id="canvas" class="canvas desktop" data-drop-zone="page" tabindex="0" aria-label="Area da pagina"></div>
+          <div id="editor-page-footer" class="editor-page-footer page-footer d-print-none"></div>
+        </div>
+      </section>
+
+      <aside class="properties-panel" aria-label="Propriedades">
+        <div class="panel-header">
+          <h1>Propriedades</h1>
+        </div>
+        <form id="properties-form" class="properties-form"></form>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="output-dialog" class="output-dialog">
+    <form method="dialog" class="dialog-shell">
+      <header>
+        <strong id="output-title">Saida</strong>
+        <button type="submit" aria-label="Fechar">&times;</button>
+      </header>
+      <textarea id="output-content" spellcheck="false"></textarea>
+      <footer>
+        <button type="button" class="tool-button text btn btn-outline-secondary" data-action="copy-output">Copiar</button>
+        <button type="button" class="tool-button text btn btn-primary" data-action="download-output">Baixar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <input type="file" id="import-json-file" accept=".json" style="display:none">
+
+  <script src="public/tabler/js/tabler.js" defer></script>
+  <script src="public/tabler/js/demo.js" defer></script>
+  <script src="public/tabler/libs/imask/dist/imask.min.js" defer></script>
+  <script src="public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="assets/js/core/helpers.js?v=2"></script>
+  <script src="assets/js/core/export-html.js?v=28"></script>
+  <script src="assets/js/core/drag-drop.js?v=2"></script>
+  <script src="assets/js/core/properties.js?v=5"></script>
+  <script src="assets/js/renderers/registry.js?v=1"></script>
+  <script src="assets/js/renderers/hidden-input.js?v=2"></script>
+  <script src="assets/js/renderers/alert.js?v=2"></script>
+  <script src="assets/js/renderers/accordion.js?v=2"></script>
+  <script src="assets/js/renderers/tabs.js?v=2"></script>
+  <script src="assets/js/renderers/input.js?v=5"></script>
+  <script src="assets/js/renderers/button.js?v=1"></script>
+  <script src="assets/js/renderers/card.js?v=1"></script>
+  <script src="assets/js/renderers/input-button-group.js?v=4"></script>
+  <script src="assets/js/renderers/table.js?v=4"></script>
+  <script src="assets/js/renderers/fieldlist.js?v=3"></script>
+  <script src="assets/js/renderers/chart.js?v=3"></script>
+  <script src="assets/js/renderers/signature.js?v=3"></script>
+  <script src="assets/js/renderers/wysiwyg.js?v=3"></script>
+  <script src="assets/js/renderers/dropzone.js?v=7"></script>
+  <script src="assets/js/renderers/fullcalendar.js?v=5"></script>
+  <script src="assets/js/renderers/heading.js?v=2"></script>
+  <script src="assets/js/renderers/paragraph.js?v=1"></script>
+  <script src="assets/js/renderers/element.js?v=1"></script>
+  <script src="assets/js/renderers/label.js?v=2"></script>
+  <script src="assets/js/renderers/list.js?v=1"></script>
+  <script src="assets/js/renderers/link.js?v=2"></script>
+  <script src="assets/js/renderers/image.js?v=1"></script>
+  <script src="assets/js/renderers/kpi.js?v=2"></script>
+  <script src="assets/js/renderers/html.js?v=1"></script>
+  <script src="assets/js/renderers/breadcrumb.js?v=2"></script>
+  <script src="assets/js/renderers/textarea.js?v=1"></script>
+  <script src="assets/js/renderers/select.js?v=2"></script>
+  <script src="assets/js/renderers/choice.js?v=2"></script>
+  <script src="assets/js/renderers/select-group.js?v=2"></script>
+  <script src="assets/js/renderers/floating-input.js?v=2"></script>
+  <script src="assets/js/renderers/help-input.js?v=2"></script>
+  <script src="assets/js/renderers/separated-input.js?v=2"></script>
+  <script src="assets/js/renderers/icon-input.js?v=2"></script>
+  <script src="assets/js/renderers/tom-select.js?v=2"></script>
+  <script src="assets/js/renderers/date-picker.js?v=2"></script>
+  <script src="assets/js/renderers/button-dropdown.js?v=1"></script>
+  <script src="assets/js/renderers/button-group.js?v=2"></script>
+  <script src="assets/js/renderers/input-select-group.js?v=2"></script>
+  <script src="assets/js/renderers/quantity-stepper.js?v=1"></script>
+  <script src="assets/js/renderers/payment-method.js?v=1"></script>
+  <script src="assets/js/renderers/js-snippet.js?v=1"></script>
+  <script src="assets/js/builder.js?v=62"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Database Designer — Template Builder</title>
+  <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
+  <link rel="stylesheet" href="public/tabler/css/tabler.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-vendors.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-themes.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/demo.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/custom.css">
+  <link rel="stylesheet" href="assets/css/builder.css?v=14">
+  <link rel="stylesheet" href="assets/css/database-builder.css?v=1">
+</head>
+<body class="layout-fluid" data-page="database-designer">
+  <script src="public/tabler/js/tabler-theme.js"></script>
+  <div class="app-shell" data-preview="false">
+    <header class="topbar navbar navbar-expand-md d-print-none">
+      <div class="brand">
+        <span class="brand-mark avatar avatar-sm bg-primary-lt text-primary" aria-hidden="true">DB</span>
+        <div>
+          <strong>Database Designer</strong>
+          <span>Multi-banco</span>
+        </div>
+      </div>
+
+      <div class="toolbar btn-list" aria-label="Acoes do designer">
+        <select id="databaseType" class="form-select" style="width:auto" aria-label="Banco de dados">
+          <option value="mysql">MySQL / MariaDB</option>
+          <option value="postgresql">PostgreSQL</option>
+          <option value="sqlite">SQLite</option>
+          <option value="sqlserver">SQL Server</option>
+          <option value="firebird">Firebird</option>
+          <option value="oracle">Oracle</option>
+        </select>
+        <button type="button" id="btn-new-table" class="tool-button text btn btn-primary">Nova Tabela</button>
+        <button type="button" id="btn-new-view" class="tool-button text btn btn-outline-teal">Nova View</button>
+        <button type="button" id="btn-new-trigger" class="tool-button text btn btn-outline-purple">Nova Trigger</button>
+        <button type="button" id="btn-import-sql" class="tool-button text btn btn-outline-secondary">Importar</button>
+        <button type="button" id="btn-export-sql" class="tool-button text btn btn-outline-primary">Exportar SQL</button>
+        <button type="button" id="btn-clear-all" class="tool-button text btn btn-outline-danger">Limpar</button>
+        <a href="index.html" class="tool-button text btn btn-outline-secondary">Paginas</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="palette-panel" aria-label="Objetos do banco">
+        <div class="panel-header">
+          <h1>Objetos</h1>
+        </div>
+
+        <div class="palette-scroll">
+          <div class="palette-search">
+            <input id="searchTables" class="form-control" type="search" placeholder="Buscar tabelas, views, triggers" autocomplete="off">
+          </div>
+
+          <div id="tablesList" class="tables-list"></div>
+        </div>
+      </aside>
+
+      <section class="canvas-panel" aria-label="Diagrama">
+        <div class="db-diagram-scroll">
+          <div id="diagram"></div>
+        </div>
+        <div id="statusBar" class="db-status-bar">Pronto</div>
+      </section>
+
+      <aside class="properties-panel" aria-label="Propriedades">
+        <div class="panel-header">
+          <h1>Propriedades</h1>
+        </div>
+        <form id="db-properties-form" class="properties-form"></form>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="sql-dialog" class="output-dialog">
+    <form method="dialog" class="dialog-shell">
+      <header>
+        <strong>SQL gerado para <span id="sqlDbLabel">MySQL</span></strong>
+        <button type="submit" aria-label="Fechar">&times;</button>
+      </header>
+      <textarea id="sqlOutput" spellcheck="false" readonly></textarea>
+      <footer>
+        <button type="button" id="sql-copy" class="tool-button text btn btn-outline-secondary">Copiar</button>
+        <button type="button" id="sql-download" class="tool-button text btn btn-primary">Baixar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="assets/js/database-builder.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,1946 @@
+{
+  "$schema": "./components.schema.json",
+  "version": 25,
+  "schemaVersion": 5,
+  "framework": "tabler",
+  "assets": {
+    "favicon": { "href": "public/tabler/icons/outline/favicon.svg", "type": "image/svg+xml" },
+    "styles": [
+      "public/tabler/libs/inter/inter.css",
+      "public/tabler/css/tabler.css",
+      "public/tabler/css/tabler-vendors.css",
+      "public/tabler/css/tabler-themes.css",
+      "public/tabler/css/custom.css"
+    ],
+    "headScripts": [
+      "public/tabler/js/tabler-theme.js"
+    ],
+    "scripts": [
+      { "src": "public/tabler/js/tabler.js", "defer": true }
+    ],
+    "runtimes": {
+      "ajaxFill": "public/components/js/ajax-fill-runtime.js",
+      "fieldList": "public/components/js/fieldlist-runtime.js",
+      "jquery": "public/tabler/libs/jquery/jquery-4.0.0.min.js",
+      "mask": "public/tabler/libs/imask/dist/imask.min.js",
+      "maskInit": "public/components/js/mask-runtime.js",
+      "datatable": "public/components/js/datatable-runtime.js",
+      "tomselect": "public/components/js/tomselect-runtime.js",
+      "litepicker": "public/components/js/litepicker-runtime.js",
+      "signature": "public/components/js/signature-runtime.js",
+      "hugerte": "public/components/js/hugerte-runtime.js",
+      "apexchart": "public/components/js/apexchart-runtime.js",
+      "fullcalendar": "public/components/js/fullcalendar-runtime.js",
+      "dropzone": "public/components/js/dropzone-runtime.js",
+      "passwordToggle": "public/components/js/password-toggle-runtime.js",
+      "quantityStepper": "public/components/js/quantity-stepper-runtime.js"
+    }
+  },
+  "layoutDefaults": {
+    "rowCssClass": "row g-3 mb-3",
+    "columnCssClass": "col-12 col-md-{{span}}"
+  },
+  "propertySets": {
+    "fieldBase": {
+      "group": "Geral",
+      "properties": [
+        { "label": "Label", "prop": "label", "field": "text" },
+        { "label": "Nome", "prop": "name", "field": "text" },
+        { "label": "Ajuda", "prop": "help", "field": "text" }
+      ]
+    },
+    "fieldState": {
+      "group": "Validacao",
+      "properties": [
+        { "label": "Obrigatorio", "prop": "required", "field": "checkbox" },
+        { "label": "Desabilitado", "prop": "disabled", "field": "checkbox" }
+      ]
+    },
+    "readonlyState": {
+      "group": "Validacao",
+      "properties": [
+        { "label": "Somente leitura", "prop": "readonly", "field": "checkbox" }
+      ]
+    },
+    "inputValidation": {
+      "group": "Validacao",
+      "properties": [
+        { "label": "Expressao de validacao", "prop": "pattern", "field": "text", "placeholder": "Ex.: [A-Za-z0-9]+" },
+        { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" }
+      ]
+    },
+    "validationState": {
+      "group": "Validacao",
+      "properties": [
+        { "label": "Estado visual", "prop": "validationState", "field": "select", "options": [["", "Nenhum"], ["valid", "Valido"], ["invalid", "Invalido"]] },
+        { "label": "Estado lite", "prop": "validationLite", "field": "checkbox" },
+        { "label": "Feedback valido", "prop": "validFeedback", "field": "text" },
+        { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" }
+      ]
+    },
+    "choiceOptions": {
+      "group": "Dados",
+      "properties": [
+        {
+          "label": "Opcoes",
+          "prop": "options",
+          "field": "repeater",
+          "addLabel": "Adicionar opcao",
+          "itemFields": [
+            { "label": "Valor", "prop": "key", "field": "text", "default": "nova_opcao" },
+            { "label": "Texto", "prop": "value", "field": "text", "default": "Nova opcao" },
+            { "label": "Selecionado", "prop": "selected", "field": "checkbox", "default": false },
+            { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }
+          ]
+        }
+      ]
+    },
+    "choiceItems": {
+      "group": "Dados",
+      "properties": [
+        {
+          "label": "Opcoes",
+          "prop": "options",
+          "field": "repeater",
+          "addLabel": "Adicionar opcao",
+          "itemFields": [
+            { "label": "Valor", "prop": "value", "field": "text", "default": "nova_opcao" },
+            { "label": "Texto", "prop": "label", "field": "text", "default": "Nova opcao" },
+            { "label": "Descricao", "prop": "description", "field": "textarea", "default": "" },
+            { "label": "Marcado", "prop": "checked", "field": "checkbox", "default": false },
+            { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }
+          ]
+        }
+      ]
+    },
+    "choiceLayout": {
+      "group": "Aparencia",
+      "properties": [
+        { "label": "Exibir inline", "prop": "inline", "field": "checkbox" }
+      ]
+    },
+    "checkboxStyle": {
+      "group": "Aparencia",
+      "properties": [
+        { "label": "Estilo", "prop": "displayStyle", "field": "select", "options": [["check", "Checkbox"], ["switch", "Switch"]] },
+        { "label": "Tamanho do switch", "prop": "switchSize", "field": "select", "options": [["", "Padrao"], ["2", "Tamanho 2"], ["3", "Tamanho 3"]] }
+      ]
+    },
+    "iconConfig": {
+      "group": "Icone",
+      "properties": [
+        { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+        { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        { "label": "Lado do icone", "prop": "iconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] }
+      ]
+    },
+    "alertOptions": {
+      "group": "Alerta",
+      "properties": [
+        { "label": "Cor", "prop": "variant", "field": "select", "options": [["danger", "Danger"], ["warning", "Warning"], ["success", "Success"], ["info", "Info"], ["primary", "Primary"], ["secondary", "Secondary"]] },
+        { "label": "Estilo", "prop": "alertStyle", "field": "select", "options": [["", "Padrao"], ["important", "Important"], ["minor", "Minor"]] },
+        { "label": "Mensagem", "prop": "message", "field": "text" },
+        { "label": "Titulo", "prop": "title", "field": "text" },
+        { "label": "Descricao", "prop": "description", "field": "textarea" },
+        {
+          "label": "Itens da lista",
+          "prop": "listItems",
+          "field": "repeater",
+          "addLabel": "Adicionar item",
+          "itemFields": [
+            { "label": "Texto", "prop": "text", "field": "text", "default": "Novo item" }
+          ]
+        },
+        { "label": "Mostrar icone", "prop": "showIcon", "field": "checkbox" },
+        { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Vazio usa icone padrao da cor" },
+        { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        { "label": "Fechavel", "prop": "dismissible", "field": "checkbox" },
+        { "label": "Aria label fechar", "prop": "closeLabel", "field": "text" },
+        { "label": "Mostrar acao", "prop": "showAction", "field": "checkbox" },
+        { "label": "Texto da acao", "prop": "actionText", "field": "text" },
+        { "label": "Href da acao", "prop": "actionHref", "field": "text" },
+        { "label": "Classe CSS da acao", "prop": "actionCssClass", "field": "text" },
+        { "label": "Role", "prop": "role", "field": "text" }
+      ]
+    },
+    "accordionOptions": {
+      "group": "Accordion",
+      "properties": [
+        { "label": "ID do accordion", "prop": "accordionId", "field": "text", "placeholder": "Vazio usa o ID do componente" },
+        { "label": "Visual", "prop": "styleVariant", "field": "select", "options": [["", "Padrao"], ["flush", "Flush"], ["tabs", "Tabs"], ["inverted", "Inverted"], ["inverted-plus", "Inverted + plus"]] },
+        { "label": "Sempre aberto", "prop": "alwaysOpen", "field": "checkbox" },
+        { "label": "Tag do cabecalho", "prop": "headingTag", "field": "select", "options": [["div", "Div"], ["h2", "H2"], ["h3", "H3"], ["h4", "H4"]] },
+        { "label": "Icone do toggle", "prop": "toggleIcon", "field": "icon", "placeholder": "chevron-down ou plus" },
+        { "label": "Cor do toggle (hex)", "prop": "toggleIconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        { "label": "Classe CSS item", "prop": "itemCssClass", "field": "text" },
+        { "label": "Classe CSS cabecalho", "prop": "headerCssClass", "field": "text" },
+        { "label": "Classe CSS botao", "prop": "buttonCssClass", "field": "text" },
+        { "label": "Classe CSS toggle", "prop": "toggleCssClass", "field": "text" },
+        { "label": "Classe CSS corpo", "prop": "bodyCssClass", "field": "text" },
+        {
+          "label": "Itens",
+          "prop": "items",
+          "field": "repeater",
+          "addLabel": "Adicionar item",
+          "itemFields": [
+            { "label": "Titulo", "prop": "title", "field": "text", "default": "Novo item" },
+            { "label": "Conteudo", "prop": "content", "field": "textarea", "default": "Conteudo do item." },
+            { "label": "Aberto", "prop": "open", "field": "checkbox", "default": false },
+            { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          ]
+        }
+      ]
+    },
+    "tabsOptions": {
+      "group": "Tabs",
+      "properties": [
+        { "label": "ID base", "prop": "tabsId", "field": "text", "placeholder": "Vazio usa o ID do componente" },
+        { "label": "Usar card", "prop": "useCard", "field": "checkbox" },
+        { "label": "Lateral (empilhado)", "prop": "stacked", "field": "checkbox" },
+        { "label": "Preencher largura", "prop": "navFill", "field": "checkbox" },
+        { "label": "Inverter ordem", "prop": "reverse", "field": "checkbox" },
+        { "label": "Usar fade", "prop": "fade", "field": "checkbox" },
+        { "label": "Classe nav lateral", "prop": "stackedNavCssClass", "field": "text" },
+        { "label": "Classe item nav lateral", "prop": "stackedNavItemCssClass", "field": "text" },
+        { "label": "Classe coluna nav", "prop": "navColCssClass", "field": "text" },
+        { "label": "Classe coluna conteudo", "prop": "contentColCssClass", "field": "text" },
+        { "label": "Classe CSS header card", "prop": "cardHeaderCssClass", "field": "text" },
+        { "label": "Classe CSS body card", "prop": "cardBodyCssClass", "field": "text" },
+        { "label": "Classe CSS nav", "prop": "navCssClass", "field": "text" },
+        { "label": "Classe CSS item nav", "prop": "navItemCssClass", "field": "text" },
+        { "label": "Classe CSS link nav", "prop": "navLinkCssClass", "field": "text" },
+        { "label": "Classe CSS conteudo", "prop": "tabContentCssClass", "field": "text" },
+        { "label": "Classe CSS painel", "prop": "tabPaneCssClass", "field": "text" },
+        { "label": "Mostrar dropdown", "prop": "showDropdown", "field": "checkbox" },
+        { "label": "Texto dropdown", "prop": "dropdownLabel", "field": "text" },
+        { "label": "Classe CSS item dropdown", "prop": "dropdownItemCssClass", "field": "text" },
+        { "label": "Classe CSS link dropdown", "prop": "dropdownLinkCssClass", "field": "text" },
+        { "label": "Classe CSS menu dropdown", "prop": "dropdownMenuCssClass", "field": "text" },
+        {
+          "label": "Acoes dropdown",
+          "prop": "dropdownActions",
+          "field": "repeater",
+          "addLabel": "Adicionar acao",
+          "itemFields": [
+            { "label": "Texto", "prop": "text", "field": "text", "default": "Nova acao" },
+            { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+            { "label": "ID", "prop": "id", "field": "text", "default": "" },
+            { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "dropdown-item" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Target", "prop": "target", "field": "select", "default": "", "options": [["", "Mesma aba"], ["_self", "_self"], ["_blank", "_blank"]] }
+          ]
+        },
+        {
+          "label": "Abas",
+          "prop": "tabs",
+          "field": "repeater",
+          "addLabel": "Adicionar aba",
+          "itemFields": [
+            { "label": "Texto da aba", "prop": "label", "field": "text", "default": "Nova aba" },
+            { "label": "Titulo do conteudo", "prop": "title", "field": "text", "default": "Titulo da aba" },
+            { "label": "Conteudo", "prop": "content", "field": "textarea", "default": "Conteudo da aba." },
+            { "label": "Ativa", "prop": "active", "field": "checkbox", "default": false },
+            { "label": "Desabilitada", "prop": "disabled", "field": "checkbox", "default": false },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Somente icone", "prop": "iconOnly", "field": "checkbox", "default": false },
+            { "label": "ID do painel", "prop": "paneId", "field": "text", "default": "" },
+            { "label": "Title do link", "prop": "linkTitle", "field": "text", "default": "" },
+            { "label": "Classe CSS item nav", "prop": "navItemCssClass", "field": "text", "default": "" },
+            { "label": "Classe CSS link nav", "prop": "navLinkCssClass", "field": "text", "default": "" }
+          ]
+        }
+      ]
+    },
+    "formAttributes": {
+      "group": "Formulario",
+      "properties": [
+        { "label": "ID do formulario", "prop": "formId", "field": "text" },
+        { "label": "Action", "prop": "action", "field": "text" },
+        { "label": "Method", "prop": "method", "field": "select", "options": [["post", "POST"], ["get", "GET"], ["dialog", "Dialog"]] },
+        { "label": "Enctype", "prop": "enctype", "field": "select", "options": [["", "Padrao"], ["application/x-www-form-urlencoded", "application/x-www-form-urlencoded"], ["multipart/form-data", "multipart/form-data"], ["text/plain", "text/plain"]] },
+        { "label": "Target", "prop": "target", "field": "select", "options": [["", "Mesma aba"], ["_self", "_self"], ["_blank", "_blank"], ["_parent", "_parent"], ["_top", "_top"]] },
+        { "label": "Autocomplete", "prop": "autocomplete", "field": "select", "options": [["off", "Off"], ["on", "On"]] },
+        { "label": "Novalidate", "prop": "novalidate", "field": "checkbox" }
+      ]
+    },
+    "selectGroupOptions": {
+      "group": "Selectgroup",
+      "properties": [
+        { "label": "Label", "prop": "label", "field": "text" },
+        { "label": "ID base", "prop": "inputId", "field": "text" },
+        { "label": "Nome", "prop": "name", "field": "text" },
+        { "label": "Tipo", "prop": "choiceType", "field": "select", "options": [["checkbox", "Checkbox"], ["radio", "Radio"]] },
+        { "label": "Conteudo", "prop": "displayMode", "field": "select", "options": [["text", "Texto"], ["icon", "Somente icone"], ["iconText", "Icone e texto"]] },
+        { "label": "Itens", "prop": "items", "field": "repeater", "addLabel": "Adicionar item", "itemFields": [
+          { "label": "Valor", "prop": "value", "field": "text", "default": "novo_item" },
+          { "label": "Texto", "prop": "label", "field": "text", "default": "Novo item" },
+          { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+          { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          { "label": "Marcado", "prop": "checked", "field": "checkbox", "default": false },
+          { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }
+        ]}
+      ]
+    },
+    "signatureOptions": {
+      "group": "Assinatura",
+      "properties": [
+        { "label": "ID do canvas", "prop": "canvasId", "field": "text", "placeholder": "Vazio usa o ID do componente" },
+        { "label": "Name do campo", "prop": "inputName", "field": "text" },
+        { "label": "Tooltip limpar", "prop": "clearLabel", "field": "text" },
+        { "label": "Icone limpar", "prop": "clearIcon", "field": "icon" },
+        { "label": "Classe CSS botao limpar", "prop": "clearBtnCssClass", "field": "text" },
+        { "label": "Classe CSS canvas", "prop": "canvasCssClass", "field": "text" },
+        { "label": "Cor da caneta (hex)", "prop": "penColor", "field": "text", "placeholder": "Vazio usa cor do tema", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        { "label": "Cor de fundo", "prop": "backgroundColor", "field": "text", "placeholder": "transparent" }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "id": "layout",
+      "label": "Layout",
+      "blocks": [
+        { "id": "row-1", "label": "1 coluna", "kind": "layout", "icon": "mini-grid one", "spans": [12] },
+        { "id": "row-2", "label": "2 colunas", "kind": "layout", "icon": "mini-grid two", "spans": [6, 6] },
+        { "id": "row-3", "label": "3 colunas", "kind": "layout", "icon": "mini-grid three", "spans": [4, 4, 4] },
+        { "id": "row-4", "label": "4 colunas", "kind": "layout", "icon": "mini-grid four", "spans": [3, 3, 3, 3] },
+        { "id": "row-48", "label": "4 - 8", "kind": "layout", "icon": "mini-grid split-48", "spans": [4, 8] },
+        { "id": "row-84", "label": "8 - 4", "kind": "layout", "icon": "mini-grid split-84", "spans": [8, 4] },
+        { "id": "row-custom", "label": "Colunas custom", "kind": "layout", "icon": "mini-grid custom", "customCount": 6 }
+      ]
+    },
+    {
+      "id": "form",
+      "label": "Formulario",
+      "blocks": [
+        {
+          "id": "form",
+          "label": "Form",
+          "kind": "formContainer",
+          "icon": "block-icon form-container",
+          "defaultCssClass": "space-y",
+          "propertySets": ["formAttributes"],
+          "container": {
+            "enabled": true,
+            "storage": "rows",
+            "renderer": "form",
+            "accepts": ["layout", "component"],
+            "rejectKinds": ["formContainer"]
+          },
+          "defaults": {
+            "formId": "",
+            "action": "",
+            "method": "post",
+            "enctype": "",
+            "target": "",
+            "autocomplete": "off",
+            "novalidate": true,
+            "ajaxEnabled": false,
+            "ajaxUrl": "",
+            "ajaxMethod": "POST",
+            "ajaxFormat": "json",
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key",
+            "ajaxHeaders": [],
+            "ajaxSuccessMessage": "Dados enviados com sucesso",
+            "ajaxErrorMessage": "Erro ao enviar os dados",
+            "ajaxRedirectUrl": "",
+            "ajaxCode": ""
+          },
+          "properties": [
+            { "label": "Enviar via AJAX", "prop": "ajaxEnabled", "field": "checkbox", "group": "Envio AJAX" },
+            { "label": "URL de envio", "prop": "ajaxUrl", "field": "text", "group": "Envio AJAX" },
+            { "label": "Metodo", "prop": "ajaxMethod", "field": "select", "options": [["POST", "POST"], ["PUT", "PUT"], ["PATCH", "PATCH"]], "group": "Envio AJAX" },
+            { "label": "Formato do corpo", "prop": "ajaxFormat", "field": "select", "options": [["json", "JSON"], ["formdata", "FormData (suporta arquivo)"]], "group": "Envio AJAX" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none", "Nenhuma"], ["bearer", "Bearer token"], ["header", "Chave em header"]], "group": "Envio AJAX" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Envio AJAX" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Envio AJAX" },
+            { "label": "Headers extras", "prop": "ajaxHeaders", "field": "keyvalue", "keyLabel": "Header", "valueLabel": "Valor", "addLabel": "Adicionar header", "keyPrefix": "header", "group": "Envio AJAX" },
+            { "label": "Mensagem de sucesso", "prop": "ajaxSuccessMessage", "field": "text", "group": "Envio AJAX" },
+            { "label": "Mensagem de erro", "prop": "ajaxErrorMessage", "field": "text", "group": "Envio AJAX" },
+            { "label": "Redirecionar apos sucesso (URL)", "prop": "ajaxRedirectUrl", "field": "text", "group": "Envio AJAX" },
+            { "label": "Codigo JS (jQuery)", "prop": "ajaxCode", "field": "textarea", "group": "Envio AJAX" }
+          ]
+        },
+        {
+          "id": "input",
+          "label": "Campo texto",
+          "kind": "input",
+          "inputType": "text",
+          "icon": "block-icon text-line",
+          "defaultCssClass": "form-control",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
+          "controlName": "campo_texto",
+          "assets": { "init": "passwordToggle" },
+          "defaults": { "label": "Campo texto", "inputType": "text", "inputId": "", "name": "", "placeholder": "", "value": "", "minLength": "", "maxLength": "", "pattern": "", "customAttributes": [], "autocomplete": "", "showPasswordToggle": false, "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "properties": [
+            { "label": "Tipo", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["tel", "Telefone"], ["url", "URL"], ["search", "Busca"]] },
+            { "label": "Mostrar botao olho", "prop": "showPasswordToggle", "field": "checkbox" },
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Campo" },
+            { "label": "Valor", "prop": "value", "field": "text", "group": "Campo" },
+            { "label": "Tamanho minimo", "prop": "minLength", "field": "number", "min": 0, "group": "Validacao" },
+            { "label": "Tamanho maximo", "prop": "maxLength", "field": "number", "min": 0, "group": "Validacao" },
+            { "label": "Autocomplete", "prop": "autocomplete", "field": "text", "group": "Campo" },
+            { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]], "group": "Campo" },
+            { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000", "group": "Mascara" },
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox", "group": "Mascara" }
+          ]
+        },
+        {
+          "id": "hidden-input",
+          "label": "Input Hidden",
+          "kind": "hiddenInput",
+          "icon": "block-icon hidden-input",
+          "defaultCssClass": "",
+          "controlName": "campo_oculto",
+          "generatedFields": [
+            { "idProp": "inputId", "nameProp": "name", "base": "campo_oculto" }
+          ],
+          "defaults": { "inputId": "", "name": "", "value": "", "customAttributes": [] },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" }
+          ]
+        },
+        {
+          "id": "number",
+          "label": "Numero",
+          "kind": "input",
+          "inputType": "number",
+          "icon": "block-icon number",
+          "defaultCssClass": "form-control",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
+          "controlName": "numero",
+          "defaults": { "label": "Numero", "inputId": "", "name": "", "allowNegative": false, "min": "0", "max": "", "step": "1", "value": "0", "pattern": "", "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
+            { "label": "Permitir negativo", "prop": "allowNegative", "field": "checkbox", "group": "Valores" },
+            { "label": "Minimo", "prop": "min", "field": "number", "group": "Valores" },
+            { "label": "Maximo", "prop": "max", "field": "number", "group": "Valores" },
+            { "label": "Step", "prop": "step", "field": "number", "group": "Valores" },
+            { "label": "Valor", "prop": "value", "field": "number", "group": "Valores" }
+          ]
+        },
+        {
+          "id": "textarea",
+          "label": "Area texto",
+          "kind": "textarea",
+          "icon": "block-icon text-box",
+          "defaultCssClass": "form-control",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "validationState"],
+          "controlName": "area_texto",
+          "defaults": { "label": "Area texto", "inputId": "", "name": "", "placeholder": "", "required": false, "disabled": false, "readonly": false, "rows": 4, "maxLength": "", "customAttributes": [], "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Campo" },
+            { "label": "Linhas", "prop": "rows", "field": "number", "min": 1, "max": 30, "group": "Campo" },
+            { "label": "Tamanho maximo", "prop": "maxLength", "field": "number", "min": 0, "group": "Validacao" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes", "group": "Campo" }
+          ]
+        },
+        {
+          "id": "wysiwyg",
+          "label": "Editor WYSIWYG",
+          "kind": "wysiwyg",
+          "icon": "block-icon text-box",
+          "defaultCssClass": "",
+          "controlName": "wysiwyg",
+          "assets": {
+            "scripts": ["public/tabler/libs/hugerte/hugerte.min.js"],
+            "init": "hugerte"
+          },
+          "defaults": { "label": "Descricao", "inputId": "", "name": "", "height": 300, "initialContent": "", "help": "" },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100 },
+            { "label": "Conteudo inicial", "prop": "initialContent", "field": "textarea" },
+            { "label": "Ajuda", "prop": "help", "field": "text" }
+          ]
+        },
+        {
+          "id": "select",
+          "label": "Selecao",
+          "kind": "select",
+          "icon": "block-icon select-box",
+          "defaultCssClass": "form-select",
+          "propertySets": ["fieldBase", "fieldState", "choiceOptions", "validationState"],
+          "controlName": "selecao",
+          "defaults": { "label": "Selecao", "selectId": "", "name": "", "options": { "opcao_1": "Opcao 1", "opcao_2": "Opcao 2", "opcao_3": "Opcao 3" }, "required": false, "disabled": false, "multiple": false, "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "selectId", "field": "text", "group": "Campo" },
+            { "label": "Multiplo", "prop": "multiple", "field": "checkbox", "group": "Campo" }
+          ]
+        },
+        {
+          "id": "radio",
+          "label": "Radio",
+          "kind": "choice",
+          "choiceType": "radio",
+          "icon": "block-icon radio",
+          "defaultCssClass": "option-list",
+          "propertySets": ["fieldBase", "fieldState", "choiceItems", "choiceLayout"],
+          "controlName": "radio",
+          "defaults": { "label": "Radio", "inputId": "", "name": "", "options": [{ "value": "sim", "label": "Sim", "description": "", "checked": true, "disabled": false }, { "value": "nao", "label": "Nao", "description": "", "checked": false, "disabled": false }], "inline": false, "required": false, "disabled": false, "help": "" },
+          "properties": [
+            { "label": "ID base", "prop": "inputId", "field": "text", "group": "Campo" }
+          ]
+        },
+        {
+          "id": "checkbox",
+          "label": "Checkbox",
+          "kind": "choice",
+          "choiceType": "checkbox",
+          "icon": "block-icon check",
+          "defaultCssClass": "option-list",
+          "propertySets": ["fieldBase", "fieldState", "choiceItems", "choiceLayout", "checkboxStyle"],
+          "controlName": "checkbox",
+          "defaults": { "label": "Checkbox", "inputId": "", "name": "", "options": [{ "value": "item_1", "label": "Item 1", "description": "", "checked": true, "disabled": false }, { "value": "item_2", "label": "Item 2", "description": "", "checked": false, "disabled": false }], "inline": false, "displayStyle": "check", "switchSize": "", "required": false, "disabled": false, "help": "" },
+          "properties": [
+            { "label": "ID base", "prop": "inputId", "field": "text", "group": "Campo" }
+          ]
+        },
+        {
+          "id": "date",
+          "label": "Data",
+          "kind": "input",
+          "inputType": "date",
+          "icon": "block-icon calendar",
+          "defaultCssClass": "form-control",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
+          "controlName": "data",
+          "defaults": { "label": "Data", "inputId": "", "name": "", "value": "", "min": "", "max": "", "pattern": "", "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
+            { "label": "Valor", "prop": "value", "field": "date", "group": "Campo" },
+            { "label": "Data minima", "prop": "min", "field": "date", "group": "Validacao" },
+            { "label": "Data maxima", "prop": "max", "field": "date", "group": "Validacao" }
+          ]
+        },
+        {
+          "id": "file",
+          "label": "Arquivo",
+          "kind": "input",
+          "inputType": "file",
+          "icon": "block-icon upload",
+          "defaultCssClass": "form-control",
+          "propertySets": ["fieldBase", "fieldState", "inputValidation", "validationState"],
+          "controlName": "arquivo",
+          "defaults": { "label": "Arquivo", "inputId": "", "name": "", "accept": "", "multiple": false, "pattern": "", "customAttributes": [], "required": false, "disabled": false, "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Arquivo" },
+            { "label": "Tipos aceitos", "prop": "accept", "field": "text", "placeholder": "image/*,.pdf", "group": "Arquivo" },
+            { "label": "Multiplos arquivos", "prop": "multiple", "field": "checkbox", "group": "Arquivo" }
+          ]
+        },
+        {
+          "id": "color-picker",
+          "label": "Seletor de cor",
+          "kind": "input",
+          "inputType": "color",
+          "icon": "block-icon select-box",
+          "defaultCssClass": "form-control form-control-color",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "validationState"],
+          "controlName": "cor",
+          "defaults": { "label": "Cor", "inputId": "", "name": "", "value": "#066fd1", "title": "Escolha uma cor", "required": false, "disabled": false, "readonly": false, "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
+            { "label": "Cor", "prop": "value", "field": "color", "group": "Campo" },
+            { "label": "Titulo", "prop": "title", "field": "text", "group": "Campo" }
+          ]
+        },
+        {
+          "id": "icon-input",
+          "label": "Input com icone",
+          "kind": "iconInput",
+          "icon": "block-icon text-line",
+          "defaultCssClass": "input-icon",
+          "assets": { "init": "mask" },
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState", "iconConfig"],
+          "controlName": "input_icone",
+          "defaults": { "label": "Input com icone", "inputType": "text", "inputId": "", "name": "", "inputCssClass": "form-control", "placeholder": "Pesquisar...", "value": "", "icon": "search", "iconColor": "", "iconPosition": "right", "pattern": "", "customAttributes": [], "autocomplete": "", "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "properties": [
+            { "label": "Tipo", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["tel", "Telefone"], ["url", "URL"], ["search", "Busca"]] },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Classe CSS do input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Autocomplete", "prop": "autocomplete", "field": "text" },
+            { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]] },
+            { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000", "group": "Mascara" },
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox", "group": "Mascara" }
+          ]
+        },
+        {
+          "id": "separated-input",
+          "label": "Input separado + acao",
+          "kind": "separatedInput",
+          "icon": "block-icon input-buttons",
+          "defaultCssClass": "row g-2",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
+          "controlName": "input_separado",
+          "defaults": { "label": "Input separado", "inputType": "text", "inputId": "", "name": "", "inputCssClass": "form-control", "placeholder": "Pesquisar...", "value": "", "actionType": "link", "buttonType": "button", "actionText": "", "actionIcon": "search", "actionIconColor": "", "actionIconPosition": "left", "actionCssClass": "btn btn-2 btn-icon", "href": "#", "pattern": "", "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "properties": [
+            { "label": "Tipo do input", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["search", "Busca"]] },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Classe CSS do input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Tipo da acao", "prop": "actionType", "field": "select", "group": "Acao", "options": [["link", "Link"], ["button", "Botao"]] },
+            { "label": "Tipo do botao", "prop": "buttonType", "field": "select", "group": "Acao", "options": [["button", "Button"], ["submit", "Submit"], ["reset", "Reset"]] },
+            { "label": "Texto da acao", "prop": "actionText", "field": "text", "group": "Acao" },
+            { "label": "Icone da acao", "prop": "actionIcon", "field": "icon", "group": "Acao" },
+            { "label": "Cor do icone (hex)", "prop": "actionIconColor", "field": "text", "group": "Acao", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "actionIconPosition", "field": "select", "group": "Acao", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Href", "prop": "href", "field": "text", "group": "Acao" },
+            { "label": "Classe CSS da acao", "prop": "actionCssClass", "field": "text", "group": "Acao" }
+          ]
+        },
+        {
+          "id": "help-input",
+          "label": "Input com ajuda",
+          "kind": "helpInput",
+          "icon": "block-icon text-line",
+          "defaultCssClass": "row g-2",
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
+          "controlName": "input_ajuda",
+          "defaults": { "label": "Input com ajuda", "inputType": "text", "inputId": "", "name": "", "inputCssClass": "form-control", "placeholder": "Digite um valor", "value": "", "helpMarker": "?", "helpContent": "Informe aqui uma orientacao para o usuario.", "helpPlacement": "top", "pattern": "", "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "properties": [
+            { "label": "Tipo do input", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["search", "Busca"]] },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Classe CSS do input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Marcador", "prop": "helpMarker", "field": "text", "group": "Ajuda" },
+            { "label": "Conteudo", "prop": "helpContent", "field": "textarea", "group": "Ajuda" },
+            { "label": "Posicao", "prop": "helpPlacement", "field": "select", "group": "Ajuda", "options": [["top", "Topo"], ["right", "Direita"], ["bottom", "Inferior"], ["left", "Esquerda"]] }
+          ]
+        },
+        {
+          "id": "floating-input",
+          "label": "Input flutuante",
+          "kind": "floatingInput",
+          "icon": "block-icon text-line",
+          "defaultCssClass": "form-floating",
+          "assets": { "init": "mask" },
+          "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "choiceOptions", "validationState"],
+          "controlName": "input_flutuante",
+          "defaults": { "label": "Email", "controlType": "input", "inputType": "email", "inputId": "", "name": "", "controlCssClass": "form-control", "placeholder": " ", "value": "nome@exemplo.com", "options": [{ "key": "opcao_1", "value": "Opcao 1", "selected": true, "disabled": false }], "multiple": false, "pattern": "", "customAttributes": [], "autocomplete": "off", "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "properties": [
+            { "label": "Controle", "prop": "controlType", "field": "select", "options": [["input", "Input"], ["select", "Select"]] },
+            { "label": "Tipo do input", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["tel", "Telefone"], ["url", "URL"]] },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Classe CSS do controle", "prop": "controlCssClass", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Multiplo", "prop": "multiple", "field": "checkbox" },
+            { "label": "Autocomplete", "prop": "autocomplete", "field": "text" },
+            { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]] },
+            { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000", "group": "Mascara" },
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox", "group": "Mascara" }
+          ]
+        },
+        {
+          "id": "selectgroup",
+          "label": "Selectgroup",
+          "kind": "selectGroup",
+          "icon": "block-icon check",
+          "defaultCssClass": "form-selectgroup",
+          "controlName": "selectgroup",
+          "propertySets": ["selectGroupOptions"],
+          "defaults": { "label": "Selectgroup", "inputId": "", "name": "", "choiceType": "checkbox", "displayMode": "text", "items": [{ "value": "html", "label": "HTML", "icon": "", "iconColor": "", "checked": true, "disabled": false }, { "value": "css", "label": "CSS", "icon": "", "iconColor": "", "checked": false, "disabled": false }, { "value": "javascript", "label": "JavaScript", "icon": "", "iconColor": "", "checked": false, "disabled": false }] }
+        },
+        {
+          "id": "payment-method",
+          "label": "Metodo de pagamento",
+          "kind": "paymentMethod",
+          "icon": "block-icon card",
+          "defaultCssClass": "form-selectgroup form-selectgroup-boxes d-flex flex-column",
+          "controlName": "metodo_pagamento",
+          "assets": {
+            "styles": ["public/tabler/css/tabler-payments.css"]
+          },
+          "defaults": { "label": "Metodo de pagamento", "inputId": "", "name": "", "items": [{ "provider": "visa", "value": "visa", "label": "final 7998", "checked": false, "disabled": false }, { "provider": "mastercard", "value": "mastercard", "label": "final 1000", "checked": true, "disabled": false }, { "provider": "paypal", "value": "paypal", "label": "PayPal", "checked": false, "disabled": false }] },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID base", "prop": "inputId", "field": "text" },
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Metodos", "prop": "items", "field": "repeater", "addLabel": "Adicionar metodo", "itemFields": [{ "label": "Provider", "prop": "provider", "field": "select", "default": "visa", "options": [["visa", "Visa"], ["mastercard", "Mastercard"], ["paypal", "PayPal"], ["americanexpress", "American Express"], ["elo", "Elo"]] }, { "label": "Valor", "prop": "value", "field": "text", "default": "cartao" }, { "label": "Texto", "prop": "label", "field": "text", "default": "final 0000" }, { "label": "Marcado", "prop": "checked", "field": "checkbox", "default": false }, { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }] }
+          ]
+        },
+        {
+          "id": "button-group",
+          "label": "Grupo de botoes",
+          "kind": "buttonGroup",
+          "icon": "block-icon button",
+          "defaultCssClass": "btn-group w-100",
+          "controlName": "grupo_botao",
+          "defaults": { "label": "Grupo de botoes", "inputId": "", "name": "", "choiceType": "radio", "buttonCssClass": "btn", "items": [{ "value": "1", "label": "1 min", "cssClass": "", "checked": true, "disabled": false }, { "value": "5", "label": "5 min", "cssClass": "", "checked": false, "disabled": false }, { "value": "10", "label": "10 min", "cssClass": "", "checked": false, "disabled": false }, { "value": "30", "label": "30 min", "cssClass": "", "checked": false, "disabled": false }] },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID base", "prop": "inputId", "field": "text" },
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Tipo", "prop": "choiceType", "field": "select", "options": [["radio", "Radio"], ["checkbox", "Checkbox"]] },
+            { "label": "Classe CSS dos botoes", "prop": "buttonCssClass", "field": "text" },
+            { "label": "Botoes", "prop": "items", "field": "repeater", "addLabel": "Adicionar botao", "itemFields": [{ "label": "Valor", "prop": "value", "field": "text", "default": "nova_opcao" }, { "label": "Texto", "prop": "label", "field": "text", "default": "Nova opcao" }, { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "" }, { "label": "Marcado", "prop": "checked", "field": "checkbox", "default": false }, { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }] }
+          ]
+        },
+        {
+          "id": "fieldlist",
+          "label": "Tabela FieldList",
+          "kind": "fieldList",
+          "icon": "block-icon table",
+          "defaultCssClass": "card",
+          "container": {
+            "enabled": true,
+            "storage": "rows",
+            "renderer": "fieldList",
+            "accepts": ["layout", "component"],
+            "rejectKinds": ["formContainer", "cardCustom", "fieldList"]
+          },
+          "defaults": {
+            "cardId": "card-contato",
+            "cardTitle": "Contatos",
+            "description": "Cadastre contatos por area, cargo ou pessoa responsavel.",
+            "headerCssClass": "card-header",
+            "addButtonText": "Adicionar contato",
+            "addButtonId": "btnAdicionarContato",
+            "addButtonCssClass": "btn btn-primary",
+            "addButtonIcon": "",
+            "addButtonIconColor": "",
+            "addButtonIconPosition": "left",
+            "tableId": "",
+            "tableWrapperCssClass": "card-table table-responsive overflow-y-visible",
+            "tableCssClass": "table card-table table-vcenter text-nowrap",
+            "tbodyId": "contatosPessoa",
+            "rowCssClass": "contato-row",
+            "indexStart": 1,
+            "columns": [
+              { "label": "Nome", "thClass": "", "tdClass": "", "width": "220px" },
+              { "label": "Departamento/Cargo", "thClass": "", "tdClass": "", "width": "220px" },
+              { "label": "Telefone", "thClass": "", "tdClass": "", "width": "180px" },
+              { "label": "Celular", "thClass": "", "tdClass": "", "width": "180px" },
+              { "label": "E-mail", "thClass": "", "tdClass": "", "width": "240px" },
+              { "label": "Site", "thClass": "", "tdClass": "", "width": "220px" },
+              { "label": "Acoes", "thClass": "text-end", "tdClass": "text-end", "width": "100px" }
+            ]
+          },
+          "properties": [
+            { "label": "ID do card", "prop": "cardId", "field": "text", "group": "Card" },
+            { "label": "Titulo", "prop": "cardTitle", "field": "text", "group": "Card" },
+            { "label": "Descricao", "prop": "description", "field": "textarea", "group": "Card" },
+            { "label": "Classe CSS do cabecalho", "prop": "headerCssClass", "field": "text", "group": "Card" },
+            { "label": "Texto do botao", "prop": "addButtonText", "field": "text", "group": "Botao adicionar" },
+            { "label": "ID do botao", "prop": "addButtonId", "field": "text", "group": "Botao adicionar" },
+            { "label": "Classe CSS do botao", "prop": "addButtonCssClass", "field": "text", "group": "Botao adicionar" },
+            { "label": "Icone Tabler", "prop": "addButtonIcon", "field": "icon", "group": "Botao adicionar" },
+            { "label": "Cor do icone (hex)", "prop": "addButtonIconColor", "field": "text", "group": "Botao adicionar", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "addButtonIconPosition", "field": "select", "group": "Botao adicionar", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "ID da tabela", "prop": "tableId", "field": "text", "group": "Tabela" },
+            { "label": "ID do tbody", "prop": "tbodyId", "field": "text", "group": "Tabela" },
+            { "label": "Classe CSS do wrapper", "prop": "tableWrapperCssClass", "field": "text", "group": "Tabela" },
+            { "label": "Classe CSS da tabela", "prop": "tableCssClass", "field": "text", "group": "Tabela" },
+            { "label": "Classe CSS das linhas", "prop": "rowCssClass", "field": "text", "group": "Tabela" },
+            { "label": "Indice inicial", "prop": "indexStart", "field": "number", "group": "Tabela", "min": 0, "step": 1 },
+            {
+              "label": "Colunas",
+              "prop": "columns",
+              "field": "repeater",
+              "group": "Tabela",
+              "addLabel": "Adicionar coluna",
+              "itemFields": [
+                { "label": "Titulo", "prop": "label", "field": "text", "default": "Nova coluna" },
+                { "label": "Classe CSS TH", "prop": "thClass", "field": "text", "default": "" },
+                { "label": "Classe CSS TD", "prop": "tdClass", "field": "text", "default": "" },
+                { "label": "Largura", "prop": "width", "field": "text", "default": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "button",
+          "label": "Botao",
+          "kind": "button",
+          "icon": "block-icon button",
+          "defaultCssClass": "button-preview btn btn-{{variant}}",
+          "defaults": { "text": "Botao", "icon": "", "iconColor": "", "iconPosition": "left", "variant": "primary", "align": "left", "buttonType": "button", "fieldListAction": "" },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Tipo", "prop": "buttonType", "field": "select", "options": [["button", "Button"], ["submit", "Submit"], ["reset", "Reset"]] },
+            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"]] },
+            { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["left", "Esquerda"], ["center", "Centro"], ["right", "Direita"]] },
+            { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"]] }
+          ]
+        },
+        {
+          "id": "button-dropdown",
+          "label": "Botao Dropdown",
+          "kind": "buttonDropdown",
+          "icon": "block-icon dropdown-button",
+          "defaultCssClass": "btn-list",
+          "defaults": {
+            "buttonText": "Acoes",
+            "buttonIcon": "",
+            "buttonIconColor": "",
+            "buttonIconPosition": "left",
+            "buttonCssClass": "btn btn-outline-secondary",
+            "menuCssClass": "dropdown-menu dropdown-menu-end",
+            "items": [
+              { "text": "Exportar", "href": "#", "id": "btnExportar", "cssClass": "dropdown-item", "icon": "", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "", "ajaxMethod": "GET", "ajaxMappings": [] },
+              { "text": "Importar XML", "href": "./pedido-compra-form.html", "id": "btnImportarXml", "cssClass": "dropdown-item", "icon": "", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "", "ajaxMethod": "GET", "ajaxMappings": [] },
+              { "text": "Relatorios", "href": "#", "id": "btnRelatorios", "cssClass": "dropdown-item", "icon": "", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "", "ajaxMethod": "GET", "ajaxMappings": [] }
+            ],
+            "extraActions": []
+          },
+          "properties": [
+            { "label": "Texto do botao", "prop": "buttonText", "field": "text" },
+            { "label": "Icone do botao", "prop": "buttonIcon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "buttonIconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "buttonIconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Classe CSS do botao", "prop": "buttonCssClass", "field": "text" },
+            { "label": "Classe CSS do menu", "prop": "menuCssClass", "field": "text" },
+            {
+              "label": "Itens dropdown",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar item",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Novo item" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+                { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+                { "label": "ID", "prop": "id", "field": "text", "default": "" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "dropdown-item" },
+                { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "default": "", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"]] },
+                { "label": "Buscar JSON via AJAX", "prop": "ajaxEnabled", "field": "checkbox", "default": false },
+                { "label": "URL AJAX", "prop": "ajaxUrlTemplate", "field": "text", "default": "https://viacep.com.br/ws/{{value}}/json" },
+                { "label": "Metodo AJAX", "prop": "ajaxMethod", "field": "select", "default": "GET", "options": [["GET", "GET"], ["POST", "POST"]] },
+                { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" }
+              ]
+            },
+            {
+              "label": "Acoes ao lado",
+              "prop": "extraActions",
+              "field": "repeater",
+              "addLabel": "Adicionar acao",
+              "itemFields": [
+                { "label": "Tipo", "prop": "type", "field": "select", "default": "button", "options": [["button", "Botao"], ["link", "Link"]] },
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Nova acao" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+                { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+                { "label": "ID", "prop": "id", "field": "text", "default": "" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-outline-secondary" },
+                { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "default": "", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"]] },
+                { "label": "Buscar JSON via AJAX", "prop": "ajaxEnabled", "field": "checkbox", "default": false },
+                { "label": "URL AJAX", "prop": "ajaxUrlTemplate", "field": "text", "default": "https://viacep.com.br/ws/{{value}}/json" },
+                { "label": "Metodo AJAX", "prop": "ajaxMethod", "field": "select", "default": "GET", "options": [["GET", "GET"], ["POST", "POST"]] },
+                { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "input-select-group",
+          "label": "Input + Select",
+          "kind": "inputSelectGroup",
+          "icon": "block-icon input-select",
+          "defaultCssClass": "input-group",
+          "assets": { "init": "mask" },
+          "controlName": "input_select",
+          "defaults": {
+            "label": "Input com Select",
+            "inputType": "text",
+            "inputId": "",
+            "inputName": "",
+            "inputCssClass": "form-control",
+            "value": "",
+            "placeholder": "Digite um valor",
+            "pattern": "",
+            "customAttributes": [],
+            "dataMask": "",
+            "dataMaskVisible": false,
+            "textAlign": "",
+            "selectPosition": "right",
+            "selectId": "",
+            "selectName": "",
+            "selectCssClass": "form-select",
+            "options": { "opcao_1": "Opcao 1", "opcao_2": "Opcao 2" }
+          },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "Tipo do input", "prop": "inputType", "field": "text" },
+            { "label": "ID input", "prop": "inputId", "field": "text" },
+            { "label": "Nome input", "prop": "inputName", "field": "text" },
+            { "label": "Classe CSS input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Posicao do select", "prop": "selectPosition", "field": "select", "options": [["right", "Direita"], ["left", "Esquerda"]] },
+            { "label": "Expressao de validacao", "prop": "pattern", "field": "text" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
+            { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]] },
+            { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000" },
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox" },
+            { "label": "ID select", "prop": "selectId", "field": "text" },
+            { "label": "Nome select", "prop": "selectName", "field": "text" },
+            { "label": "Classe CSS select", "prop": "selectCssClass", "field": "text" },
+            {
+              "label": "Opcoes",
+              "prop": "options",
+              "field": "repeater",
+              "addLabel": "Adicionar opcao",
+              "itemFields": [
+                { "label": "Valor", "prop": "key", "field": "text", "default": "nova_opcao" },
+                { "label": "Texto", "prop": "value", "field": "text", "default": "Nova opcao" },
+                { "label": "Selecionado", "prop": "selected", "field": "checkbox", "default": false },
+                { "label": "Desabilitado", "prop": "disabled", "field": "checkbox", "default": false }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quantity-stepper",
+          "label": "Quantidade +/-",
+          "kind": "quantityStepper",
+          "icon": "block-icon quantity-stepper",
+          "defaultCssClass": "input-group input-group-sm",
+          "controlName": "quantidade",
+          "defaults": {
+            "width": "150px",
+            "inputType": "number",
+            "inputId": "",
+            "inputName": "",
+            "inputCssClass": "form-control text-center item-quantidade",
+            "min": "0.001",
+            "step": "0.001",
+            "value": "1",
+            "pattern": "",
+            "customAttributes": [],
+            "minusText": "-",
+            "minusIcon": "",
+            "minusIconColor": "",
+            "allowNegative": false,
+            "minusCssClass": "btn btn-outline-secondary btn-qty-minus",
+            "plusText": "+",
+            "plusIcon": "",
+            "plusIconColor": "",
+            "plusCssClass": "btn btn-outline-secondary btn-qty-plus"
+          },
+          "properties": [
+            { "label": "Largura", "prop": "width", "field": "text" },
+            { "label": "ID input", "prop": "inputId", "field": "text" },
+            { "label": "Nome input", "prop": "inputName", "field": "text" },
+            { "label": "Classe CSS input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Permitir negativo", "prop": "allowNegative", "field": "checkbox" },
+            { "label": "Minimo", "prop": "min", "field": "text" },
+            { "label": "Step", "prop": "step", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Expressao de validacao", "prop": "pattern", "field": "text" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
+            { "label": "Texto botao menos", "prop": "minusText", "field": "text" },
+            { "label": "Icone botao menos", "prop": "minusIcon", "field": "icon" },
+            { "label": "Cor icone botao menos (hex)", "prop": "minusIconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Classe CSS botao menos", "prop": "minusCssClass", "field": "text" },
+            { "label": "Texto botao mais", "prop": "plusText", "field": "text" },
+            { "label": "Icone botao mais", "prop": "plusIcon", "field": "icon" },
+            { "label": "Cor icone botao mais (hex)", "prop": "plusIconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Classe CSS botao mais", "prop": "plusCssClass", "field": "text" }
+          ]
+        },
+        {
+          "id": "input-button-group",
+          "label": "Input + Botoes",
+          "kind": "inputButtonGroup",
+          "icon": "block-icon input-buttons",
+          "defaultCssClass": "input-group",
+          "assets": { "init": "mask" },
+          "controlName": "input_com_botao",
+          "defaults": {
+            "label": "Input com Botoes",
+            "inputType": "text",
+            "inputId": "",
+            "inputName": "",
+            "inputCssClass": "form-control",
+            "placeholder": "Digite um valor",
+            "value": "",
+            "maxLength": "",
+            "autocomplete": "",
+            "pattern": "",
+            "customAttributes": [],
+            "dataMask": "",
+            "dataMaskVisible": false,
+            "textAlign": "",
+            "buttonsPosition": "right",
+            "buttons": [
+              { "type": "button", "text": "Buscar", "href": "#", "id": "", "cssClass": "btn btn-outline-secondary", "icon": "search", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "https://viacep.com.br/ws/{{value}}/json", "ajaxMethod": "GET", "ajaxMappings": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }] }
+            ],
+            "invalidFeedback": "Informe um valor valido."
+          },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "Tipo input", "prop": "inputType", "field": "text" },
+            { "label": "ID input", "prop": "inputId", "field": "text" },
+            { "label": "Nome input", "prop": "inputName", "field": "text" },
+            { "label": "Classe CSS input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Maxlength", "prop": "maxLength", "field": "text" },
+            { "label": "Autocomplete", "prop": "autocomplete", "field": "text" },
+            { "label": "Posicao dos botoes", "prop": "buttonsPosition", "field": "select", "options": [["right", "Direita"], ["left", "Esquerda"]] },
+            { "label": "Expressao de validacao", "prop": "pattern", "field": "text" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
+            { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]] },
+            { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000" },
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox" },
+            {
+              "label": "Botoes",
+              "prop": "buttons",
+              "field": "repeater",
+              "addLabel": "Adicionar botao",
+              "itemFields": [
+                { "label": "Tipo", "prop": "type", "field": "select", "default": "button", "options": [["button", "Botao"], ["link", "Link"]] },
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Novo botao" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+                { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+                { "label": "ID", "prop": "id", "field": "text", "default": "" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-outline-secondary" },
+                { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "default": "", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"]] },
+                { "label": "Buscar JSON via AJAX", "prop": "ajaxEnabled", "field": "checkbox", "default": false },
+                { "label": "URL AJAX", "prop": "ajaxUrlTemplate", "field": "text", "default": "https://viacep.com.br/ws/{{value}}/json" },
+                { "label": "Metodo AJAX", "prop": "ajaxMethod", "field": "select", "default": "GET", "options": [["GET", "GET"], ["POST", "POST"]] },
+                { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" }
+              ]
+            },
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "content",
+      "label": "Conteudo",
+      "blocks": [
+        {
+          "id": "alert",
+          "label": "Alert",
+          "kind": "alert",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "alert alert-{{variant}}",
+          "propertySets": ["alertOptions"],
+          "defaults": {
+            "variant": "danger",
+            "alertStyle": "",
+            "message": "An error occurred!",
+            "title": "",
+            "description": "",
+            "listItems": [],
+            "showIcon": true,
+            "icon": "alert-circle",
+            "iconColor": "",
+            "dismissible": false,
+            "closeLabel": "close",
+            "showAction": false,
+            "actionText": "Link",
+            "actionHref": "#",
+            "actionCssClass": "alert-action",
+            "role": "alert"
+          }
+        },
+        {
+          "id": "accordion",
+          "label": "Accordion",
+          "kind": "accordion",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "accordion",
+          "propertySets": ["accordionOptions"],
+          "defaults": {
+            "accordionId": "",
+            "styleVariant": "",
+            "alwaysOpen": false,
+            "headingTag": "div",
+            "toggleIcon": "chevron-down",
+            "toggleIconColor": "",
+            "itemCssClass": "accordion-item",
+            "headerCssClass": "accordion-header",
+            "buttonCssClass": "accordion-button",
+            "toggleCssClass": "accordion-button-toggle",
+            "bodyCssClass": "accordion-body",
+            "items": [
+              { "title": "Pergunta principal", "content": "Use este item para organizar conteudos em secoes recolhaveis.", "open": true, "disabled": false, "icon": "", "iconColor": "" },
+              { "title": "Detalhes adicionais", "content": "O usuario pode abrir e fechar esta area no preview e no HTML exportado.", "open": false, "disabled": false, "icon": "", "iconColor": "" },
+              { "title": "Mais informacoes", "content": "Edite os itens pelas propriedades para trocar titulo, texto, icone e estado inicial.", "open": false, "disabled": false, "icon": "", "iconColor": "" }
+            ]
+          }
+        },
+        {
+          "id": "tabs",
+          "label": "Tabs",
+          "kind": "tabs",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "card",
+          "propertySets": ["tabsOptions"],
+          "defaults": {
+            "tabsId": "",
+            "useCard": true,
+            "stacked": false,
+            "navFill": false,
+            "reverse": false,
+            "fade": false,
+            "stackedNavCssClass": "list-group list-group-transparent",
+            "stackedNavItemCssClass": "list-group-item list-group-item-action d-flex align-items-center",
+            "navColCssClass": "col-12 col-md-3 border-end",
+            "contentColCssClass": "col-12 col-md-9 d-flex flex-column",
+            "cardHeaderCssClass": "card-header",
+            "cardBodyCssClass": "card-body",
+            "navCssClass": "nav nav-tabs card-header-tabs",
+            "navItemCssClass": "nav-item",
+            "navLinkCssClass": "nav-link",
+            "tabContentCssClass": "tab-content",
+            "tabPaneCssClass": "tab-pane",
+            "showDropdown": false,
+            "dropdownLabel": "Dropdown",
+            "dropdownItemCssClass": "nav-item dropdown",
+            "dropdownLinkCssClass": "nav-link dropdown-toggle",
+            "dropdownMenuCssClass": "dropdown-menu",
+            "dropdownActions": [
+              { "text": "Action", "href": "#", "id": "", "cssClass": "dropdown-item", "icon": "", "iconColor": "", "iconPosition": "left", "target": "" }
+            ],
+            "tabs": [
+              { "label": "Home", "title": "Home tab", "content": "Conteudo principal da aba Home.", "active": true, "disabled": false, "icon": "", "iconColor": "", "paneId": "", "linkTitle": "", "navItemCssClass": "", "navLinkCssClass": "" },
+              { "label": "Profile", "title": "Profile tab", "content": "Conteudo da aba Profile.", "active": false, "disabled": false, "icon": "", "iconColor": "", "paneId": "", "linkTitle": "", "navItemCssClass": "", "navLinkCssClass": "" },
+              { "label": "Settings", "title": "Settings tab", "content": "Conteudo da aba Settings.", "active": false, "disabled": false, "icon": "settings", "iconColor": "", "iconOnly": true, "paneId": "", "linkTitle": "Settings", "navItemCssClass": "ms-auto", "navLinkCssClass": "" }
+            ]
+          }
+        },
+        {
+          "id": "signature",
+          "label": "Assinatura",
+          "kind": "signature",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "signature position-relative",
+          "propertySets": ["signatureOptions"],
+          "assets": {
+            "scripts": [{ "src": "public/tabler/libs/signature_pad/dist/signature_pad.umd.min.js", "defer": true }],
+            "init": "signature"
+          },
+          "defaults": {
+            "canvasId": "",
+            "inputName": "assinatura",
+            "clearLabel": "Limpar assinatura",
+            "clearIcon": "trash",
+            "clearBtnCssClass": "btn btn-icon",
+            "canvasCssClass": "signature-canvas",
+            "penColor": "",
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "div",
+          "label": "Div",
+          "kind": "element",
+          "tagName": "div",
+          "icon": "block-icon div",
+          "defaultCssClass": "mb-3",
+          "defaults": { "text": "Conteudo da div." },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "textarea" }
+          ]
+        },
+        {
+          "id": "span",
+          "label": "Span",
+          "kind": "element",
+          "tagName": "span",
+          "icon": "block-icon span",
+          "defaultCssClass": "text-secondary",
+          "defaults": { "text": "Texto inline" },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" }
+          ]
+        },
+        {
+          "id": "label",
+          "label": "Label",
+          "kind": "label",
+          "icon": "block-icon label",
+          "defaultCssClass": "form-label",
+          "defaults": { "text": "Label do campo", "forId": "" },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" },
+            { "label": "For", "prop": "forId", "field": "text" }
+          ]
+        },
+        {
+          "id": "list",
+          "label": "Lista",
+          "kind": "list",
+          "icon": "block-icon list",
+          "defaultCssClass": "list-group",
+          "itemCssClass": "list-group-item",
+          "defaults": {
+            "items": [
+              { "text": "Item 1" },
+              { "text": "Item 2" },
+              { "text": "Item 3" }
+            ]
+          },
+          "properties": [
+            {
+              "label": "Itens",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar item",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Novo item" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "breadcrumb",
+          "label": "Breadcrumb",
+          "kind": "breadcrumb",
+          "icon": "block-icon breadcrumb",
+          "defaultCssClass": "breadcrumb breadcrumb-arrows mt-2",
+          "defaults": {
+            "ariaLabel": "breadcrumbs",
+            "items": [
+              { "text": "Inicio", "href": "./index-erp.html", "cssClass": "breadcrumb-item", "active": false },
+              { "text": "Cadastros", "href": "#", "cssClass": "breadcrumb-item", "active": false },
+              { "text": "Pessoas", "href": "#", "cssClass": "breadcrumb-item", "active": true }
+            ]
+          },
+          "properties": [
+            { "label": "Aria label", "prop": "ariaLabel", "field": "text" },
+            {
+              "label": "Itens",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar item",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Novo item" },
+                { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "breadcrumb-item" },
+                { "label": "Ativo", "prop": "active", "field": "checkbox", "default": false }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "heading",
+          "label": "Titulo",
+          "kind": "heading",
+          "icon": "block-icon heading",
+          "defaultCssClass": "content-heading",
+          "defaults": { "text": "Titulo", "level": "h2" },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" },
+            { "label": "Nivel", "prop": "level", "field": "select", "options": [["h1", "H1"], ["h2", "H2"], ["h3", "H3"]] }
+          ]
+        },
+        {
+          "id": "paragraph",
+          "label": "Texto",
+          "kind": "paragraph",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "content-paragraph",
+          "defaults": { "text": "Texto da pagina." },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "textarea" }
+          ]
+        },
+        {
+          "id": "link",
+          "label": "Link",
+          "kind": "link",
+          "icon": "block-icon link",
+          "defaultCssClass": "btn btn-link px-0",
+          "defaults": { "text": "Abrir link", "href": "#", "target": "" },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" },
+            { "label": "Href", "prop": "href", "field": "text" },
+            { "label": "Target", "prop": "target", "field": "select", "options": [["", "Mesma aba"], ["_blank", "Nova aba"]] }
+          ]
+        },
+        {
+          "id": "image",
+          "label": "Imagem",
+          "kind": "image",
+          "icon": "block-icon image",
+          "defaultCssClass": "img-fluid",
+          "defaults": { "src": "", "alt": "Imagem", "width": "100%" },
+          "properties": [
+            { "label": "URL", "prop": "src", "field": "text" },
+            { "label": "Alt", "prop": "alt", "field": "text" },
+            { "label": "Largura", "prop": "width", "field": "text" }
+          ]
+        },
+        {
+          "id": "card",
+          "label": "Card",
+          "kind": "card",
+          "icon": "block-icon card",
+          "defaultCssClass": "content-card card",
+          "defaults": { "title": "Card", "content": "Conteudo do card." },
+          "properties": [
+            { "label": "Titulo", "prop": "title", "field": "text" },
+            { "label": "Conteudo", "prop": "content", "field": "textarea" }
+          ]
+        },
+        {
+          "id": "card-custom",
+          "label": "Card Personalizado",
+          "kind": "cardCustom",
+          "icon": "block-icon card-custom",
+          "defaultCssClass": "card",
+          "container": {
+            "enabled": true,
+            "renderer": "cardCustom",
+            "accepts": ["layout", "component"],
+            "rejectKinds": ["cardCustom"],
+            "zones": [
+              { "id": "header", "storage": "headerRows", "rejectKinds": ["formContainer", "cardCustom"] },
+              { "id": "body", "storage": "bodyRows" }
+            ]
+          },
+          "defaults": {
+            "headerCssClass": "card-header",
+            "bodyCssClass": "card-body"
+          },
+          "properties": [
+            { "label": "Classe CSS do titulo", "prop": "headerCssClass", "field": "text" },
+            { "label": "Classe CSS do conteudo", "prop": "bodyCssClass", "field": "text" }
+          ]
+        },
+        {
+          "id": "kpi",
+          "label": "Indicador KPI",
+          "kind": "kpi",
+          "icon": "block-icon kpi",
+          "defaultCssClass": "card card-sm",
+          "defaults": {
+            "label": "Total pedidos",
+            "value": "0",
+            "valueId": "kpiTotalPedidos",
+            "bodyWrapper": true,
+            "bodyCssClass": "card-body",
+            "labelCssClass": "subheader",
+            "valueCssClass": "h2 mb-0"
+          },
+          "properties": [
+            { "label": "Titulo", "prop": "label", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "ID do valor", "prop": "valueId", "field": "text" },
+            { "label": "Usar corpo", "prop": "bodyWrapper", "field": "checkbox" },
+            { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text" },
+            { "label": "Classe CSS do titulo", "prop": "labelCssClass", "field": "text" },
+            { "label": "Classe CSS do valor", "prop": "valueCssClass", "field": "text" }
+          ]
+        },
+        {
+          "id": "info-kpi",
+          "label": "Informativo",
+          "kind": "kpi",
+          "icon": "block-icon info-kpi",
+          "defaultCssClass": "bg-primary-lt rounded p-3",
+          "defaults": {
+            "label": "Total geral",
+            "value": "R$ 0,00",
+            "valueId": "totalGeral",
+            "bodyWrapper": false,
+            "bodyCssClass": "",
+            "labelCssClass": "subheader",
+            "valueCssClass": "display-6"
+          },
+          "properties": [
+            { "label": "Titulo", "prop": "label", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "ID do valor", "prop": "valueId", "field": "text" },
+            { "label": "Usar corpo", "prop": "bodyWrapper", "field": "checkbox" },
+            { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text" },
+            { "label": "Classe CSS do titulo", "prop": "labelCssClass", "field": "text" },
+            { "label": "Classe CSS do valor", "prop": "valueCssClass", "field": "text" }
+          ]
+        },
+        {
+          "id": "table",
+          "label": "Tabela",
+          "kind": "table",
+          "icon": "block-icon table",
+          "defaultCssClass": "table table-vcenter card-table",
+          "defaults": {
+            "columns": [
+              { "label": "Nome", "thClass": "text-nowrap", "tdClass": "text-nowrap", "width": "180px" },
+              { "label": "Email", "thClass": "", "tdClass": "", "width": "260px" },
+              { "label": "Situacao", "thClass": "text-center", "tdClass": "text-center", "width": "120px" }
+            ],
+            "rows": [
+              { "cells": ["Maria", "maria@email.com", "Ativo"] },
+              { "cells": ["Joao", "joao@email.com", "Inativo"] }
+            ]
+          },
+          "properties": [
+            {
+              "label": "Colunas",
+              "prop": "columns",
+              "field": "repeater",
+              "addLabel": "Adicionar coluna",
+              "itemFields": [
+                { "label": "Titulo", "prop": "label", "field": "text", "default": "Nova coluna" },
+                { "label": "Classe CSS TH", "prop": "thClass", "field": "text", "default": "" },
+                { "label": "Classe CSS TD", "prop": "tdClass", "field": "text", "default": "" },
+                { "label": "Largura", "prop": "width", "field": "text", "default": "" }
+              ]
+            },
+            { "label": "Linhas", "prop": "rows", "field": "matrix", "columnsProp": "columns", "addLabel": "Adicionar linha" }
+          ]
+        },
+        {
+          "id": "html",
+          "label": "HTML",
+          "kind": "html",
+          "icon": "block-icon html",
+          "defaultCssClass": "",
+          "defaults": { "html": "<div>HTML personalizado</div>" },
+          "properties": [
+            { "label": "HTML", "prop": "html", "field": "textarea", "rows": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "js",
+      "label": "Componentes JS",
+      "blocks": [
+        {
+          "id": "js-snippet",
+          "label": "Script JS",
+          "kind": "jsSnippet",
+          "icon": "block-icon html",
+          "assets": {
+            "scripts": ["public/tabler/libs/jquery/jquery-4.0.0.min.js"]
+          },
+          "defaults": {
+            "template": "calc",
+            "description": "",
+            "code": ""
+          },
+          "properties": [
+            { "label": "Template", "prop": "template", "field": "select", "options": [["calc", "Calculo entre campos"], ["visibility", "Mostrar/esconder campo por condicao"], ["toggleState", "Habilitar/desabilitar campo"], ["blank", "Em branco"]] },
+            { "label": "Descricao", "prop": "description", "field": "text" },
+            { "label": "Codigo JS (jQuery)", "prop": "code", "field": "textarea" }
+          ]
+        },
+        {
+          "id": "datatable",
+          "label": "DataTable",
+          "kind": "datatable",
+          "icon": "block-icon datatable",
+          "defaultCssClass": "table card-table table-vcenter text-nowrap datatable w-100",
+          "assets": {
+            "styles": [
+              "public/tabler/libs/datatables/1.13.8/css/dataTables.bootstrap5.min.css",
+              "public/tabler/libs/datatables/responsive/2.5.0/css/responsive.bootstrap5.min.css",
+              "public/tabler/libs/datatables/buttons/2.4.2/css/buttons.bootstrap5.min.css",
+              "public/tabler/libs/datatables/colreorder/1.7.0/css/colReorder.bootstrap5.min.css"
+            ],
+            "scripts": [
+              "public/tabler/libs/jquery/jquery-4.0.0.min.js",
+              "public/tabler/libs/datatables/1.13.8/js/jquery.dataTables.min.js",
+              "public/tabler/libs/datatables/1.13.8/js/dataTables.bootstrap5.min.js",
+              "public/tabler/libs/datatables/responsive/2.5.0/js/dataTables.responsive.min.js",
+              "public/tabler/libs/datatables/responsive/2.5.0/js/responsive.bootstrap5.min.js",
+              "public/tabler/libs/datatables/colreorder/1.7.0/js/dataTables.colReorder.min.js",
+              "public/tabler/libs/datatables/colreorder/1.7.0/js/colReorder.bootstrap5.min.js",
+              "public/tabler/libs/datatables/buttons/2.4.2/js/dataTables.buttons.min.js",
+              "public/tabler/libs/datatables/buttons/2.4.2/js/buttons.bootstrap5.min.js",
+              "public/tabler/libs/datatables/buttons/2.4.2/js/buttons.colVis.min.js"
+            ],
+            "init": "datatable"
+          },
+          "defaults": {
+            "cardTitle": "Registros",
+            "description": "Dados carregados via DataTable.",
+            "tableId": "",
+            "ajaxUrl": "mock/datatable.json",
+            "columns": [
+              { "label": "Nome", "thClass": "text-nowrap", "tdClass": "text-nowrap", "width": "180px" },
+              { "label": "Email", "thClass": "", "tdClass": "", "width": "260px" },
+              { "label": "Situacao", "thClass": "text-center", "tdClass": "text-center", "width": "120px" }
+            ],
+            "rows": [],
+            "pageLength": 10,
+            "responsive": true,
+            "colReorder": true,
+            "buttons": true,
+            "searching": true,
+            "lengthChange": true,
+            "emptyText": "Nenhum registro encontrado"
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "cardTitle", "field": "text" },
+            { "label": "Descricao", "prop": "description", "field": "text" },
+            { "label": "ID da tabela", "prop": "tableId", "field": "text" },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            {
+              "label": "Colunas",
+              "prop": "columns",
+              "field": "repeater",
+              "addLabel": "Adicionar coluna",
+              "itemFields": [
+                { "label": "Titulo", "prop": "label", "field": "text", "default": "Nova coluna" },
+                { "label": "Classe CSS TH", "prop": "thClass", "field": "text", "default": "" },
+                { "label": "Classe CSS TD", "prop": "tdClass", "field": "text", "default": "" },
+                { "label": "Largura", "prop": "width", "field": "text", "default": "" }
+              ]
+            },
+            { "label": "Registros por pagina", "prop": "pageLength", "field": "number", "min": 1 },
+            { "label": "Responsiva", "prop": "responsive", "field": "checkbox" },
+            { "label": "Reordenar colunas", "prop": "colReorder", "field": "checkbox" },
+            { "label": "Botao de colunas", "prop": "buttons", "field": "checkbox" },
+            { "label": "Busca", "prop": "searching", "field": "checkbox" },
+            { "label": "Seletor de quantidade", "prop": "lengthChange", "field": "checkbox" },
+            { "label": "Texto vazio", "prop": "emptyText", "field": "text" }
+          ]
+        },
+        {
+          "id": "tom-select",
+          "label": "TomSelect",
+          "kind": "tomSelect",
+          "icon": "block-icon tom-select",
+          "defaultCssClass": "form-select",
+          "propertySets": ["fieldBase", "fieldState", "validationState"],
+          "controlName": "tom_select",
+          "assets": {
+            "styles": [
+              "public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css"
+            ],
+            "scripts": [
+              "public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"
+            ],
+            "init": "tomselect"
+          },
+          "defaults": {
+            "label": "Categoria",
+            "selectId": "",
+            "name": "",
+            "placeholder": "Selecione a categoria",
+            "emptyOptionText": "",
+            "options": {},
+            "ajaxUrl": "mock/tom-select.json",
+            "jsonPath": "categorias",
+            "required": true,
+            "disabled": false,
+            "multiple": false,
+            "create": false,
+            "createUrl": "",
+            "valueField": "id",
+            "labelField": "text",
+            "searchField": "text",
+            "allowEmptyOption": true,
+            "sortField": "text",
+            "sortDirection": "asc",
+            "maxOptions": 100,
+            "invalidFeedback": "",
+            "help": ""
+          },
+          "properties": [
+            { "label": "ID", "prop": "selectId", "field": "text", "group": "Geral" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Geral" },
+            { "label": "Opcao vazia", "prop": "emptyOptionText", "field": "text", "group": "Dados" },
+            { "label": "URL AJAX", "prop": "ajaxUrl", "field": "text", "group": "Dados remotos" },
+            { "label": "JSON path", "prop": "jsonPath", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo valor", "prop": "valueField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo texto", "prop": "labelField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo busca", "prop": "searchField", "field": "text", "group": "Dados remotos" },
+            { "label": "Multiplo", "prop": "multiple", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Permitir opcao vazia", "prop": "allowEmptyOption", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Campo de ordenacao", "prop": "sortField", "field": "text", "group": "Comportamento" },
+            { "label": "Direcao da ordenacao", "prop": "sortDirection", "field": "select", "options": [["asc", "Crescente"], ["desc", "Decrescente"]], "group": "Comportamento" },
+            { "label": "Max opcoes", "prop": "maxOptions", "field": "number", "group": "Comportamento" },
+            { "label": "Permitir criar", "prop": "create", "field": "checkbox", "group": "Comportamento" },
+            { "label": "URL do formulario de criacao", "prop": "createUrl", "field": "text", "group": "Comportamento" },
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text", "group": "Validacao" }
+          ]
+        },
+        {
+          "id": "datepicker",
+          "label": "Datepicker",
+          "kind": "datePicker",
+          "icon": "block-icon calendar",
+          "defaultCssClass": "input-icon",
+          "controlName": "datepicker",
+          "assets": {
+            "styles": ["public/tabler/libs/litepicker/dist/css/litepicker.css"],
+            "scripts": ["public/tabler/libs/litepicker/dist/litepicker.js"],
+            "init": "litepicker"
+          },
+          "defaults": { "label": "Data", "inputId": "", "name": "", "inputCssClass": "form-control", "placeholder": "Selecione uma data", "value": "", "icon": "calendar", "iconColor": "", "iconPosition": "right", "format": "YYYY-MM-DD", "lang": "pt-BR", "mode": "date", "endName": "", "endPlaceholder": "Data final", "endValue": "", "timeStep": 5, "inline": false, "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "" },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Modo", "prop": "mode", "field": "select", "options": [["date","Data"],["datetime","Data e hora"],["daterange","Periodo"],["datetimerange","Periodo com hora"]] },
+            { "label": "Classe CSS do input", "prop": "inputCssClass", "field": "text" },
+            { "label": "Placeholder (data inicial)", "prop": "placeholder", "field": "text" },
+            { "label": "Valor (data inicial)", "prop": "value", "field": "text" },
+            { "label": "Nome (data final)", "prop": "endName", "field": "text" },
+            { "label": "Placeholder (data final)", "prop": "endPlaceholder", "field": "text" },
+            { "label": "Valor (data final)", "prop": "endValue", "field": "text" },
+            { "label": "Formato", "prop": "format", "field": "text" },
+            { "label": "Idioma", "prop": "lang", "field": "text" },
+            { "label": "Passo minutos", "prop": "timeStep", "field": "text" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Lado do icone", "prop": "iconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Obrigatorio", "prop": "required", "field": "checkbox" },
+            { "label": "Desabilitado", "prop": "disabled", "field": "checkbox" },
+            { "label": "Somente leitura", "prop": "readonly", "field": "checkbox" },
+            { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
+            { "label": "Ajuda", "prop": "help", "field": "text" }
+          ]
+        },
+        {
+          "id": "inline-datepicker",
+          "label": "Datepicker inline",
+          "kind": "datePicker",
+          "icon": "block-icon calendar",
+          "defaultCssClass": "datepicker-inline",
+          "controlName": "datepicker_inline",
+          "assets": {
+            "styles": ["public/tabler/libs/litepicker/dist/css/litepicker.css"],
+            "scripts": ["public/tabler/libs/litepicker/dist/litepicker.js"],
+            "init": "litepicker"
+          },
+          "defaults": { "label": "Calendario", "inputId": "", "name": "", "format": "YYYY-MM-DD", "lang": "pt-BR", "inline": true },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID", "prop": "inputId", "field": "text" },
+            { "label": "Formato", "prop": "format", "field": "text" },
+            { "label": "Idioma", "prop": "lang", "field": "text" }
+          ]
+        },
+        {
+          "id": "tags-input",
+          "label": "Tags input",
+          "kind": "tomSelect",
+          "icon": "block-icon tom-select",
+          "defaultCssClass": "form-select",
+          "propertySets": ["fieldBase", "fieldState", "validationState"],
+          "controlName": "tags",
+          "assets": {
+            "styles": ["public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css"],
+            "scripts": ["public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"],
+            "init": "tomselect"
+          },
+          "defaults": { "label": "Tags", "selectId": "", "name": "", "placeholder": "Selecione ou crie tags", "emptyOptionText": "", "options": [], "ajaxUrl": "mock/tags-input.json", "jsonPath": "tags", "required": false, "disabled": false, "multiple": true, "create": true, "createUrl": "", "valueField": "id", "labelField": "text", "searchField": "text", "invalidFeedback": "", "help": "" },
+          "properties": [
+            { "label": "ID", "prop": "selectId", "field": "text", "group": "Geral" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Geral" },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados remotos" },
+            { "label": "JSON path", "prop": "jsonPath", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo valor", "prop": "valueField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo texto", "prop": "labelField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo busca", "prop": "searchField", "field": "text", "group": "Dados remotos" },
+            { "label": "Permitir criar", "prop": "create", "field": "checkbox", "group": "Comportamento" },
+            { "label": "URL do formulario de criacao", "prop": "createUrl", "field": "text", "group": "Comportamento" },
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text", "group": "Validacao" }
+          ]
+        },
+        {
+          "id": "dropzone",
+          "label": "Dropzone",
+          "kind": "dropzone",
+          "icon": "block-icon cloud-upload",
+          "defaultCssClass": "dropzone",
+          "controlName": "dropzone",
+          "assets": {
+            "styles": ["public/tabler/libs/dropzone/dist/dropzone.css"],
+            "scripts": ["public/tabler/libs/dropzone/dist/dropzone-min.js"],
+            "init": "dropzone"
+          },
+          "defaults": {
+            "label": "Arquivos",
+            "dropzoneId": "",
+            "storeId": "",
+            "name": "",
+            "autoProcess": false,
+            "action": "#",
+            "multiple": true,
+            "acceptedFiles": "",
+            "maxFiles": 10,
+            "maxFileSizeMb": 10,
+            "title": "Arraste arquivos aqui ou clique para selecionar",
+            "description": "Tamanho maximo: 10 MB",
+            "help": ""
+          },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "ID", "prop": "dropzoneId", "field": "text" },
+            { "label": "Nome do campo", "prop": "name", "field": "text" },
+            { "label": "Envio automatico (autoProcessQueue)", "prop": "autoProcess", "field": "checkbox" },
+            { "label": "URL de upload (autoProcessQueue)", "prop": "action", "field": "text", "showWhen": { "prop": "autoProcess", "equals": true } },
+            { "label": "Input oculto que recebe os arquivos", "prop": "storeIdInfo", "field": "info", "valueTemplate": "{{storeId}}", "showWhen": { "prop": "autoProcess", "equals": false } },
+            { "label": "Multiplos arquivos", "prop": "multiple", "field": "checkbox" },
+            { "label": "Tipos aceitos", "prop": "acceptedFiles", "field": "text" },
+            { "label": "Maximo de arquivos", "prop": "maxFiles", "field": "text" },
+            { "label": "Tamanho maximo (MB)", "prop": "maxFileSizeMb", "field": "text" },
+            { "label": "Titulo", "prop": "title", "field": "text" },
+            { "label": "Descricao", "prop": "description", "field": "text" },
+            { "label": "Ajuda", "prop": "help", "field": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "charts",
+      "label": "Graficos",
+      "blocks": [
+        {
+          "id": "chart-line-spline",
+          "label": "Linha Spline",
+          "kind": "chart",
+          "icon": "block-icon chart-line",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Faturamento",
+            "chartId": "",
+            "height": 240,
+            "chartType": "line-spline",
+            "ajaxUrl": "mock/chart-xy.json",
+            "series1Name": "Receita",
+            "series1Data": "",
+            "series2Name": "",
+            "series2Data": "",
+            "categories": "",
+            "colors": "primary",
+            "legendShow": false
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Cores", "prop": "colors", "field": "select", "options": [["primary","Primaria"],["multi","Multicolor Tabler"],["primary-multi","Primaria multipla"]] },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "chart-area-spline",
+          "label": "Area Spline",
+          "kind": "chart",
+          "icon": "block-icon chart-area",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Visitas",
+            "chartId": "",
+            "height": 240,
+            "chartType": "area-spline",
+            "ajaxUrl": "mock/chart-xy.json",
+            "series1Name": "",
+            "series1Data": "",
+            "series2Name": "",
+            "series2Data": "",
+            "categories": "",
+            "colors": "primary",
+            "legendShow": false
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "chart-column",
+          "label": "Colunas",
+          "kind": "chart",
+          "icon": "block-icon chart-bar",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Vendas",
+            "chartId": "",
+            "height": 240,
+            "chartType": "column",
+            "ajaxUrl": "mock/chart-xy.json",
+            "series1Name": "",
+            "series1Data": "",
+            "series2Name": "",
+            "series2Data": "",
+            "categories": "",
+            "colors": "primary",
+            "legendShow": false
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Cores", "prop": "colors", "field": "select", "options": [["primary","Primaria"],["multi","Multicolor Tabler"],["primary-multi","Primaria multipla"]] },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "chart-distributed",
+          "label": "Colunas Distribuidas",
+          "kind": "chart",
+          "icon": "block-icon chart-bar",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Por Categoria",
+            "chartId": "",
+            "height": 240,
+            "chartType": "distributed",
+            "ajaxUrl": "mock/chart-xy.json",
+            "series1Name": "",
+            "series1Data": "",
+            "series2Name": "",
+            "series2Data": "",
+            "categories": "",
+            "colors": "multi",
+            "legendShow": false
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" }
+          ]
+        },
+        {
+          "id": "chart-pie",
+          "label": "Pizza",
+          "kind": "chart",
+          "icon": "block-icon chart-pie",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Fontes de Acesso",
+            "chartId": "",
+            "height": 240,
+            "chartType": "pie",
+            "ajaxUrl": "mock/chart-pie.json",
+            "labels": "",
+            "values": "",
+            "legendShow": true
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "chart-donut",
+          "label": "Rosca (Donut)",
+          "kind": "chart",
+          "icon": "block-icon chart-pie",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "init": "apexchart"
+          },
+          "defaults": {
+            "title": "Distribuicao",
+            "chartId": "",
+            "height": 240,
+            "chartType": "donut",
+            "ajaxUrl": "mock/chart-pie.json",
+            "labels": "",
+            "values": "",
+            "legendShow": true
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do grafico", "prop": "chartId", "field": "text" },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Calendario",
+      "blocks": [
+        {
+          "id": "fullcalendar",
+          "label": "Calendario",
+          "kind": "fullcalendar",
+          "icon": "block-icon calendar",
+          "defaultCssClass": "card",
+          "assets": {
+            "scripts": [{ "src": "public/tabler/libs/fullcalendar/index.global.min.js", "defer": true }],
+            "init": "fullcalendar"
+          },
+          "defaults": {
+            "title": "",
+            "calendarId": "",
+            "initialView": "dayGridMonth",
+            "firstDay": 1,
+            "weekends": true,
+            "editable": false,
+            "dayClickUrl": "",
+            "dayClickTarget": "_blank",
+            "eventClickUrl": "",
+            "eventClickTarget": "_blank",
+            "ajaxUrl": "mock/fullcalendar.json"
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do calendario", "prop": "calendarId", "field": "text" },
+            { "label": "Visualizacao inicial", "prop": "initialView", "field": "select", "options": [["dayGridMonth", "Mes (grade)"], ["multiMonthYear", "Ano (multi-mes)"], ["timeGridWeek", "Semana (horarios)"], ["timeGridDay", "Dia (horarios)"], ["listMonth", "Lista do mes"]] },
+            { "label": "Primeiro dia da semana", "prop": "firstDay", "field": "select", "options": [["0", "Domingo"], ["1", "Segunda"]], "group": "Comportamento" },
+            { "label": "Mostrar fins de semana", "prop": "weekends", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Editavel (arrastar)", "prop": "editable", "field": "checkbox", "group": "Comportamento" },
+            { "label": "URL ao clicar no dia (use {{date}})", "prop": "dayClickUrl", "field": "text", "group": "Comportamento" },
+            { "label": "Abrir clique do dia em", "prop": "dayClickTarget", "field": "select", "options": [["_blank", "Nova aba"], ["_self", "Mesma aba"]], "group": "Comportamento" },
+            { "label": "URL ao clicar no evento (use {{id}})", "prop": "eventClickUrl", "field": "text", "group": "Comportamento" },
+            { "label": "Abrir clique do evento em", "prop": "eventClickTarget", "field": "select", "options": [["_blank", "Nova aba"], ["_self", "Mesma aba"]], "group": "Comportamento" },
+            { "label": "URL dos eventos JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "1",
+    "title": "Reunião de planejamento",
+    "start": "2026-06-02T09:00:00",
+    "end": "2026-06-02T10:30:00"
+  },
+  {
+    "id": "2",
+    "title": "Entrega do relatório",
+    "start": "2026-06-05",
+    "end": "2026-06-06",
+    "color": "var(--tblr-red)",
+    "backgroundColor": "var(--tblr-red-lt)",
+    "borderColor": "var(--tblr-red-200)"
+  },
+  {
+    "id": "3",
+    "title": "Sprint Review",
+    "start": "2026-06-09T14:00:00",
+    "end": "2026-06-09T15:30:00"
+  },
+  {
+    "id": "4",
+    "title": "Feriado — Corpus Christi",
+    "start": "2026-06-11",
+    "end": "2026-06-12",
+    "color": "var(--tblr-green)",
+    "backgroundColor": "var(--tblr-green-lt)",
+    "borderColor": "var(--tblr-green-200)"
+  },
+  {
+    "id": "5",
+    "title": "Treinamento equipe",
+    "start": "2026-06-15T10:00:00",
+    "end": "2026-06-15T12:00:00"
+  },
+  {
+    "id": "6",
+    "title": "Apresentação ao cliente",
+    "start": "2026-06-17T15:00:00",
+    "end": "2026-06-17T16:00:00"
+  },
+  {
+    "id": "7",
+    "title": "Recesso de meio do ano",
+    "start": "2026-06-22",
+    "end": "2026-06-26",
+    "color": "var(--tblr-azure)",
+    "backgroundColor": "var(--tblr-azure-lt)",
+    "borderColor": "var(--tblr-azure-200)"
+  },
+  {
+    "id": "8",
+    "title": "Fechamento mensal",
+    "start": "2026-06-30T09:00:00",
+    "end": "2026-06-30T11:00:00"
+  },
+  {
+    "id": "9",
+    "title": "Kickoff julho",
+    "start": "2026-07-01T10:00:00",
+    "end": "2026-07-01T11:30:00"
+  },
+  {
+    "id": "10",
+    "title": "Revisão de metas",
+    "start": "2026-07-08T14:00:00",
+    "end": "2026-07-08T15:00:00"
+  }
+]

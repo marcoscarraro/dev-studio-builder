@@ -1,0 +1,6 @@
+{
+  "categories": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set"],
+  "series": [
+    { "name": "Serie 1", "data": [30, 40, 45, 50, 49, 60, 70, 91, 125] }
+  ]
+}

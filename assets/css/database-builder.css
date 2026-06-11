@@ -1,0 +1,438 @@
+/* Estilos especificos do Database Designer (database_builder.html).
+   O shell (topbar, paineis, campos do painel de propriedades) vem de builder.css +
+   Tabler; aqui ficam apenas o diagrama, os cards, a sidebar de objetos, o editor de
+   codigo SQL e o dialogo de saida. Cores sempre via tokens (--tblr-* / builder.css)
+   para o tema claro/escuro funcionar. */
+
+/* === Area do diagrama === */
+/* O .canvas-panel do builder.css reserva 48px para a toolbar do canvas
+   (grid-template-rows: 48px 1fr); aqui nao ha toolbar — o diagrama ocupa tudo
+   e a barra de status fica embaixo. */
+body[data-page="database-designer"] .canvas-panel {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.db-diagram-scroll {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg);
+}
+
+#diagram {
+  position: relative;
+  min-width: 2000px;
+  min-height: 1400px;
+}
+
+/* === Cards do diagrama (tabela / view / trigger) === */
+.table-card,
+.view-card,
+.trigger-card {
+  position: absolute;
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--tblr-border-radius, 6px);
+  box-shadow: var(--tblr-shadow-card, 0 2px 10px rgba(0, 0, 0, 0.12));
+  cursor: move;
+  z-index: 10;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.trigger-card {
+  width: 300px;
+  z-index: 9;
+}
+
+.table-card.dragging,
+.view-card.dragging,
+.trigger-card.dragging {
+  opacity: 0.85;
+  cursor: grabbing;
+}
+
+.table-card.selected,
+.view-card.selected,
+.trigger-card.selected {
+  border-color: var(--tblr-primary);
+  box-shadow: 0 0 0 2px rgba(var(--tblr-primary-rgb), 0.25);
+}
+
+.table-header,
+.view-header,
+.trigger-header {
+  padding: 8px 12px;
+  border-radius: var(--tblr-border-radius, 6px) var(--tblr-border-radius, 6px) 0 0;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.table-name,
+.view-name,
+.trigger-title {
+  font-weight: 600;
+  font-size: 13px;
+  word-break: break-word;
+  color: var(--tblr-body-color);
+}
+
+.card-kind-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 99px;
+  flex: none;
+}
+
+.card-kind-badge.kind-table { background: var(--tblr-primary-lt, #e3ecfb); color: var(--tblr-primary); }
+.card-kind-badge.kind-view { background: var(--tblr-teal-lt, #d2f0ec); color: var(--tblr-teal, #0ca678); }
+.card-kind-badge.kind-trigger { background: var(--tblr-purple-lt, #ece3f5); color: var(--tblr-purple, #ae3ec9); }
+
+.table-columns,
+.view-columns {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.column-item {
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.column-item:last-child {
+  border-bottom: none;
+}
+
+.column-flag {
+  font-size: 9px;
+  font-weight: 700;
+  width: 22px;
+  flex: none;
+  text-align: center;
+  border-radius: 3px;
+  padding: 1px 0;
+}
+
+.column-flag.flag-pk { background: var(--tblr-yellow-lt, #fbf1d3); color: var(--tblr-yellow, #f59f00); }
+.column-flag.flag-fk { background: var(--tblr-red-lt, #fbdfdf); color: var(--tblr-red, #d63939); }
+.column-flag.flag-empty { background: transparent; }
+
+.column-name {
+  flex: 1;
+  font-family: var(--tblr-font-monospace, monospace);
+  color: var(--tblr-body-color);
+}
+
+.column-type {
+  color: var(--tblr-secondary, #667382);
+  font-size: 10px;
+}
+
+.trigger-body {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--tblr-body-color);
+}
+
+.trigger-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.trigger-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tag-timing { background: var(--tblr-purple-lt, #ece3f5); color: var(--tblr-purple, #ae3ec9); }
+.tag-event { background: var(--tblr-teal-lt, #d2f0ec); color: var(--tblr-teal, #0ca678); }
+
+.trigger-code-preview {
+  font-family: var(--tblr-font-monospace, monospace);
+  font-size: 10px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--tblr-purple, #ae3ec9);
+  padding: 6px 8px;
+  border-radius: 3px;
+  max-height: 70px;
+  overflow: hidden;
+  white-space: pre-wrap;
+  margin-top: 6px;
+  color: var(--tblr-secondary, #667382);
+}
+
+.trigger-desc {
+  font-size: 11px;
+  color: var(--tblr-secondary, #667382);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Camada SVG das conexoes (linhas de FK entre os cards) */
+.connection-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* cards alem do tamanho minimo do #diagram nao cortam a linha */
+  pointer-events: none;
+  z-index: 5;
+}
+
+.fk-line {
+  fill: none;
+  stroke: var(--tblr-secondary, #667382);
+  stroke-width: 1.5;
+  opacity: 0.55;
+}
+
+.fk-line.active {
+  stroke: var(--tblr-primary, #206bc4);
+  stroke-width: 2;
+  opacity: 1;
+}
+
+.fk-arrow-head { fill: var(--tblr-secondary, #667382); }
+.fk-arrow-head.active { fill: var(--tblr-primary, #206bc4); }
+
+.fk-dot { fill: var(--tblr-secondary, #667382); }
+.fk-dot.active { fill: var(--tblr-primary, #206bc4); }
+
+/* === Sidebar de objetos === */
+.tables-list {
+  padding: 0 12px 12px;
+}
+
+.table-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--tblr-primary);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.table-item:hover {
+  background: var(--surface-3);
+}
+
+.table-item.active {
+  border-color: var(--tblr-primary);
+  background: var(--tblr-primary-lt, #e3ecfb);
+}
+
+.table-item.kind-view { border-left-color: var(--tblr-teal, #0ca678); }
+.table-item.kind-trigger { border-left-color: var(--tblr-purple, #ae3ec9); }
+
+.table-item .table-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.table-item .table-info {
+  font-size: 11px;
+  color: var(--tblr-secondary, #667382);
+  margin-top: 2px;
+}
+
+/* === Itens recolhiveis do painel (colunas, indices, FKs, triggers) === */
+.db-item {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: var(--surface-2);
+}
+
+.db-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.db-item-head strong {
+  flex: 1;
+  word-break: break-word;
+}
+
+.db-item-head small {
+  color: var(--tblr-secondary, #667382);
+}
+
+.db-item-remove {
+  background: none;
+  border: none;
+  color: var(--tblr-red, #d63939);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+.db-item-body {
+  display: none;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.db-item.open .db-item-body {
+  display: block;
+}
+
+.db-add-button {
+  width: 100%;
+  margin-top: 2px;
+}
+
+.db-check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* builder.css estica todo input do painel (".field input" = width 100% +
+   min-height 36px); os checkboxes (PK/NN/AI, colunas de indice, eventos de
+   trigger, colunas da view) voltam ao tamanho padrao do Tabler. */
+body[data-page="database-designer"] .properties-form input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  min-height: 0;
+  padding: 0;
+  flex: none;
+}
+
+/* Seletor de colunas da view */
+.column-selector {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+  background: var(--surface);
+}
+
+.view-select-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 2px;
+  font-size: 12px;
+}
+
+.view-select-item .view-col-alias {
+  width: 110px;
+  flex: none;
+}
+
+/* Templates rapidos de trigger */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px;
+}
+
+.template-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 6px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 11px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.template-card:hover {
+  border-color: var(--tblr-purple, #ae3ec9);
+  background: var(--tblr-purple-lt, #ece3f5);
+}
+
+/* === Editor de codigo SQL (pre sobreposto ao textarea) === */
+.code-editor-wrap {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #1e1e2e;
+}
+
+.code-editor-wrap pre,
+.code-editor-wrap textarea {
+  margin: 0;
+  padding: 10px;
+  font-family: var(--tblr-font-monospace, Consolas, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  tab-size: 4;
+  white-space: pre-wrap;
+}
+
+.code-editor-wrap pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  color: #cdd6f4;
+  overflow: auto;
+}
+
+.code-editor-wrap textarea {
+  position: relative;
+  width: 100%;
+  min-height: 160px;
+  background: transparent;
+  color: transparent;
+  caret-color: #fff;
+  border: none;
+  outline: none;
+  resize: vertical;
+  z-index: 1;
+  user-select: text;
+}
+
+.tok-kw { color: #cba6f7; font-weight: bold; }
+.tok-str { color: #a6e3a1; }
+.tok-num { color: #fab387; }
+.tok-comment { color: #6c7086; font-style: italic; }
+
+/* === Barra de status === */
+.db-status-bar {
+  flex: none;
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--tblr-secondary, #667382);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* Aviso "nada selecionado" no painel (mesmo tom do builder) */
+.db-empty-note {
+  padding: 14px;
+  font-size: 12px;
+  color: var(--tblr-secondary, #667382);
+}

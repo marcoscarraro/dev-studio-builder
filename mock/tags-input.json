@@ -1,0 +1,11 @@
+{
+  "tags": [
+    { "id": "html", "text": "HTML" },
+    { "id": "css", "text": "CSS" },
+    { "id": "javascript", "text": "JavaScript" },
+    { "id": "python", "text": "Python" },
+    { "id": "php", "text": "PHP" },
+    { "id": "typescript", "text": "TypeScript" },
+    { "id": "java", "text": "Java" }
+  ]
+}

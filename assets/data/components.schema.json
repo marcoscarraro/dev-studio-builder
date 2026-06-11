@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./components.schema.json",
+  "title": "Template Builder Component Registry",
+  "type": "object",
+  "required": ["version", "schemaVersion", "framework", "groups"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "framework": { "type": "string", "minLength": 1 },
+    "assets": { "$ref": "#/$defs/assets" },
+    "layoutDefaults": {
+      "type": "object",
+      "properties": {
+        "rowCssClass": { "type": "string" },
+        "columnCssClass": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "propertySets": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/propertySet" }
+    },
+    "groups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/group" }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "asset": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "properties": {
+            "src": { "type": "string" },
+            "href": { "type": "string" },
+            "type": { "type": "string" },
+            "defer": { "type": "boolean" },
+            "async": { "type": "boolean" },
+            "media": { "type": "string" },
+            "integrity": { "type": "string" },
+            "crossorigin": { "type": "string" },
+            "referrerpolicy": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "assetList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/asset" }
+    },
+    "assets": {
+      "type": "object",
+      "properties": {
+        "favicon": { "$ref": "#/$defs/asset" },
+        "styles": { "$ref": "#/$defs/assetList" },
+        "headScripts": { "$ref": "#/$defs/assetList" },
+        "scripts": { "$ref": "#/$defs/assetList" },
+        "init": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "propertyField": {
+      "type": "object",
+      "required": ["label", "prop", "field"],
+      "properties": {
+        "label": { "type": "string" },
+        "prop": { "type": "string", "minLength": 1 },
+        "field": {
+          "enum": [
+            "text",
+            "number",
+            "url",
+            "email",
+            "color",
+            "date",
+            "time",
+            "datetime-local",
+            "password",
+            "textarea",
+            "checkbox",
+            "select",
+            "icon",
+            "keyvalue",
+            "attributes",
+            "repeater",
+            "matrix"
+          ]
+        },
+        "group": { "type": "string" },
+        "options": {
+          "oneOf": [
+            { "type": "array" },
+            { "type": "object" }
+          ]
+        },
+        "rows": { "type": "integer", "minimum": 1 },
+        "columnsProp": { "type": "string" },
+        "addLabel": { "type": "string" },
+        "itemFields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/propertyField" }
+        },
+        "default": {},
+        "min": {},
+        "max": {},
+        "step": {},
+        "minlength": {},
+        "maxlength": {},
+        "minLength": {},
+        "maxLength": {},
+        "pattern": { "type": "string" },
+        "placeholder": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "propertySet": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/propertyField" }
+        },
+        {
+          "type": "object",
+          "required": ["properties"],
+          "properties": {
+            "group": { "type": "string" },
+            "properties": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/propertyField" }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "container": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "storage": { "type": "string", "minLength": 1 },
+        "renderer": { "enum": ["form", "cardCustom", "fieldList"] },
+        "zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "storage"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "storage": { "type": "string", "minLength": 1 },
+              "accepts": {
+                "type": "array",
+                "items": { "enum": ["layout", "component"] },
+                "uniqueItems": true
+              },
+              "rejectKinds": {
+                "type": "array",
+                "items": { "type": "string" },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "accepts": {
+          "type": "array",
+          "items": { "enum": ["layout", "component"] },
+          "uniqueItems": true
+        },
+        "rejectKinds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "block": {
+      "type": "object",
+      "required": ["id", "label", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "icon": { "type": "string" },
+        "tagName": { "type": "string" },
+        "inputType": { "type": "string" },
+        "choiceType": { "type": "string" },
+        "defaultCssClass": { "type": "string" },
+        "itemCssClass": { "type": "string" },
+        "controlName": { "type": "string" },
+        "generatedFields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "idProp": { "type": "string" },
+              "nameProp": { "type": "string" },
+              "base": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "spans": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1, "maximum": 12 }
+        },
+        "customCount": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "defaults": { "type": "object" },
+        "properties": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/propertyField" }
+        },
+        "propertySets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "container": { "$ref": "#/$defs/container" },
+        "assets": { "$ref": "#/$defs/assets" }
+      },
+      "additionalProperties": true
+    },
+    "group": {
+      "type": "object",
+      "required": ["id", "label", "blocks"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "blocks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/block" }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
