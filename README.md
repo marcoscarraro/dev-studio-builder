@@ -1,38 +1,74 @@
 # Dev Studio Builder
 
-Uma plataforma visual para desenvolvimento de aplicações web, permitindo criar páginas HTML e modelar bancos de dados através de uma interface Drag and Drop.
+> Plataforma visual para criação de páginas HTML, formulários e modelagem de banco de dados utilizando Drag & Drop.
 
-O objetivo do Dev Studio Builder é acelerar o desenvolvimento de sistemas administrativos e corporativos, reduzindo a quantidade de código manual e garantindo consistência visual entre as telas da aplicação.
+O Dev Studio Builder é uma ferramenta voltada para desenvolvedores que desejam acelerar a construção de sistemas administrativos, ERPs, CRMs, dashboards e aplicações corporativas, mantendo consistência visual e reduzindo a quantidade de código manual.
 
-## Motivação
+Através de uma interface visual intuitiva, é possível montar páginas utilizando componentes pré-configurados, personalizar propriedades em tempo real, exportar HTML pronto para produção e modelar bancos de dados visualmente.
 
-Durante o desenvolvimento de sistemas web, frequentemente surge a necessidade de criar novas páginas, formulários e estruturas de dados mantendo um padrão visual consistente.
+---
 
-Mesmo utilizando ferramentas de Inteligência Artificial para geração de código, nem sempre o resultado segue exatamente os padrões esperados, exigindo ajustes manuais e retrabalho.
+# Motivação
 
-O Dev Studio Builder foi criado para resolver esse problema, fornecendo um ambiente visual onde páginas e estruturas de banco de dados podem ser construídas de forma rápida, padronizada e reutilizável.
+Durante o desenvolvimento de sistemas web, uma das tarefas mais repetitivas é a criação de telas administrativas.
 
-## Principais Recursos
+Mesmo utilizando Inteligência Artificial para geração de código, frequentemente surgem problemas como:
 
-### Page Builder
+* Falta de padronização entre telas;
+* Necessidade de ajustes manuais constantes;
+* Código repetitivo;
+* Perda de produtividade;
+* Dificuldade em manter a identidade visual do sistema.
 
-Editor visual baseado no Template Tabler para construção de interfaces web.
+O Dev Studio Builder nasceu para resolver esses problemas através de uma abordagem visual, reutilizável e padronizada.
 
-#### Funcionalidades
+---
 
-* Drag and Drop de componentes
-* Mais de 20 componentes pré-configurados
+# O Que o Dev Studio Builder Resolve?
+
+✅ Criação rápida de interfaces administrativas
+
+✅ Padronização visual entre telas
+
+✅ Redução de código repetitivo
+
+✅ Reutilização de componentes
+
+✅ Exportação de HTML pronto para uso
+
+✅ Modelagem visual de banco de dados
+
+✅ Geração de SQL para múltiplos bancos
+
+✅ Persistência de projetos em JSON
+
+✅ Facilidade de manutenção
+
+✅ Maior produtividade para equipes de desenvolvimento
+
+---
+
+# Principais Recursos
+
+## Page Builder
+
+Editor visual baseado no ecossistema do Template Tabler.
+
+### Funcionalidades
+
+* Drag & Drop
 * Edição visual em tempo real
-* Painel de propriedades
-* Configuração de atributos HTML
-* Componentes reutilizáveis
-* Inserção de HTML personalizado
 * Layout responsivo
+* Painel de propriedades
+* Componentes reutilizáveis
+* HTML personalizado
 * Exportação para HTML
 * Exportação para JSON
 * Importação de projetos JSON
 
-#### Componentes Disponíveis
+### Componentes Disponíveis
+
+Mais de 20 componentes prontos para uso:
 
 * Containers
 * Rows
@@ -54,45 +90,362 @@ Editor visual baseado no Template Tabler para construção de interfaces web.
 * Breadcrumb
 * Navbar
 * Títulos
-* Textos
-* Separadores
+* Parágrafos
+* Divisores
 
-### Database Design Builder
+### Componentes Avançados
 
-Ferramenta visual para modelagem de bancos de dados.
+* DataTable
+* Tom Select
+* Litepicker
+* ApexCharts
+* FullCalendar
+* Dropzone Upload
+* Signature Pad
+* Máscaras de Entrada
+* Toggle de Senha
+* Listas Dinâmicas (FieldList)
 
-#### Funcionalidades
+---
+
+## Database Designer
+
+Editor visual para modelagem de bancos de dados.
+
+### Funcionalidades
 
 * Criação de tabelas
-* Definição de campos
+* Criação de campos
 * Chaves primárias
 * Chaves estrangeiras
-* Relacionamentos
-* Tipos de dados configuráveis
-* Visualização ERD (Entity Relationship Diagram)
-* Exportação para JSON
-* Geração de scripts SQL
-* Importação de projetos
+* Índices
+* Views
+* Triggers
+* Relacionamentos visuais
+* Painel de propriedades em tempo real
+* Exportação para SQL
 
-## Benefícios
+### Bancos Suportados
 
-* Desenvolvimento mais rápido
-* Padronização visual
-* Menos código repetitivo
-* Reutilização de componentes
-* Modelagem visual de banco de dados
-* Facilidade de manutenção
-* Maior produtividade
-* Integração entre interface e estrutura de dados
+* MySQL
+* PostgreSQL
+* SQLite
+* SQL Server
+* Firebird
+* Oracle
 
-## Tecnologias
+---
 
-* HTML5
-* CSS3
-* JavaScript
-* jQuery
-* Template Tabler
+# Capturas de Tela
 
-## Licença
+## Editor de Páginas
 
-Este projeto é distribuído sob a licença MIT, permitindo uso comercial, modificação, distribuição e utilização em projetos privados, desde que mantidos os avisos de copyright e licença originais.
+```text
+docs/screenshots/tela-principal.png
+```
+
+![Editor de Páginas](docs/screenshots/tela-principal.png)
+
+---
+
+## Painel de Propriedades
+
+```text
+docs/screenshots/fieldlist.png
+```
+
+![Painel de Propriedades](docs/screenshots/fieldlist.png)
+
+---
+
+## Exportação HTML
+
+```text
+docs/screenshots/exportar-codigo-html.png
+```
+
+![Exportação HTML](docs/screenshots/exportar-codigo-html.png)
+
+---
+
+## Database Designer
+
+```text
+docs/screenshots/tabelas.png
+```
+
+![Database Designer](docs/screenshots/tabelas.png)
+
+---
+
+## Database Designer Propriedades da Tabela
+
+```text
+docs/screenshots/propriedades-tabela.png
+```
+
+![Database Designer](docs/screenshots/propriedades-tabela.png)
+
+---
+
+## Database Designer Triggers
+
+```text
+docs/screenshots/trigger.png
+```
+
+![Database Designer](docs/screenshots/trigger.png)
+
+---
+# Como Instalar
+
+## Requisitos
+
+* Navegador moderno
+* Servidor Web local
+* Git
+
+---
+
+## Clonar o Repositório
+
+```bash
+git clone https://github.com/marcoscarraro/dev-studio-builder.git
+```
+
+Acesse a pasta do projeto:
+
+```bash
+cd dev-studio-builder
+```
+
+---
+
+## Executar Localmente
+
+### Utilizando PHP
+
+```bash
+php -S localhost:8000
+```
+
+### Utilizando Python
+
+```bash
+python -m http.server 8000
+```
+
+Abra no navegador:
+
+```text
+http://localhost:8000
+```
+
+---
+
+# Como Utilizar
+
+## Criando uma Página
+
+1. Abra o editor.
+2. Arraste componentes da barra lateral.
+3. Solte os componentes na área de trabalho.
+4. Configure suas propriedades.
+5. Visualize as alterações em tempo real.
+6. Exporte o HTML ou salve o projeto em JSON.
+
+---
+
+## Exportando HTML
+
+1. Clique em **Exportar HTML**.
+2. O sistema gerará o código completo.
+3. Utilize o HTML exportado em qualquer projeto compatível com Tabler.
+
+---
+
+## Exportando JSON
+
+1. Clique em **Exportar JSON**.
+2. Salve o arquivo gerado.
+3. Utilize-o posteriormente para continuar a edição.
+
+---
+
+## Importando Projetos
+
+1. Clique em **Importar Projeto**.
+2. Selecione um arquivo JSON exportado anteriormente.
+3. O projeto será reconstruído automaticamente no editor.
+
+---
+
+# Arquitetura do Projeto
+
+O Dev Studio Builder foi desenvolvido utilizando uma arquitetura modular para facilitar manutenção e extensibilidade.
+
+## Estrutura de Pastas
+
+```text
+assets/
+│
+├── css/
+│
+├── data/
+│   └── components.json
+│
+├── js/
+│   ├── builder.js
+│   │
+│   ├── core/
+│   │   ├── helpers.js
+│   │   ├── drag-drop.js
+│   │   ├── properties.js
+│   │   └── export-html.js
+│   │
+│   └── renderers/
+│       ├── registry.js
+│       ├── input.js
+│       ├── select.js
+│       ├── card.js
+│       └── ...
+│
+public/
+│
+└── components/
+    └── js/
+        ├── datatable-runtime.js
+        ├── apexchart-runtime.js
+        ├── dropzone-runtime.js
+        └── ...
+│
+database_builder.html
+
+assets/js/database-builder.js
+
+assets/css/database-builder.css
+```
+
+---
+
+# Arquitetura dos Componentes
+
+## Catálogo de Componentes
+
+Todos os componentes disponíveis são definidos em:
+
+```text
+assets/data/components.json
+```
+
+Cada componente possui:
+
+* Identificador
+* Tipo
+* Propriedades
+* Valores padrão
+* Renderer
+* Dependências
+* Comportamentos
+
+---
+
+## Renderers
+
+Cada componente possui um renderer independente responsável pela geração do HTML.
+
+Exemplo:
+
+```text
+assets/js/renderers/input.js
+```
+
+O renderer transforma as propriedades configuradas pelo usuário em HTML final.
+
+---
+
+## Runtimes
+
+Componentes que necessitam comportamento JavaScript possuem runtimes independentes.
+
+Exemplos:
+
+* DataTables
+* ApexCharts
+* FullCalendar
+* Dropzone
+* Litepicker
+* Tom Select
+* Máscaras
+* Signature Pad
+
+Os runtimes são adicionados automaticamente durante a exportação do HTML.
+
+---
+
+# Criando Novos Componentes
+
+O Dev Studio Builder foi projetado para ser extensível.
+
+Novos componentes podem ser criados através de:
+
+1. Cadastro no `components.json`
+2. Criação de um renderer
+3. Criação de um runtime (quando necessário)
+
+A documentação completa está disponível na pasta:
+
+```text
+docs/
+```
+
+---
+
+# Documentação
+
+Documentação para desenvolvedores:
+
+* Como Criar Componentes
+* Exemplos de Componentes
+* Contrato do components.json
+* Mapa da Arquitetura
+* Checklist de Testes
+* Como Criar Novas Funcionalidades
+
+---
+
+# Licença
+
+Este projeto é distribuído sob a licença MIT.
+
+Você pode:
+
+* Utilizar comercialmente;
+* Modificar;
+* Distribuir;
+* Utilizar em projetos privados;
+* Criar soluções derivadas.
+
+Desde que os avisos de copyright e licença sejam preservados.
+
+---
+
+# Apoie o Projeto
+
+Se o Dev Studio Builder ajudou você a economizar tempo no desenvolvimento de sistemas, considere apoiar o projeto.
+
+Sua contribuição ajuda na manutenção, documentação e implementação de novas funcionalidades.
+
+## Chave PIX
+
+```text
+50481825000143
+```
+
+Obrigado por apoiar o software livre e o desenvolvimento open source.
+
+
+![License](https://img.shields.io/github/license/marcoscarraro/dev-studio-builder)
+![Stars](https://img.shields.io/github/stars/marcoscarraro/dev-studio-builder)
+![Issues](https://img.shields.io/github/issues/marcoscarraro/dev-studio-builder)
+![Version](https://img.shields.io/badge/version-MVP-blue)
