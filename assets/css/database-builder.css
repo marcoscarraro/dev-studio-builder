@@ -323,6 +323,22 @@ body[data-page="database-designer"] .properties-form input[type="checkbox"] {
   flex: none;
 }
 
+/* Blocos de JOIN da view (um por tabela alem da primeira) */
+.db-join-item {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--tblr-teal, #0ca678);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: var(--surface-2);
+}
+
+.db-join-head {
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--tblr-body-color);
+}
+
 /* Seletor de colunas da view */
 .column-selector {
   max-height: 220px;

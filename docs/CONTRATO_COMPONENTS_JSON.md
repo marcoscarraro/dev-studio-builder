@@ -446,6 +446,36 @@ ja escreve `data-chart-options`, `data-chart-type`, `data-chart-ajax-url`). O ca
 carrega a biblioteca dinamicamente na primeira vez que o componente e arrastado — caminho de
 inicializacao **separado**, dentro de `builder.js`, que nao usa estes runtimes.
 
+### DataTable com AJAX e server-side
+
+O componente `datatable` emite sua configuracao em atributos `data-dt-*` e o runtime
+`public/components/js/datatable-runtime.js` inicializa o jQuery DataTables. Para dados
+pequenos, mantenha `serverSide: false` e use uma URL que retorne:
+
+```json
+{ "data": [[1, "Maria", "maria@email.com"]] }
+```
+
+Para grandes volumes, habilite `serverSide`, use `ajaxMethod: "POST"` e implemente o
+endpoint no protocolo server-side do DataTables. O request envia `draw`, `start`,
+`length`, `search`, `order` e `columns`; a resposta deve retornar:
+
+```json
+{
+  "draw": 1,
+  "recordsTotal": 1000,
+  "recordsFiltered": 42,
+  "data": []
+}
+```
+
+Headers de APIs externas ficam nas props `ajaxAuthType`/`ajaxAuthToken`/`ajaxAuthHeader`
+e `ajaxHeaders`. O renderer gera `data-dt-ajax-headers` como JSON, entao tokens ficam
+visiveis no HTML exportado. `ajaxBodyFormat: "form"` envia POST url-encoded padrao
+do DataTables; `ajaxBodyFormat: "json"` envia os parametros como JSON. Quando a API retornar objetos, preencha `columns[].data`
+com os nomes dos campos (ex.: `name`, `email`, `status`); quando retornar arrays,
+deixe vazio.
+
 Para scripts proprios, use:
 
 ```json
@@ -591,4 +621,3 @@ campo_texto-a1b2c3
 - `properties` edita os valores.
 - Renderer le os valores em `component.props`.
 - Runtime so roda no HTML exportado.
-

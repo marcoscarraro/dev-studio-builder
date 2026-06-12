@@ -198,7 +198,46 @@ Quando alterar `chart.js`, `export-html.js`, `builder.js` ou `components.json` (
 - verificar que o script `apexcharts.min.js` foi incluido no HTML exportado;
 - testar com mais de um grafico na mesma pagina (IDs nao podem colidir).
 
-## 12. Envio AJAX do Formulario
+## 11c. DataTable — Server-side e Selecao por Checkbox
+
+Quando alterar `table.js` (renderer datatable), `datatable-runtime.js` ou o bloco datatable do `components.json`:
+
+**Server-side** (mock: `mock/datatable-server-side.php`, 80 mil registros):
+
+- marcar "Processamento server-side" e preencher o "Campo data" das colunas (`nome`, `email`, `situacao` — o mock devolve objetos quando os campos sao nomeados; preencher TODAS as colunas ou NENHUMA, nunca misturar);
+- paginacao/busca/ordenacao vem do PHP (Network mostra `draw/start/length/search/order` a cada acao);
+- testar tambem metodo POST com corpo JSON e um header de autenticacao.
+
+**Selecao por checkbox** (ligar "Selecao de linhas" no painel; campos "Campo do ID nos dados" — `id` para objetos, indice para arrays — e "Name dos inputs ocultos" aparecem via showWhen):
+
+- coluna de checkbox aparece (preview e export); checkbox do cabecalho marca/desmarca a PAGINA visivel; estado indeterminado quando parcial;
+- marcar linhas, trocar de pagina e voltar: selecao preservada (re-marcada a cada draw);
+- com a pagina inteira marcada e mais registros no filtro, o aviso azul oferece "Selecionar todos os N registros":
+  - server-side: entra no modo "todos" (flag + excecoes) — desmarcar uma linha vira excecao ("exceto 1"); mudar a BUSCA desfaz o modo todos (o filtro faz parte da selecao); trocar de pagina/ordenar preserva;
+  - client-side: enumera os IDs de verdade (continua no modo "ids");
+- inputs ocultos (DevTools > Elements, container `data-dt-selection-store`):
+  - sempre: `selecionados_modo` = `ids` | `todos`;
+  - modo ids: `selecionados[]`, um input por ID;
+  - modo todos: `selecionados_excluidos[]` + `selecionados_busca` + `selecionados_total` — o backend refaz a consulta com o filtro e exclui as excecoes;
+- dentro de um form com Envio AJAX (FormData), os campos acima chegam no payload (Network);
+- API JS no console: `TemplateBuilderDataTableSelection.get('<id da tabela>')` devolve `{mode, ids}` ou `{mode, except, search, total}`; `.clear(...)` limpa e desmarca;
+- ColReorder nao move a coluna do checkbox (fixedColumnsLeft); no modo responsivo ela fica sempre visivel (classe `all`);
+- datatable SEM selecao segue identico ao comportamento anterior (regressao).
+
+## 11d. TomSelect — Busca Remota (server-side)
+
+Quando alterar `tom-select.js` (renderer), `tomselect-runtime.js`, `initializePreviewTomSelects` (builder.js) ou o bloco tom-select do `components.json`:
+
+- ligar "Busca remota (server-side)" no painel: os campos "Parametro da busca", "Debounce" e "Carregar ao abrir" aparecem (showWhen);
+- configurar URL `mock/tom-select-search.php` (JSON path `categorias` ja e o default);
+- abrir o select com preload ligado: Network mostra UMA requisicao `?q=` vazia (primeiros 20);
+- digitar "ele": a requisicao `?q=ele` sai DEPOIS da pausa de digitacao (debounce 300ms) — digitando rapido, uma requisicao por pausa, nao por tecla;
+- subir o Debounce para 1000ms e repetir: menos requisicoes no Network;
+- acentos: digitar "sao" encontra "... - Sao Paulo"; "acao" encontra "Açao" (mock normaliza os dois lados);
+- "Max opcoes" limita quantos itens aparecem no dropdown (nao quantos vem do servidor — o mock devolve no maximo 20);
+- busca remota DESLIGADA (regressao): UMA busca completa no carregamento da pagina (`mock/tom-select.json`) e nenhuma requisicao ao digitar;
+- testar no preview do canvas E na pagina exportada (canvas usa initializePreviewTomSelects; export usa o runtime);
+- **Tags input** (mesmo kind/runtime do TomSelect): repetir o teste com URL `mock/tags-search.php` (JSON path `tags` ja e o default) — digitar "script" traz JavaScript/TypeScript; "programacao" acha "Programacao Orientada a Objetos"; criar tag nova ("Permitir criar") continua funcionando junto com a busca remota.
 
 - habilitar "Enviar via AJAX" no form (URL `mock/form-post.php`, formato JSON, Bearer token de teste);
 - o textarea "Codigo JS (jQuery)" preenche sozinho e atualiza ao vivo conforme as configs mudam;
@@ -232,12 +271,15 @@ Quando alterar `chart.js`, `export-html.js`, `builder.js` ou `components.json` (
 - abrir pelo botao "Banco de Dados" na topbar do builder (nova aba): mesmo shell visual; alternar o dark mode e conferir;
 - Nova Tabela: aparece no diagrama ja selecionada; renomear no painel reflete ao vivo no card e na sidebar;
 - Colunas: adicionar/expandir/editar (tipo, tamanho, PK/NOT NULL/AI, valor padrao) e remover; AI duplicado e bloqueado;
-- Indices: adicionar, marcar colunas (checkboxes), tipo INDEX/UNIQUE; aparece no SQL exportado;
-- FK: criar com 2 tabelas (coluna origem -> tabela/coluna destino PK), ON DELETE/UPDATE; badge FK aparece na coluna do card;
+- Indices: adicionar, marcar colunas (checkboxes), tipo INDEX/UNIQUE; marcar 2+ colunas cria indice composto (a ordem de marcacao e a ordem no indice; o cabecalho do item mostra as colunas); aparece no SQL exportado;
+- FK: criar com 2 tabelas (coluna origem -> tabela/coluna destino PK), ON DELETE/UPDATE; badge FK aparece na coluna do card; a linha de ligacao (seta na tabela destino) aparece entre os cards, acompanha o arraste e fica destacada quando uma das tabelas esta selecionada; remover a FK remove a linha;
+- checkboxes do painel (PK/NN/AI, colunas de indice, eventos de trigger, colunas da view) com tamanho normal do Tabler (nao esticados);
 - Triggers: na tabela e avulsa (com select de tabela); templates rapidos preenchem o codigo; editor com highlight SQL; pre-visualizar abre o dialogo;
 - View: modo construtor (tabelas origem, colunas com alias, WHERE/ORDER/LIMIT) e modo SQL (editor com highlight); pre-visualizar;
+- View com 2+ tabelas: bloco "JOIN com <tabela>" aparece para cada tabela alem da primeira; se existe FK entre as tabelas, a condicao ON ja vem preenchida; tipo de join selecionavel (INNER/LEFT/RIGHT/FULL/CROSS — FULL nao aparece no MySQL); CROSS JOIN esconde o campo ON; "Preencher ON pela FK" rederiva a condicao; o preview mostra o FROM com os JOINs;
 - trocar o tipo de banco: campos engine/charset somem/aparecem, tipos de coluna mudam;
-- Exportar SQL: dialogo padrao do builder; Copiar (em HTTP usa fallback) e Baixar funcionam; Importar SQL (prompt) cria tabelas;
+- Exportar SQL: dialogo padrao do builder; Copiar (em HTTP usa fallback) e Baixar funcionam;
+- Importar SQL: abre dialogo proprio (mesmo padrao do export) para colar o codigo; Importar com o campo vazio avisa e mantem o dialogo aberto; com CREATE TABLE valido cria as tabelas;
 - arrastar cards pelo diagrama; clique no fundo limpa a selecao; recarregar a pagina restaura tudo (localStorage proprio, formato antigo carrega);
 - builder (index.html) segue intacto.
 

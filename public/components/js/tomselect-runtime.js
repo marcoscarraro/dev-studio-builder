@@ -1,7 +1,12 @@
 // Runtime do componente TomSelect na pagina exportada.
 // Varre o DOM por [data-tomselect] e inicializa cada select lendo a config dos data-*
 //   (data-ajax-url, data-json-path, data-value-field, data-tomselect-create, etc.).
-// Quando ha data-ajax-url, busca as opcoes e injeta no select.
+// Quando ha data-ajax-url, dois modos:
+// - Padrao: UMA busca completa no carregamento; clique/digitacao filtram localmente.
+// - Busca remota (data-remote-search="true"): usa o load do TomSelect — cada pausa
+//   na digitacao (debounce data-load-throttle, ms) consulta a URL com o termo no
+//   parametro data-search-param (ex: ?q=maria); o servidor devolve so o que casa.
+//   data-preload="true" dispara uma consulta vazia ao abrir o select.
 // Equivale ao antigo renderTomSelectInitializer de export-html.js.
 (function () {
   var runtimeName = "TemplateBuilderTomSelectRuntime";
@@ -37,6 +42,11 @@
 
     var ajaxUrl = select.dataset.ajaxUrl || "";
     var jsonPath = select.dataset.jsonPath || "";
+    var remoteSearch = select.dataset.remoteSearch === "true" && Boolean(ajaxUrl);
+    var searchParam = select.dataset.searchParam || "q";
+    var loadThrottle = parseInt(select.dataset.loadThrottle, 10);
+    if (isNaN(loadThrottle) || loadThrottle < 0) loadThrottle = 300;
+    var preload = select.dataset.preload === "true";
     var valueField = select.dataset.valueField || "id";
     var labelField = select.dataset.labelField || "text";
     var searchFields = (select.dataset.searchField || labelField).split(",").map(function (f) {
@@ -72,9 +82,44 @@
       }
     };
 
+    if (remoteSearch) {
+      // Busca remota: o servidor filtra; o debounce evita uma requisicao por tecla.
+      settings.loadThrottle = loadThrottle;
+      if (preload) {
+        settings.preload = "focus"; // consulta vazia ao abrir (primeiros resultados)
+      }
+      settings.load = function (query, callback) {
+        fetch(buildSearchUrl(ajaxUrl, searchParam, query)).then(function (r) {
+          if (r.ok) {
+            return r.json();
+          } else {
+            return null;
+          }
+        }).then(function (response) {
+          if (!response) {
+            callback();
+            return;
+          }
+          var items;
+          if (jsonPath) {
+            items = readJsonPath(response, jsonPath);
+          } else {
+            items = response;
+          }
+          if (!Array.isArray(items)) {
+            items = [];
+          }
+          callback(items);
+        }).catch(function () {
+          callback();
+        });
+      };
+    }
+
     var ts = new window.TomSelect(select, settings);
 
-    if (ajaxUrl) {
+    if (ajaxUrl && !remoteSearch) {
+      // Modo padrao: busca completa uma unica vez; o resto e filtro local.
       fetch(ajaxUrl).then(function (r) {
         if (r.ok) {
           return r.json();
@@ -98,6 +143,17 @@
         ts.refreshOptions(false);
       }).catch(function () {});
     }
+  }
+
+  // Monta a URL da busca remota preservando query string existente.
+  function buildSearchUrl(baseUrl, param, query) {
+    var separator;
+    if (baseUrl.indexOf("?") >= 0) {
+      separator = "&";
+    } else {
+      separator = "?";
+    }
+    return baseUrl + separator + encodeURIComponent(param) + "=" + encodeURIComponent(query || "");
   }
 
   // Botao "criar": com URL abre uma nova aba (e nao cria local); sem URL usa o create

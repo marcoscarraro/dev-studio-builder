@@ -1,0 +1,10 @@
+{
+  "data": [
+    ["Maria Silva", "maria@email.com", "Ativo"],
+    ["Joao Santos", "joao@email.com", "Inativo"],
+    ["Ana Oliveira", "ana@email.com", "Ativo"],
+    ["Carlos Lima", "carlos@email.com", "Pendente"],
+    ["Fernanda Costa", "fernanda@email.com", "Ativo"],
+    ["Roberto Souza", "roberto@email.com", "Inativo"]
+  ]
+}

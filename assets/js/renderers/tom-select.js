@@ -6,6 +6,7 @@
   function renderTomSelectComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};
     const options = "";
+    const remoteSearch = context.toBooleanValue(props.remoteSearch);
     let required;
     if (context.toBooleanValue(props.required)) {
       required = ' <span class="required-mark">*</span>';
@@ -18,6 +19,10 @@
       ' data-tomselect=""',
       context.attr("data-ajax-url", props.ajaxUrl),
       context.attr("data-json-path", props.jsonPath),
+      context.attr("data-remote-search", remoteSearch ? "true" : "false"),
+      remoteSearch ? context.attr("data-search-param", props.searchParam || "q") : "",
+      remoteSearch ? context.attr("data-load-throttle", props.loadThrottle != null ? String(props.loadThrottle) : "300") : "",
+      remoteSearch ? context.attr("data-preload", context.toBooleanValue(props.preload) ? "true" : "false") : "",
       context.attr("data-placeholder", props.placeholder),
       context.attr("data-value-field", props.valueField || "id"),
       context.attr("data-label-field", props.labelField || "text"),

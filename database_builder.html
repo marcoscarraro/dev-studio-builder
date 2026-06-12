@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="public/tabler/css/demo.css?1778257825">
   <link rel="stylesheet" href="public/tabler/css/custom.css">
   <link rel="stylesheet" href="assets/css/builder.css?v=14">
-  <link rel="stylesheet" href="assets/css/database-builder.css?v=1">
+  <link rel="stylesheet" href="assets/css/database-builder.css?v=3">
 </head>
 <body class="layout-fluid" data-page="database-designer">
   <script src="public/tabler/js/tabler-theme.js"></script>
@@ -92,6 +92,19 @@
     </form>
   </dialog>
 
-  <script src="assets/js/database-builder.js?v=1"></script>
+  <dialog id="import-dialog" class="output-dialog">
+    <form method="dialog" class="dialog-shell">
+      <header>
+        <strong>Importar SQL (<span id="importDbLabel">MySQL</span>)</strong>
+        <button type="submit" aria-label="Fechar">&times;</button>
+      </header>
+      <textarea id="importSqlInput" spellcheck="false" placeholder="Cole aqui o codigo SQL (CREATE TABLE ...)"></textarea>
+      <footer>
+        <button type="button" id="import-run" class="tool-button text btn btn-primary">Importar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="assets/js/database-builder.js?v=4"></script>
 </body>
 </html>

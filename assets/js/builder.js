@@ -1204,6 +1204,11 @@
       }
       const ajaxUrl = (select.dataset.ajaxUrl || "").trim();
       const jsonPath = select.dataset.jsonPath || "";
+      const remoteSearch = select.dataset.remoteSearch === "true" && Boolean(ajaxUrl);
+      const searchParam = select.dataset.searchParam || "q";
+      let loadThrottle = parseInt(select.dataset.loadThrottle, 10);
+      if (isNaN(loadThrottle) || loadThrottle < 0) { loadThrottle = 300; }
+      const preloadOnFocus = select.dataset.preload === "true";
       const valueField = select.dataset.valueField || "id";
       const labelField = select.dataset.labelField || "text";
       const searchFields = (select.dataset.searchField || labelField).split(",").map((s) => s.trim()).filter(Boolean);
@@ -1211,6 +1216,17 @@
       const sortField = (select.dataset.sortField || "text").trim();
       const sortDirection = (select.dataset.sortDirection || "asc").trim();
       const maxOptions = parseInt(select.dataset.maxOptions, 10) || 100;
+      const readItems = (response) => {
+        if (!response) { return []; }
+        let items;
+        if (jsonPath) {
+          items = jsonPath.split(".").reduce((v, k) => v && v[k], response);
+        } else {
+          items = response;
+        }
+        if (!Array.isArray(items)) { return []; }
+        return items;
+      };
       const settings = {
         plugins: select.multiple ? ["remove_button", "clear_button"] : ["clear_button"],
         copyClassesToDropdown: false,
@@ -1224,19 +1240,25 @@
         sortField: [{ field: sortField, direction: sortDirection }],
         maxOptions
       };
+      if (remoteSearch) {
+        // Mesmo comportamento do tomselect-runtime: busca remota com debounce
+        settings.loadThrottle = loadThrottle;
+        if (preloadOnFocus) { settings.preload = "focus"; }
+        settings.load = (query, callback) => {
+          const separator = ajaxUrl.includes("?") ? "&" : "?";
+          fetch(`${ajaxUrl}${separator}${encodeURIComponent(searchParam)}=${encodeURIComponent(query || "")}`)
+            .then((r) => r.ok ? r.json() : null)
+            .then((response) => callback(readItems(response)))
+            .catch(() => callback());
+        };
+      }
       const ts = new window.TomSelect(select, settings);
-      if (ajaxUrl) {
+      if (ajaxUrl && !remoteSearch) {
         fetch(ajaxUrl)
           .then((r) => r.ok ? r.json() : null)
           .then((response) => {
-            if (!response) { return; }
-            let items;
-            if (jsonPath) {
-              items = jsonPath.split(".").reduce((v, k) => v && v[k], response);
-            } else {
-              items = response;
-            }
-            if (!Array.isArray(items)) { items = []; }
+            const items = readItems(response);
+            if (!items.length) { return; }
             ts.addOptions(items);
             ts.refreshOptions(false);
           })
@@ -1839,6 +1861,7 @@
       idAttr,
       indent,
       mergeClassNames,
+      normalizeKeyValueEntries,
       parseDropdownActions,
       parseTableColumns,
       parseTableRows,
@@ -2471,7 +2494,7 @@
     if (columns.length) {
       return columns;
     } else {
-      return [{ label: "Coluna 1", thClass: "", tdClass: "", width: "" }];
+      return [{ label: "Coluna 1", data: "", thClass: "", tdClass: "", width: "" }];
     }
   }
 
@@ -2785,6 +2808,7 @@
     ];
     const tableColumnFields = [
       { label: "Titulo", prop: "label", field: "text", default: "Nova coluna" },
+      { label: "Campo data", prop: "data", field: "text", default: "" },
       { label: "Classe CSS TH", prop: "thClass", field: "text", default: "" },
       { label: "Classe CSS TD", prop: "tdClass", field: "text", default: "" },
       { label: "Largura", prop: "width", field: "text", default: "" }
@@ -3039,6 +3063,15 @@
         commonField("Titulo do card", "cardTitle"),
         commonField("Descricao", "description"),
         commonField("ID da tabela", "tableId"),
+        commonField("URL dos dados JSON", "ajaxUrl"),
+        commonField("Processamento server-side", "serverSide", "checkbox"),
+        { label: "Metodo AJAX", prop: "ajaxMethod", field: "select", options: [["GET", "GET"], ["POST", "POST"]] },
+        { label: "Formato do corpo POST", prop: "ajaxBodyFormat", field: "select", options: [["form", "Form URL-encoded"], ["json", "JSON"]] },
+        commonField("JSON path dos registros", "ajaxDataSrc"),
+        { label: "Autenticacao", prop: "ajaxAuthType", field: "select", options: [["none", "Nenhuma"], ["bearer", "Bearer token"], ["header", "Chave em header"]] },
+        commonField("Token / chave", "ajaxAuthToken"),
+        commonField("Nome do header da chave", "ajaxAuthHeader"),
+        { label: "Headers extras", prop: "ajaxHeaders", field: "keyvalue", keyLabel: "Header", valueLabel: "Valor", addLabel: "Adicionar header", keyPrefix: "header" },
         { label: "Colunas", prop: "columns", field: "repeater", addLabel: "Adicionar coluna", itemFields: tableColumnFields },
         { label: "Linhas", prop: "rows", field: "matrix", columnsProp: "columns", addLabel: "Adicionar linha" },
         commonField("Registros por pagina", "pageLength", "number"),
@@ -3994,6 +4027,10 @@
       delete props.columnStyles;
     }
 
+    if (definition.kind === "datatable") {
+      props.ajaxHeaders = normalizeKeyValueEntries(props.ajaxHeaders);
+    }
+
     if (definition.kind === "jsSnippet") {
       // Componente recem-criado vem com code vazio: preenche com o snippet do
       // template selecionado (fonte: window.TemplateBuilderJsSnippets, do renderer).
@@ -4648,6 +4685,7 @@
         }
         return {
           label: String(column.label || `Coluna ${index + 1}`),
+          data: String(column.data || ""),
           thClass: String(column.thClass || ""),
           tdClass: String(column.tdClass || ""),
           width: String(column.width || "")
@@ -4661,6 +4699,7 @@
       const style = mergeTableColumnStyle(inlineStyle, styleRows[index]);
       return {
         label: parts[0] || `Coluna ${index + 1}`,
+        data: "",
         thClass: style.thClass,
         tdClass: style.tdClass,
         width: style.width

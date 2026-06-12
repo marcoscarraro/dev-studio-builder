@@ -12,6 +12,8 @@ Este guia explica a arquitetura atual para manutencao sem depender de IA.
 - [Checklist de testes](docs/CHECKLIST_TESTES.md)
 - [Mapa do builder.js](docs/MAPA_BUILDER_JS.md)
 - [Como criar uma feature](docs/COMO_CRIAR_FEATURE.md)
+- [Componente DataTable (server-side e selecao)](docs/COMPONENTE_DATATABLE.md)
+- [Componentes TomSelect e Tags (busca remota)](docs/COMPONENTE_TOMSELECT.md)
 
 ## Visao Geral
 
