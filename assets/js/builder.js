@@ -1,4 +1,4 @@
-// Template Builder — orquestrador principal do editor.
+// DEV STUDIO BUILDER — orquestrador principal do editor.
 // Este arquivo concentra: estado global, renderizacao do canvas, painel de
 // propriedades, historico de undo/redo e coordenacao entre os modulos externos.
 // Consulte docs/MAPA_BUILDER_JS.md para um mapa detalhado de cada secao.
@@ -11,6 +11,39 @@
   const HISTORY_LIMIT = 60;
   const COMPONENTS_URL = "assets/data/components.json";
   const TABLER_ICONS_URL = "assets/data/tabler-icons.json";
+
+  const PATTERN_TEMPLATES = [
+    { label: "E-mail", value: "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$" },
+    { label: "CPF", value: "^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$" },
+    { label: "CNPJ", value: "^\\d{2}\\.?\\d{3}\\.?\\d{3}\\/?\\d{4}-?\\d{2}$" },
+    { label: "CPF ou CNPJ", value: "^(\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}|\\d{2}\\.?\\d{3}\\.?\\d{3}\\/?\\d{4}-?\\d{2})$" },
+    { label: "Celular com DDD (BR)", value: "^\\(?[1-9]{2}\\)?\\s?9[0-9]{4}-?[0-9]{4}$" },
+    { label: "Telefone fixo com DDD (BR)", value: "^\\(?[1-9]{2}\\)?\\s?[2-8][0-9]{3}-?[0-9]{4}$" },
+    { label: "Telefone (celular ou fixo)", value: "^\\(?[1-9]{2}\\)?\\s?[2-9][0-9]{3,4}-?[0-9]{4}$" },
+    { label: "Data DD/MM/AAAA", value: "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/\\d{4}$" },
+    { label: "Data DD/MM/AA", value: "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/\\d{2}$" },
+    { label: "IP (IPv4)", value: "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" },
+    { label: "Somente letras (sem acento)", value: "^[A-Za-z]+$" },
+    { label: "Somente letras (com acento)", value: "^[A-Za-zÀ-ɏ]+$" },
+    { label: "Nome completo", value: "^[A-Za-zÀ-ɏ]{2,}(\\s[A-Za-zÀ-ɏ]+)+$" },
+    { label: "Somente numeros", value: "^[0-9]+$" },
+    { label: "Numero inteiro (pos/neg)", value: "^-?[0-9]+$" },
+    { label: "Numero decimal (virgula)", value: "^-?[0-9]+,[0-9]+$" },
+    { label: "Numero decimal (ponto)", value: "^-?[0-9]+\\.[0-9]+$" },
+    { label: "Cartao de credito", value: "^[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}$" },
+    { label: "CEP", value: "^\\d{5}-?\\d{3}$" },
+    { label: "RG", value: "^\\d{1,2}\\.?\\d{3}\\.?\\d{3}-?[0-9Xx]$" },
+    { label: "PIS / PASEP", value: "^\\d{3}\\.?\\d{5}\\.?\\d{2}-?\\d$" },
+    { label: "Placa Mercosul", value: "^[A-Z]{3}[0-9][A-Z][0-9]{2}$" },
+    { label: "Placa antiga (ABC-1234)", value: "^[A-Z]{3}-?[0-9]{4}$" },
+    { label: "Placa (Mercosul ou antiga)", value: "^([A-Z]{3}-?[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2})$" },
+    { label: "URL (http/https)", value: "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$" },
+    { label: "Senha forte (min 8, mai/min/num/especial)", value: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$" },
+    { label: "Cor hexadecimal (#RRGGBB)", value: "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" },
+    { label: "Slug (letras, numeros e hifens)", value: "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    { label: "Alfanumerico sem espacos", value: "^[A-Za-z0-9]+$" },
+    { label: "Alfanumerico com espacos", value: "^[A-Za-z0-9 ]+$" },
+  ];
   const previewAssetPromises = new Map();
   const helpers = window.TemplateBuilderHelpers || {};
   const attr = helpers.attr;
@@ -56,6 +89,9 @@
   async function init() {
     els.shell = document.querySelector(".app-shell");
     els.canvas = document.getElementById("canvas");
+    els.pageNavbar = document.getElementById("editor-page-navbar");
+    els.pageSidebar = document.getElementById("editor-page-sidebar");
+    els.pageBodyWrapper = document.getElementById("editor-page-body-wrapper");
     els.pageHeader = document.getElementById("editor-page-header");
     els.pageFooter = document.getElementById("editor-page-footer");
     els.propertiesForm = document.getElementById("properties-form");
@@ -89,7 +125,7 @@
         toast("Aviso: dado salvo estava corrompido, iniciando nova pagina");
       }
     } else {
-      state.page = createStarterPage();
+      state.page = createEmptyPage();
     }
 
     commitHistory();
@@ -105,9 +141,16 @@
       type: "page",
       name: "",
       props: {
-        pretitle: "Template Builder",
-        title: "Nova pagina"
+        pretitle: "DEV STUDIO BUILDER",
+        title: "Nova pagina",
+        menuLayout: "none",
+        menuPosition: "left",
+        menuTheme: "dark",
+        menuSticky: false,
+        menuSidebarWidth: "normal"
       },
+      navbar: [],
+      sidebar: [],
       header: [],
       footer: [],
       children: []
@@ -119,14 +162,21 @@
       id: uid("page"),
       type: "page",
       props: {
-        pretitle: "Template Builder",
-        title: "Cadastro"
+        pretitle: "DEV STUDIO BUILDER",
+        title: "Cadastro",
+        menuLayout: "none",
+        menuPosition: "left",
+        menuTheme: "dark",
+        menuSticky: false,
+        menuSidebarWidth: "normal"
       },
+      navbar: [],
+      sidebar: [],
       header: [
         createRow([12], [
           [
             createComponent("html", {
-              html: '<div class="page-pretitle">Template Builder</div><h2 class="page-title">Cadastro</h2>'
+              html: '<div class="page-pretitle">DEV STUDIO BUILDER</div><h2 class="page-title">Cadastro</h2>'
             })
           ]
         ])
@@ -528,6 +578,11 @@
 
     els.pageName.addEventListener("input", () => {
       state.page.name = els.pageName.value;
+      state.page.props.title = els.pageName.value;
+      const titleField = els.propertiesForm.querySelector('[data-prop="title"]');
+      if (titleField && document.activeElement !== titleField) {
+        titleField.value = els.pageName.value;
+      }
       debounceHistory();
     });
 
@@ -555,6 +610,25 @@
 
   function bindProperties() {
     window.TemplateBuilderProperties.bind(getPropertiesContext());
+    els.propertiesForm.addEventListener("change", (event) => {
+      // Pattern-picker: preenche o campo de expressao de validacao com o template escolhido
+      if (event.target.classList.contains("pattern-picker-select") && event.target.value) {
+        const targetProp = event.target.dataset.patternProp || "pattern";
+        const target = els.propertiesForm.querySelector(`[data-prop="${targetProp}"]`);
+        if (target) {
+          target.value = event.target.value;
+          target.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        event.target.value = "";
+        return;
+      }
+      // Re-render completo quando props de menu mudam (para mostrar/ocultar campos condicionais)
+      const field = event.target.closest("[data-prop]");
+      if (field && ["menuLayout", "menuPosition", "menuTheme", "menuSidebarWidth"].includes(field.dataset.prop)) {
+        render();
+        commitHistory();
+      }
+    });
   }
 
   function getPropertiesContext() {
@@ -579,6 +653,8 @@
       renderCanvas,
       renderPageFooter,
       renderPageHeader,
+      renderPageNavbar,
+      renderPageSidebar,
       renderSummary,
       setRowColumnCount,
       state,
@@ -605,7 +681,9 @@
   }
 
   function bindDevices() {
-    document.querySelector(".segmented-control").addEventListener("click", (event) => {
+    const segmented = document.querySelector(".segmented-control");
+    if (!segmented) return;
+    segmented.addEventListener("click", (event) => {
       const button = event.target.closest("[data-device]");
       if (!button) {
         return;
@@ -622,6 +700,12 @@
   // Funcoes que mapeiam secao/elemento DOM para arrays de linhas no state,
   // e calculam indices de insercao durante o drop.
   function getSectionRows(section) {
+    if (section === "navbar") {
+      return state.page.navbar;
+    }
+    if (section === "sidebar") {
+      return state.page.sidebar;
+    }
     if (section === "header") {
       return state.page.header;
     }
@@ -632,6 +716,12 @@
   }
 
   function getSectionElement(section) {
+    if (section === "navbar") {
+      return els.pageNavbar;
+    }
+    if (section === "sidebar") {
+      return els.pageSidebar;
+    }
     if (section === "header") {
       return els.pageHeader;
     }
@@ -642,7 +732,7 @@
   }
 
   function getElementSection(element) {
-    const sectionNode = element.closest('[data-section="header"], [data-section="page"], [data-section="footer"]');
+    const sectionNode = element.closest('[data-section="navbar"], [data-section="sidebar"], [data-section="header"], [data-section="page"], [data-section="footer"]');
     if (sectionNode) {
       return sectionNode.dataset.section;
     } else {
@@ -799,6 +889,12 @@
   }
 
   function getSurfaceSection(surface) {
+    if (surface === els.pageNavbar) {
+      return "navbar";
+    }
+    if (surface === els.pageSidebar) {
+      return "sidebar";
+    }
     if (surface === els.pageHeader) {
       return "header";
     }
@@ -945,7 +1041,7 @@
   }
 
   function findRowLocation(id) {
-    for (const section of ["header", "page", "footer"]) {
+    for (const section of ["navbar", "sidebar", "header", "page", "footer"]) {
       const rows = getSectionRows(section);
       const location = findRowLocationInRows(id, rows, section);
       if (location) {
@@ -983,7 +1079,7 @@
   }
 
   function getAllRows() {
-    return collectRows([...state.page.header, ...state.page.children, ...state.page.footer], []);
+    return collectRows([...state.page.navbar, ...state.page.sidebar, ...state.page.header, ...state.page.children, ...state.page.footer], []);
   }
 
   function collectExportComponents() {
@@ -1053,6 +1149,8 @@
   //   (ApexCharts, Litepicker) de forma dinamica e inicializa os componentes no canvas.
   //   Os guards _apexChart / _templateBuilderLitepicker evitam dupla inicializacao.
   function render() {
+    renderPageNavbar();
+    renderPageSidebar();
     renderPageHeader();
     renderCanvas();
     renderPageFooter();
@@ -1400,6 +1498,107 @@
   // === RENDERIZACAO DAS SECOES DA PAGINA ===
   // Cada secao (header, canvas/body, footer) tem sua funcao de render.
   // renderRow: cria o elemento DOM de uma linha com suas colunas e componentes.
+
+  function renderPageNavbar() {
+    const menuLayout = state.page.props.menuLayout || "none";
+    const showNavbar = menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const theme = state.page.props.menuTheme || "dark";
+    const sticky = toBooleanValue(state.page.props.menuSticky);
+
+    if (!showNavbar) {
+      els.pageNavbar.classList.add("hidden");
+      els.pageNavbar.removeAttribute("data-drop-zone");
+      els.pageNavbar.removeAttribute("data-section");
+      els.pageNavbar.innerHTML = "";
+      return;
+    }
+
+    const selected = (state.selectedId === state.page.id && state.selectedSection === "navbar") ? " selected" : "";
+    const empty = state.page.navbar.length ? "" : " is-empty";
+    const themeClass = theme === "dark" ? " navbar-theme-dark" : "";
+    const stickyClass = sticky && menuLayout !== "combo-pill" ? " navbar-sticky" : "";
+    const pillClass = menuLayout === "combo-pill" ? " navbar-pill" : "";
+
+    els.pageNavbar.className = `editor-page-navbar${selected}${empty}${themeClass}${stickyClass}${pillClass}`;
+    els.pageNavbar.dataset.dropZone = "navbar";
+    els.pageNavbar.dataset.section = "navbar";
+    els.pageNavbar.innerHTML = "";
+
+    const container = document.createElement("div");
+    container.className = "container-xl";
+
+    if (!state.page.navbar.length) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "empty-canvas empty-navbar";
+      placeholder.textContent = "Navbar vazio — arraste itens de menu aqui";
+      container.appendChild(placeholder);
+    } else {
+      state.page.navbar.forEach((row) => {
+        container.appendChild(renderRow(row, "navbar"));
+      });
+    }
+
+    els.pageNavbar.appendChild(container);
+  }
+
+  function renderPageSidebar() {
+    const menuLayout = state.page.props.menuLayout || "none";
+    const showSidebar = menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const position = state.page.props.menuPosition || "left";
+    const theme = state.page.props.menuTheme || "dark";
+    const sidebarWidth = state.page.props.menuSidebarWidth || "normal";
+
+    if (!showSidebar) {
+      els.pageSidebar.classList.add("hidden");
+      els.pageSidebar.removeAttribute("data-drop-zone");
+      els.pageSidebar.removeAttribute("data-section");
+      els.pageSidebar.innerHTML = "";
+      if (els.pageBodyWrapper) {
+        els.pageBodyWrapper.classList.remove("sidebar-right");
+      }
+      return;
+    }
+
+    if (menuLayout !== "combo-pill" && els.pageBodyWrapper) {
+      if (position === "right") {
+        els.pageBodyWrapper.classList.add("sidebar-right");
+      } else {
+        els.pageBodyWrapper.classList.remove("sidebar-right");
+      }
+    } else if (els.pageBodyWrapper) {
+      els.pageBodyWrapper.classList.remove("sidebar-right");
+    }
+
+    const selected = (state.selectedId === state.page.id && state.selectedSection === "sidebar") ? " selected" : "";
+    const empty = state.page.sidebar.length ? "" : " is-empty";
+    const posClass = menuLayout !== "combo-pill" && position === "right" ? " sidebar-right" : "";
+    const themeClass = theme === "dark" ? " sidebar-theme-dark" : "";
+    const widthClass = menuLayout === "combo-pill"
+      ? " sidebar-icon-mode"
+      : sidebarWidth === "compact" ? " sidebar-compact" : sidebarWidth === "wide" ? " sidebar-wide" : "";
+
+    els.pageSidebar.className = `editor-page-sidebar${selected}${empty}${posClass}${themeClass}${widthClass}`;
+    els.pageSidebar.dataset.dropZone = "sidebar";
+    els.pageSidebar.dataset.section = "sidebar";
+    els.pageSidebar.innerHTML = "";
+
+    const container = document.createElement("div");
+    container.className = "container-xl";
+
+    if (!state.page.sidebar.length) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "empty-canvas empty-sidebar";
+      placeholder.textContent = "Sidebar vazio — arraste itens de menu aqui";
+      container.appendChild(placeholder);
+    } else {
+      state.page.sidebar.forEach((row) => {
+        container.appendChild(renderRow(row, "sidebar"));
+      });
+    }
+
+    els.pageSidebar.appendChild(container);
+  }
+
   function renderPageHeader() {
     let selected;
     if (state.selectedId === state.page.id && state.selectedSection === "header") {
@@ -2608,8 +2807,37 @@
   }
 
   function renderPageProperties(page) {
+    const menuLayout = page.props.menuLayout || "none";
+    const showPositionAndTheme = menuLayout !== "none";
+    const showNavbarOptions = menuLayout === "horizontal" || menuLayout === "combo";
+    const showSidebarOptions = menuLayout === "vertical" || menuLayout === "combo";
     return [
-      fieldInput("Titulo do documento", "title", page.props.title || "Pagina")
+      '<section class="property-group"><h3>Pagina</h3>',
+      fieldInput("Titulo do documento", "title", page.props.title || "Pagina"),
+      '</section>',
+      '<section class="property-group"><h3>Menu de navegacao</h3>',
+      fieldSelect("Tipo de layout", "menuLayout", menuLayout, [
+        ["none", "Nenhum"],
+        ["horizontal", "Superior (navbar)"],
+        ["vertical", "Lateral (sidebar)"],
+        ["combo", "Lateral + Superior"],
+        ["combo-pill", "Pill + Icone lateral (moderno)"]
+      ]),
+      showPositionAndTheme ? fieldSelect("Tema", "menuTheme", page.props.menuTheme || "dark", [
+        ["dark", "Escuro"],
+        ["light", "Claro"]
+      ]) : "",
+      showSidebarOptions ? fieldSelect("Posicao do sidebar", "menuPosition", page.props.menuPosition || "left", [
+        ["left", "Esquerda"],
+        ["right", "Direita"]
+      ]) : "",
+      showSidebarOptions ? fieldSelect("Largura do sidebar", "menuSidebarWidth", page.props.menuSidebarWidth || "normal", [
+        ["compact", "Compacto (so icones)"],
+        ["normal", "Normal (220px)"],
+        ["wide", "Largo (280px)"]
+      ]) : "",
+      showNavbarOptions ? fieldCheckbox("Navbar fixa no scroll (sticky)", "menuSticky", page.props.menuSticky) : "",
+      '</section>'
     ].join("");
   }
 
@@ -2825,6 +3053,7 @@
         commonField("Maximo", "max"),
         commonField("Step", "step"),
         commonField("Maxlength", "maxLength"),
+        { label: "Template de expressao", prop: "_patternPicker", field: "pattern-picker" },
         commonField("Expressao de validacao", "pattern"),
         commonField("Autocomplete", "autocomplete"),
         commonField("Mascara (data-mask)", "dataMask"),
@@ -2916,6 +3145,7 @@
         commonField("Valor", "value"),
         commonField("Placeholder", "placeholder"),
         { label: "Posicao do select", prop: "selectPosition", field: "select", options: [["right", "Direita"], ["left", "Esquerda"]] },
+        { label: "Template de expressao", prop: "_patternPicker", field: "pattern-picker" },
         commonField("Expressao de validacao", "pattern"),
         commonField("Atributos personalizados", "customAttributes", "attributes"),
         commonField("Mascara (data-mask)", "dataMask"),
@@ -2937,6 +3167,7 @@
         commonField("Minimo", "min"),
         commonField("Step", "step"),
         commonField("Valor", "value"),
+        { label: "Template de expressao", prop: "_patternPicker", field: "pattern-picker" },
         commonField("Expressao de validacao", "pattern"),
         commonField("Atributos personalizados", "customAttributes", "attributes"),
         commonField("Texto botao menos", "minusText"),
@@ -2962,6 +3193,7 @@
         commonField("Maxlength", "maxLength"),
         commonField("Autocomplete", "autocomplete"),
         { label: "Posicao dos botoes", prop: "buttonsPosition", field: "select", options: [["right", "Direita"], ["left", "Esquerda"]] },
+        { label: "Template de expressao", prop: "_patternPicker", field: "pattern-picker" },
         commonField("Expressao de validacao", "pattern"),
         commonField("Atributos personalizados", "customAttributes", "attributes"),
         commonField("Mascara (data-mask)", "dataMask"),
@@ -3129,13 +3361,23 @@
     return String(actual == null ? "" : actual) === String(expected);
   }
 
-  // interpolatePropertyTemplate: troca {{prop}} pelo valor da prop (campos "info").
+  // interpolatePropertyTemplate: troca tokens {{prop}}, {{prop:literal}} ou {{prop||fallbackProp}}.
+  //   {{prop}}             — valor da prop ou vazio se ausente
+  //   {{prop:literal}}     — usa "literal" quando prop estiver vazia
+  //   {{prop||outraProp}}  — usa outraProp (de props) quando prop estiver vazia
   function interpolatePropertyTemplate(template, props) {
-    return String(template || "").replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => {
-      if (props[name] == null) {
-        return "";
+    return String(template || "").replace(/\{\{\s*(\w+)(?::([^|}]*))?(?:\|\|(\w+))?\s*\}\}/g, (match, name, literalFallback, propFallback) => {
+      const val = props[name];
+      if (val != null && String(val).trim() !== "") {
+        return String(val);
       }
-      return String(props[name]);
+      if (propFallback != null) {
+        const fallbackVal = props[propFallback];
+        if (fallbackVal != null && String(fallbackVal).trim() !== "") {
+          return String(fallbackVal);
+        }
+      }
+      return literalFallback != null ? literalFallback : "";
     });
   }
 
@@ -3154,6 +3396,12 @@
       return fieldInfo(field.label, interpolatePropertyTemplate(field.valueTemplate, props));
     }
 
+    // Campo "code-info": textarea somente leitura com botao de copiar. Valor vem de
+    // valueTemplate com placeholders {{prop:fallback}}. Ideal para snippets de referencia.
+    if (field.field === "code-info") {
+      return fieldCodeInfo(field.label, interpolatePropertyTemplate(field.valueTemplate, props), rows);
+    }
+
     if (field.field === "keyvalue") {
       return fieldKeyValue(field.label, field.prop, value);
     }
@@ -3165,6 +3413,22 @@
         addLabel: "Adicionar atributo",
         keyPrefix: "data-atributo"
       });
+    }
+
+    if (field.field === "pattern-picker") {
+      const targetProp = escapeAttr(field.patternProp || "pattern");
+      const opts = PATTERN_TEMPLATES.map((t) =>
+        `<option value="${escapeAttr(t.value)}">${escapeHtml(t.label)}</option>`
+      ).join("");
+      return [
+        '<div class="field">',
+        `  <label class="form-label">Template de expressao</label>`,
+        `  <select class="form-select form-select-sm pattern-picker-select" data-pattern-prop="${targetProp}">`,
+        `    <option value="">— escolher template —</option>`,
+        opts,
+        `  </select>`,
+        '</div>'
+      ].join("");
     }
 
     if (field.field === "repeater") {
@@ -3234,6 +3498,20 @@
 
   function fieldInfo(label, value) {
     return `<div class="field"><label class="form-label">${escapeHtml(label)}</label><input class="form-control" type="text" value="${escapeAttr(value == null ? "" : value)}" readonly tabindex="-1"></div>`;
+  }
+
+  function fieldCodeInfo(label, value, rows) {
+    const clipboardIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    const safeValue = escapeHtml(value == null ? "" : value);
+    return [
+      '<div class="field">',
+      `  <div class="d-flex align-items-center justify-content-between mb-1">`,
+      `    <label class="form-label mb-0">${escapeHtml(label)}</label>`,
+      `    <button type="button" class="btn btn-sm btn-ghost-secondary py-0 px-1" data-property-action="copy-code-info" title="Copiar codigo">${clipboardIcon}</button>`,
+      `  </div>`,
+      `  <textarea class="form-control font-monospace" rows="${rows || 6}" readonly tabindex="-1" style="font-size:0.7rem;resize:none;line-height:1.5">${safeValue}</textarea>`,
+      '</div>'
+    ].join("\n");
   }
 
   function fieldTextarea(label, prop, value, rows) {
@@ -3474,13 +3752,14 @@
     node.props[prop] = entries;
   }
 
+  function getRepeaterItemFields(field) {
+    if (Array.isArray(field.itemFields)) return field.itemFields;
+    if (Array.isArray(field.fields)) return field.fields;
+    return [];
+  }
+
   function fieldRepeater(field, value) {
-    let itemFields;
-    if (Array.isArray(field.itemFields)) {
-      itemFields = field.itemFields;
-    } else {
-      itemFields = [];
-    }
+    const itemFields = getRepeaterItemFields(field);
     const items = normalizeRepeaterItems(value, itemFields);
     const rows = items.map((item, index) => {
       const inputs = itemFields.map((itemField) => renderRepeaterItemField(field.prop, index, itemField, item[itemField.prop])).join("");
@@ -3598,7 +3877,7 @@
   }
 
   function createRepeaterItem(field) {
-    return (Array.isArray(field.itemFields) ? field.itemFields : []).reduce((item, itemField) => {
+    return getRepeaterItemFields(field).reduce((item, itemField) => {
       if (hasOwn(itemField, "default")) {
         item[itemField.prop] = deepClone(itemField.default);
       } else {
@@ -3683,7 +3962,7 @@
   function applyRepeaterAction(node, button) {
     const prop = button.dataset.repeaterProp;
     const field = getComponentPropertySchema(node).find((item) => item.prop === prop);
-    const items = normalizeRepeaterItems(node.props[prop], field && field.itemFields ? field.itemFields : []);
+    const items = normalizeRepeaterItems(node.props[prop], field ? getRepeaterItemFields(field) : []);
     const action = button.dataset.repeaterAction;
     const index = Number(button.dataset.repeaterIndex);
     if (action === "add") {
@@ -3834,14 +4113,27 @@
     }
     page.props = page.props || { title: "Pagina" };
     page.props.title = page.props.title || "Pagina";
+    page.props.menuLayout = page.props.menuLayout || "none";
+    page.props.menuPosition = page.props.menuPosition || "left";
+    page.props.menuTheme = page.props.menuTheme || "dark";
+    if (page.props.menuSticky === undefined) page.props.menuSticky = false;
+    page.props.menuSidebarWidth = page.props.menuSidebarWidth || "normal";
     if (!Array.isArray(page.header)) {
       page.header = createLegacyHeaderRows(page.props);
     }
     if (!Array.isArray(page.footer)) {
       page.footer = [];
     }
+    if (!Array.isArray(page.navbar)) {
+      page.navbar = [];
+    }
+    if (!Array.isArray(page.sidebar)) {
+      page.sidebar = [];
+    }
     page.header = normalizeRows(page.header);
     page.footer = normalizeRows(page.footer);
+    page.navbar = normalizeRows(page.navbar);
+    page.sidebar = normalizeRows(page.sidebar);
     page.children = normalizeRows(page.children);
 
     return page;
@@ -4141,7 +4433,7 @@
     if (props && props.pretitle) {
       pretitle = props.pretitle;
     } else {
-      pretitle = "Template Builder";
+      pretitle = "DEV STUDIO BUILDER";
     }
     return [
       createRow([12], [

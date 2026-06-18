@@ -177,6 +177,71 @@ renderers via `getRendererContext()`: `renderSelectOption`, `renderDropdownItem`
 
 ---
 
+## Context do Renderer (`getRendererContext()`)
+
+Cada renderer recebe um objeto `context` montado por `getRendererContext()` em `builder.js`.
+Todos os helpers abaixo estao disponíveis dentro de qualquer arquivo em `assets/js/renderers/`.
+
+### Escapamento e atributos
+
+| Helper | Assinatura resumida | O que faz |
+|---|---|---|
+| `escapeHtml` | `(str)` | Escapa `< > & " '` para HTML |
+| `escapeAttr` | `(str)` | Escapa para uso dentro de atributos |
+| `attr` | `(name, value)` | Retorna ` name="valor"` ou `""` se vazio |
+| `classAttr` | `(cls)` | Retorna ` class="cls"` ou `""` se vazio |
+
+### Classes CSS
+
+| Helper | O que faz |
+|---|---|
+| `getComponentClass(component)` | Classe CSS do componente: o que o usuario digitou ou o `defaultCssClass` |
+| `mergeClassNames(a, b, ...)` | Junta classes com espaco, ignorando valores falsy |
+
+### IDs e conversoes
+
+| Helper | O que faz |
+|---|---|
+| `sanitizeElementId(value, fallback)` | Retorna `value` se valido; senao `fallback` |
+| `toBooleanValue(value)` | Converte `"true"/"false"/true/false/1/0` para boolean |
+
+### Icones e botoes
+
+| Helper | O que faz |
+|---|---|
+| `renderTablerIcon(name, color)` | HTML do icone Tabler ou `""` |
+| `renderButtonContent(text, icon, pos, color)` | Interior de botao (texto + icone posicionado) |
+| `getSafeButtonType(value)` | Valida e retorna `"button"`, `"submit"` ou `"reset"` |
+| `fieldListActionAttr(value)` | Atributo `data-fieldlist-action` para botoes de FieldList |
+
+### Formulario
+
+| Helper | O que faz |
+|---|---|
+| `renderFormLabel(label, required)` | HTML do `<label>` (com asterisco se required) |
+| `renderHelpText(props)` | HTML do texto de ajuda (`props.help`) |
+| `renderRequiredMark(props)` | Asterisco `<span class="text-danger">` se `props.required` |
+| `renderValidationFeedback(props)` | HTML dos feedbacks `is-valid`/`is-invalid` |
+| `renderInputAttributes(options)` | Todos os atributos HTML de um `<input>` (id, name, type, ...) |
+| `getValidationClass(props)` | Retorna `"is-valid"`, `"is-invalid"` ou `""` |
+| `renderCustomAttributes(attrs)` | Monta atributos da lista `customAttributes` |
+
+### Indentacao
+
+| Helper | O que faz |
+|---|---|
+| `indent(html, spaces)` | Indenta cada linha com N espacos (para HTML exportado legivel) |
+
+### Selects e listas
+
+| Helper | O que faz |
+|---|---|
+| `renderSelectOption(value, text, selected)` | `<option>` com `selected` se necessario |
+| `parseOptions(value)` | Converte string ou objeto em array de `[value, text]` |
+| `parseChoiceItems(value)` | Normaliza lista de itens de checkbox/radio |
+
+---
+
 ## Regras de Ouro para Nao Quebrar o Builder
 
 1. **Nao altere `state` diretamente fora de `builder.js`** — use o contexto

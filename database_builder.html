@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Database Designer — Template Builder</title>
+  <title>Database Designer — DEV STUDIO BUILDER</title>
   <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
   <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="public/tabler/css/custom.css">
   <link rel="stylesheet" href="assets/css/builder.css?v=14">
   <link rel="stylesheet" href="assets/css/database-builder.css?v=3">
+  <link rel="stylesheet" href="public/tema/tema.css">
 </head>
 <body class="layout-fluid" data-page="database-designer">
   <script src="public/tabler/js/tabler-theme.js"></script>
@@ -37,6 +38,8 @@
           <option value="firebird">Firebird</option>
           <option value="oracle">Oracle</option>
         </select>
+        <button type="button" id="btn-undo" class="tool-button btn btn-icon btn-outline-secondary" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">&#8630;</button>
+        <button type="button" id="btn-redo" class="tool-button btn btn-icon btn-outline-secondary" title="Refazer (Ctrl+Y)" aria-label="Refazer">&#8631;</button>
         <button type="button" id="btn-new-table" class="tool-button text btn btn-primary">Nova Tabela</button>
         <button type="button" id="btn-new-view" class="tool-button text btn btn-outline-teal">Nova View</button>
         <button type="button" id="btn-new-trigger" class="tool-button text btn btn-outline-purple">Nova Trigger</button>
@@ -105,6 +108,6 @@
     </form>
   </dialog>
 
-  <script src="assets/js/database-builder.js?v=4"></script>
+  <script src="assets/js/database-builder.js?v=5"></script>
 </body>
 </html>

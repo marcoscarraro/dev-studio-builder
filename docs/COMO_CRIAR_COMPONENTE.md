@@ -139,6 +139,7 @@ Tipos suportados em `properties`:
 - `attributes`
 - `repeater`
 - `matrix`
+- `code-info`
 
 Exemplo com select:
 
@@ -286,6 +287,57 @@ nenhum erro no console. Caso real: o Dropzone renderizava `<form class="dropzone
 trocado por `<div class="dropzone">` (a lib aceita qualquer elemento) com a URL em
 `data-dropzone-url`.
 
+## Regras Criticas
+
+### Nunca altere `id` ou `kind` em componentes existentes
+
+O `id` e o `kind` de um componente sao salvos no JSON de cada projeto do usuario.
+Alterar qualquer um deles depois que projetos foram salvos faz o builder nao reconhecer
+mais o componente — ele some da pagina ao carregar.
+
+- `id`: mude so o `label` se quiser renomear o que aparece na paleta.
+- `kind`: define qual renderer e usado; se o kind mudar, o componente quebra em
+  projetos existentes.
+
+### Classes CSS dinamicas — quando usar qual padrao
+
+**Padrao simples (maioria dos componentes):** use `cssClassAttr` diretamente no
+elemento raiz. O valor ja vem processado (defaultCssClass ou o que o usuario digitou).
+
+```js
+return `<div${cssClassAttr}>...</div>`;
+```
+
+**Padrao de override** (quando a classe e montada a partir de props logicas como
+variante, tamanho, outline): verifique se o usuario ja customizou antes de sobrescrever.
+
+```js
+let cls;
+if (component.props && component.props.cssClass !== undefined) {
+  return `<button${cssClassAttr}>...</button>`;  // respeita o usuario
+}
+const variant = props.variant || "primary";
+cls = `btn btn-${variant}`;
+return `<button${context.classAttr(cls)}>...</button>`;
+```
+
+**Padrao de extensao** (quando a classe base existe mas precisa de modificadores
+opcionais como alinhamento ou estado): parta de `getComponentClass` e adicione com
+`mergeClassNames`.
+
+```js
+let cls = context.getComponentClass(component);         // base
+if (props.align) cls = context.mergeClassNames(cls, props.align);
+return `<p${context.classAttr(cls)}>...</p>`;
+```
+
+### `showWhen` so suporta `equals` (sem "not equals")
+
+O campo condicional `showWhen: { prop: "x", equals: v }` faz um campo aparecer
+QUANDO outra prop TEM o valor especificado. Nao ha suporte a "diferente de" ou
+comparacoes de range. Se precisar mostrar um campo quando outra prop NENHUM VALOR,
+a alternativa e sempre exibir o campo (sem `showWhen`).
+
 ## Erros Comuns
 
 - Esquecer de carregar o renderer no `index.html`.
@@ -294,4 +346,6 @@ trocado por `<div class="dropzone">` (a lib aceita qualquer elemento) com a URL 
 - Editar `components.json` e deixar JSON invalido.
 - Colocar JS de runtime dentro do renderer.
 - Colocar comportamento da pagina exportada dentro de `builder.js`.
+- Alterar `id` ou `kind` de um componente existente (quebra projetos salvos).
+- Usar `showWhen` tentando negar uma condicao — o sistema so suporta igualdade.
 

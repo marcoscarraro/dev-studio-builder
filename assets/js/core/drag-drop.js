@@ -8,6 +8,8 @@
   // bindCanvas: vincula dragover, dragleave, drop, click e dragstart
   //   nas tres superficies editaveis (header, canvas, footer).
   function bindCanvas(context) {
+    bindEditingSurface(context, context.els.pageNavbar);
+    bindEditingSurface(context, context.els.pageSidebar);
     bindEditingSurface(context, context.els.pageHeader);
     bindEditingSurface(context, context.els.canvas);
     bindEditingSurface(context, context.els.pageFooter);
@@ -109,7 +111,7 @@
 
     event.preventDefault();
 
-    if (target.dataset.dropZone === "page" || target.dataset.dropZone === "header" || target.dataset.dropZone === "footer") {
+    if (target.dataset.dropZone === "page" || target.dataset.dropZone === "header" || target.dataset.dropZone === "footer" || target.dataset.dropZone === "navbar" || target.dataset.dropZone === "sidebar") {
       dropOnSection(context, target, event);
     }
 
@@ -271,7 +273,7 @@
       return false;
     }
 
-    if (target.dataset.dropZone === "page" || target.dataset.dropZone === "header" || target.dataset.dropZone === "footer") {
+    if (target.dataset.dropZone === "page" || target.dataset.dropZone === "header" || target.dataset.dropZone === "footer" || target.dataset.dropZone === "navbar" || target.dataset.dropZone === "sidebar") {
       return true;
     }
 

@@ -26,6 +26,17 @@
     } else {
       footer = "";
     }
+
+    const menuLayout = context.state.page.props.menuLayout || "none";
+    const menuTheme = context.state.page.props.menuTheme || "dark";
+    const menuPosition = context.state.page.props.menuPosition || "left";
+    const themeAttr = menuTheme === "dark" ? ' data-bs-theme="dark"' : "";
+    const hasSidebar = menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const hasNavbar = menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const isPillLayout = menuLayout === "combo-pill";
+    const sidebarHtml = hasSidebar ? (isPillLayout ? exportIconSidebar(context) : exportSidebar(context, menuPosition, themeAttr)) : "";
+    const navbarHtml = hasNavbar ? (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr)) : "";
+
     const title = context.escapeHtml(context.state.page.props.title || "Pagina");
     const lines = [
       "<!doctype html>",
@@ -37,12 +48,21 @@
       `  <title>${title}</title>`,
       ...[renderFaviconAsset(context, assets.favicon)].filter(Boolean).map((line) => `  ${line}`),
       ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
+      ...(isPillLayout ? ['  <link rel="stylesheet" href="public/components/css/pill-layout.css">'] : []),
       "</head>",
       '<body class="layout-fluid">',
       ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
-      '  <div class="page">',
-      '    <div class="page-wrapper">'
+      '  <div class="page">'
     ];
+
+    if (sidebarHtml) {
+      lines.push(context.indent(sidebarHtml, 4));
+    }
+    if (navbarHtml) {
+      lines.push(context.indent(navbarHtml, 4));
+    }
+
+    lines.push('    <div class="page-wrapper">');
 
     if (header) {
       lines.push(
@@ -92,12 +112,271 @@
       lines.push("  </script>");
     }
 
+    if (isPillLayout) {
+      lines.push('  <script src="public/components/js/pill-layout.js" defer></script>');
+    }
+
     lines.push(
       "</body>",
       "</html>"
     );
 
     return lines.join("\n");
+  }
+
+  function exportSidebar(context, position, themeAttr) {
+    const posClass = position === "right" ? " navbar-end" : "";
+    const sidebarWidth = context.state.page.props.menuSidebarWidth || "normal";
+    const widthClass = sidebarWidth === "compact" ? " navbar-vertical-sm" : "";
+    const items = exportMenuItems(context, context.state.page.sidebar);
+    return [
+      `<aside class="navbar navbar-vertical navbar-expand-lg${posClass}${widthClass}"${themeAttr}>`,
+      '  <div class="container-xl">',
+      '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">',
+      '      <span class="navbar-toggler-icon"></span>',
+      '    </button>',
+      '    <div class="collapse navbar-collapse" id="sidebar-menu">',
+      '      <ul class="navbar-nav pt-lg-3">',
+      items ? context.indent(items, 8) : '',
+      '      </ul>',
+      '    </div>',
+      '  </div>',
+      '</aside>'
+    ].filter((line) => line !== '').join("\n");
+  }
+
+  function exportNavbar(context, themeAttr) {
+    const sticky = context.toBooleanValue(context.state.page.props.menuSticky);
+    const stickyClass = sticky ? " navbar-sticky" : "";
+    const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav flex-row order-md-no-order");
+    return [
+      `<header class="navbar navbar-expand-md d-print-none${stickyClass}"${themeAttr}>`,
+      '  <div class="container-xl">',
+      '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">',
+      '      <span class="navbar-toggler-icon"></span>',
+      '    </button>',
+      '    <div class="collapse navbar-collapse" id="navbar-menu">',
+      navContent ? context.indent(navContent, 6) : '',
+      '    </div>',
+      '  </div>',
+      '</header>'
+    ].filter((line) => line !== '').join("\n");
+  }
+
+  function exportMenuItems(context, rows) {
+    if (!Array.isArray(rows) || !rows.length) {
+      return "";
+    }
+    const lines = [];
+    rows.forEach((row) => {
+      if (!Array.isArray(row.columns)) return;
+      row.columns.forEach((column) => {
+        if (!Array.isArray(column.children)) return;
+        column.children.forEach((component) => {
+          lines.push(exportMenuComponent(context, component));
+        });
+      });
+    });
+    return lines.filter(Boolean).join("\n");
+  }
+
+  function hasMultiColumnRows(rows) {
+    return Array.isArray(rows) && rows.some(function (r) {
+      return Array.isArray(r.columns) && r.columns.length > 1;
+    });
+  }
+
+  // Returns complete <ul class="navbar-nav"> section(s) for navbar export.
+  // For single-column-only rows: one <ul singleGroupClass>all items</ul>.
+  // For rows with multiple columns: one <ul navbar-nav> per column, with
+  // me-auto / mx-auto alignment so they spread left / center / right.
+  function exportMenuNavSections(context, rows, singleGroupClass) {
+    if (!Array.isArray(rows) || !rows.length) return "";
+
+    if (!hasMultiColumnRows(rows)) {
+      const items = exportMenuItems(context, rows);
+      return items ? `<ul class="${singleGroupClass}">\n${items}\n</ul>` : "";
+    }
+
+    // Multi-column mode: collect sections
+    var sections = [];
+
+    rows.forEach(function (row) {
+      if (!Array.isArray(row.columns)) return;
+
+      if (row.columns.length === 1) {
+        var items = (row.columns[0].children || [])
+          .map(function (c) { return exportMenuComponent(context, c); })
+          .filter(Boolean).join("\n");
+        if (!items) return;
+        var last = sections[sections.length - 1];
+        if (last && last.type === "single") {
+          last.items += "\n" + items;
+        } else {
+          sections.push({ type: "single", items: items });
+        }
+      } else {
+        var colItems = row.columns.map(function (col) {
+          return (col.children || [])
+            .map(function (c) { return exportMenuComponent(context, c); })
+            .filter(Boolean).join("\n");
+        });
+        sections.push({ type: "columns", colItems: colItems });
+      }
+    });
+
+    var parts = [];
+    sections.forEach(function (section) {
+      if (section.type === "single") {
+        parts.push("<ul class=\"navbar-nav\">\n" + section.items + "\n</ul>");
+      } else {
+        var count = section.colItems.length;
+        section.colItems.forEach(function (items, i) {
+          var cls;
+          if (i === 0) cls = "navbar-nav me-auto";
+          else if (i === count - 1) cls = "navbar-nav";
+          else cls = "navbar-nav mx-auto";
+          parts.push("<ul class=\"" + cls + "\">\n" + (items || "") + "\n</ul>");
+        });
+      }
+    });
+
+    return parts.join("\n");
+  }
+
+  function exportMenuComponent(context, component) {
+    const esc = context.escapeAttr;
+    const html = context.escapeHtml;
+
+    if (component.type === "menu-item") {
+      const props = component.props || {};
+      const label = html(props.label || "Item");
+      const href = esc(props.href || "#");
+      const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+      const iconHtml = props.icon
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+        : "";
+      return [
+        '<li class="nav-item">',
+        `  <a class="nav-link" href="${href}"${target}>${iconHtml}<span class="nav-link-title">${label}</span></a>`,
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-dropdown") {
+      const props = component.props || {};
+      const label = html(props.label || "Dropdown");
+      const iconHtml = props.icon
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+        : "";
+      const items = Array.isArray(props.items) ? props.items : [];
+      const subItemsHtml = items.map((item) => {
+        const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+        const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+        const itemIconHtml = itemIconUrl
+          ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
+          : "";
+        return `  <a class="dropdown-item d-flex align-items-center" href="${esc(item.href || "#")}"${itemTarget}>${itemIconHtml}${html(item.label || "")}</a>`;
+      }).join("\n");
+      const dropdownId = `dd-${component.id}`;
+      return [
+        '<li class="nav-item dropdown">',
+        `  <a class="nav-link dropdown-toggle" href="#${dropdownId}" data-bs-toggle="dropdown" role="button" aria-expanded="false">`,
+        `    ${iconHtml}<span class="nav-link-title">${label}</span>`,
+        '  </a>',
+        `  <div class="dropdown-menu" id="${dropdownId}">`,
+        subItemsHtml,
+        '  </div>',
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-divider") {
+      return '<li class="nav-item"><hr class="navbar-divider my-2"></li>';
+    }
+
+    if (component.type === "menu-label") {
+      const props = component.props || {};
+      const label = html(props.label || "");
+      return `<li class="nav-item"><span class="nav-link nav-link-title text-uppercase" style="font-size:.65em;opacity:.7">${label}</span></li>`;
+    }
+
+    if (component.type === "menu-brand") {
+      const props = component.props || {};
+      const text = html(props.text || "Marca");
+      const href = esc(props.href || "#");
+      const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+      const logoUrl = esc(props.logoUrl || "");
+      const imgHtml = logoUrl
+        ? `<img src="${logoUrl}" alt="${text}" class="navbar-brand-image" style="max-height:36px">`
+        : "";
+      return `<div class="navbar-brand navbar-brand-autodark"><a href="${href}"${target}>${imgHtml}<span class="navbar-brand-text">${text}</span></a></div>`;
+    }
+
+    if (component.type === "menu-badge-item") {
+      const props = component.props || {};
+      const label = html(props.label || "Item");
+      const href = esc(props.href || "#");
+      const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+      const badgeText = html(props.badgeText || "");
+      const badgeColor = esc(props.badgeColor || "red");
+      const iconHtml = props.icon
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+        : "";
+      const badgeHtml = badgeText ? `<span class="badge bg-${badgeColor} ms-auto badge-sm">${badgeText}</span>` : "";
+      return [
+        '<li class="nav-item">',
+        `  <a class="nav-link d-flex align-items-center" href="${href}"${target}>${iconHtml}<span class="nav-link-title">${label}</span>${badgeHtml}</a>`,
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-user") {
+      const props = component.props || {};
+      const name = html(props.name || "Usuario");
+      const role = html(props.role || "");
+      const avatarUrl = esc(props.avatarUrl || "");
+      const initials = html((props.avatarInitials || (props.name || "U").substring(0, 2)).toUpperCase());
+      const color = esc(props.avatarColor || "blue");
+      const items = Array.isArray(props.items) ? props.items : [];
+      const avatarHtml = avatarUrl
+        ? `<span class="avatar avatar-sm" style="background-image:url('${avatarUrl}')"></span>`
+        : `<span class="avatar avatar-sm bg-${color}-lt">${initials}</span>`;
+      const subItemsHtml = items.map((item) => {
+        return `    <a class="dropdown-item" href="${esc(item.href || "#")}">${html(item.label || "")}</a>`;
+      }).join("\n");
+      const dropdownId = `user-dd-${component.id}`;
+      return [
+        '<li class="nav-item dropdown">',
+        `  <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">`,
+        `    ${avatarHtml}`,
+        `    <div class="d-none d-xl-block"><div style="font-weight:600">${name}</div>${role ? `<div class="small text-secondary">${role}</div>` : ""}</div>`,
+        `  </a>`,
+        `  <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" id="${dropdownId}">`,
+        subItemsHtml,
+        `  </div>`,
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-search") {
+      const props = component.props || {};
+      const placeholder = esc(props.placeholder || "Buscar...");
+      return [
+        '<li class="nav-item">',
+        '  <div class="input-icon">',
+        `    <input type="search" class="form-control form-control-sm" placeholder="${placeholder}">`,
+        '    <span class="input-icon-addon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/></svg></span>',
+        '  </div>',
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-spacer") {
+      return '<li class="nav-item flex-fill"></li>';
+    }
+
+    return "";
   }
 
   function exportRow(context, row) {
@@ -494,6 +773,183 @@
     return rows.some((row) => {
       return row.columns.some((column) => column.children.length > 0);
     });
+  }
+
+  // === LAYOUT COMBO-PILL: navbar flutuante (pill) + sidebar de icones ===
+
+  function exportPillNavbar(context, themeAttr) {
+    const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav me-auto");
+    const mobileModules = exportMobileSidebarItems(context, context.state.page.sidebar);
+    const mobileSection = mobileModules
+      ? [
+          '      <div class="app-mobile-modules d-md-none">',
+          '        <div class="app-mobile-modules-label">Menu</div>',
+          '        <ul class="navbar-nav">',
+          context.indent(mobileModules, 10),
+          '        </ul>',
+          '      </div>'
+        ].join("\n")
+      : '';
+    return [
+      `<header class="navbar navbar-expand-md app-pill-navbar d-print-none"${themeAttr}>`,
+      '  <div class="container-fluid">',
+      '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#pillNavOffcanvas" aria-controls="pillNavOffcanvas" aria-expanded="false" aria-label="Abrir menu">',
+      '      <span class="navbar-toggler-icon"></span>',
+      '    </button>',
+      '    <div class="offcanvas offcanvas-start offcanvas-md" tabindex="-1" id="pillNavOffcanvas" aria-labelledby="pillNavOffcanvasLabel">',
+      '      <div class="offcanvas-header d-md-none">',
+      '        <span class="offcanvas-title fw-bold" id="pillNavOffcanvasLabel">Menu</span>',
+      '        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#pillNavOffcanvas" aria-label="Fechar"></button>',
+      '      </div>',
+      '      <div class="offcanvas-body">',
+      navContent ? context.indent(navContent, 8) : '',
+      mobileSection,
+      '      </div>',
+      '    </div>',
+      '  </div>',
+      '</header>'
+    ].filter((line) => line !== '').join("\n");
+  }
+
+  function exportMobileSidebarItems(context, rows) {
+    if (!Array.isArray(rows) || !rows.length) return "";
+    const esc = context.escapeAttr;
+    const html = context.escapeHtml;
+    const lines = [];
+    rows.forEach((row) => {
+      if (!Array.isArray(row.columns)) return;
+      row.columns.forEach((column) => {
+        if (!Array.isArray(column.children)) return;
+        column.children.forEach((component) => {
+          const props = component.props || {};
+          if (component.type === "menu-item") {
+            const label = html(props.label || "Item");
+            const href = esc(props.href || "#");
+            const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+            const iconUrl = `public/tabler/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+            lines.push(
+              '<li class="nav-item">',
+              `  <a class="nav-link" href="${href}"${target}>`,
+              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
+              `    <span class="nav-link-title">${label}</span>`,
+              '  </a>',
+              '</li>'
+            );
+          } else if (component.type === "menu-dropdown") {
+            const label = html(props.label || "Dropdown");
+            const iconUrl = `public/tabler/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+            const subItems = Array.isArray(props.items) ? props.items : [];
+            const dropId = `mob-drop-${Math.random().toString(36).slice(2, 8)}`;
+            const subHtml = subItems.map((item) => {
+              const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+              const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+              const itemIconHtml = itemIconUrl
+                ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
+                : "";
+              return `    <a class="dropdown-item d-flex align-items-center" href="${esc(item.href || "#")}"${itemTarget}>${itemIconHtml}${html(item.label || "")}</a>`;
+            }).join("\n");
+            lines.push(
+              '<li class="nav-item dropdown">',
+              `  <a class="nav-link dropdown-toggle" href="#${dropId}" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">`,
+              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
+              `    <span class="nav-link-title">${label}</span>`,
+              '  </a>',
+              `  <div class="dropdown-menu" data-bs-theme="light">`,
+              subHtml,
+              '  </div>',
+              '</li>'
+            );
+          } else if (component.type === "menu-divider") {
+            lines.push('<li class="nav-item"><hr class="dropdown-divider my-1"></li>');
+          } else if (component.type === "menu-label") {
+            lines.push(`<li class="nav-item"><span class="nav-link text-uppercase small fw-bold text-secondary" style="font-size:.65rem;letter-spacing:.06em">${html(props.label || "")}</span></li>`);
+          }
+        });
+      });
+    });
+    return lines.join("\n");
+  }
+
+  function exportIconSidebar(context) {
+    const rows = context.state.page.sidebar;
+    const items = exportIconSidebarItems(context, rows);
+    return [
+      '<aside class="app-icon-sidebar" id="appIconSidebar">',
+      '  <ul class="side-nav">',
+      items ? context.indent(items, 4) : '',
+      '  </ul>',
+      '</aside>'
+    ].filter((line) => line !== '').join("\n");
+  }
+
+  function makeSideIconHtml(iconName, esc) {
+    const name = esc((iconName || "circle").replace(/[^A-Za-z0-9_-]/g, ""));
+    const url = `public/tabler/icons/outline/${name}.svg`;
+    return `<span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span></span>`;
+  }
+
+  function exportIconSidebarItems(context, rows) {
+    if (!Array.isArray(rows) || !rows.length) return "";
+    const esc = context.escapeAttr;
+    const html = context.escapeHtml;
+    const caretSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>';
+    const lines = [];
+
+    rows.forEach((row) => {
+      if (!Array.isArray(row.columns)) return;
+      row.columns.forEach((column) => {
+        if (!Array.isArray(column.children)) return;
+        column.children.forEach((component) => {
+          const props = component.props || {};
+
+          if (component.type === "menu-item") {
+            const label = html(props.label || "Item");
+            const href = esc(props.href || "#");
+            const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+            const iconHtml = makeSideIconHtml(props.icon, esc);
+            lines.push(
+              '<li class="side-item">',
+              `  <a class="side-link" href="${href}"${target} data-leaf data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `    ${iconHtml}`,
+              `    <span class="side-text">${label}</span>`,
+              '  </a>',
+              '</li>'
+            );
+          } else if (component.type === "menu-dropdown") {
+            const label = html(props.label || "Dropdown");
+            const iconHtml = makeSideIconHtml(props.icon, esc);
+            const subItems = Array.isArray(props.items) ? props.items : [];
+            const subHtml = subItems.map((item) => {
+              const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+              const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+              const itemIconHtml = itemIconUrl
+                ? `<span class="button-icon me-1" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
+                : "";
+              return `  <li><a class="side-sublink" href="${esc(item.href || "#")}"${itemTarget} data-leaf>${itemIconHtml}${html(item.label || "")}</a></li>`;
+            }).join("\n");
+            lines.push(
+              '<li class="side-item">',
+              `  <a class="side-link" href="#" data-sub data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `    ${iconHtml}`,
+              `    <span class="side-text">${label}</span>`,
+              `    <span class="side-caret">${caretSvg}</span>`,
+              '  </a>',
+              '  <ul class="side-sub">',
+              subHtml,
+              '  </ul>',
+              '</li>'
+            );
+          } else if (component.type === "menu-divider") {
+            lines.push('<li class="side-item"><hr style="margin:.4rem 0;opacity:.15"></li>');
+          } else if (component.type === "menu-label") {
+            const label = html(props.label || "");
+            lines.push(`<li class="side-item"><span class="side-text" style="font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;opacity:.6;padding:.4rem .6rem;display:block">${label}</span></li>`);
+          }
+        });
+      });
+    });
+
+    return lines.join("\n");
   }
 
   window.TemplateBuilderExportHtml = {

@@ -68,43 +68,76 @@ Editor visual baseado no ecossistema do Template Tabler.
 
 ### Componentes Disponíveis
 
-Mais de 20 componentes prontos para uso:
+Mais de 55 componentes prontos para uso:
 
-* Containers
-* Rows
-* Columns
-* Cards
-* Formulários
-* Inputs
-* Selects
-* Textareas
-* Checkboxes
-* Radios
-* Botões
-* Tabelas
-* Alertas
-* Badges
-* Modais
-* Tabs
+**Layout**
+* Form Container
+* Card / Card Personalizado
+* Divisor de Seção
+* Page Header
+
+**Conteúdo**
+* Título (H1–H3, com pretitle e alinhamento)
+* Parágrafo (alinhamento, muted)
+* Imagem (forma, lazy, link)
+* Lista (ordenada/não-ordenada, list-group, flush)
+* Badge (variante, pill, outline)
+* Alert
+* Progress Bar
+* Spinner
+* Avatar
+* Stat Card (KPI visual)
+* Empty State
+* Callout
+* Timeline
+* Stepper
+* Skeleton (placeholder animado)
+* KPI / Info KPI (ícone, tendência)
+* Tabela (striped, hover, bordered, responsive, thead/tfoot configuráveis)
+
+**Formulário**
+* Campo Texto (prefix/suffix addon, máscara, toggle senha)
+* Número
+* Textarea
+* Select
+* Checkbox / Radio / Switch
+* Floating Label Input
+* Rating (estrelas interativas)
+* Separated Input
+* Input com Ícone
+* Quantity Stepper
+* Payment Method
+
+**Interação**
+* Botão (variante, outline, tamanho, disabled, link)
+* Grupo de Botões
+* Button Dropdown
+* Input + Botão (AJAX Fill)
+* Input + Select
+* Modal (com trigger)
+* Offcanvas (com trigger e ID gerado)
+* Tabs (com badge por aba)
 * Accordion
 * Breadcrumb
-* Navbar
-* Títulos
-* Parágrafos
-* Divisores
 
-### Componentes Avançados
+**Navegação**
+* Navbar / Sidebar (sistema de menus visuais)
+* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer
 
-* DataTable
-* Tom Select
+**Avançados**
+* DataTable (client-side, AJAX, server-side, seleção por checkbox)
+* Tom Select / Tags Input (busca remota server-side)
 * Litepicker
-* ApexCharts
+* ApexCharts (linha, barra, pizza, donut, área...)
 * FullCalendar
 * Dropzone Upload
+* Rich Text Editor (HugeRTE)
 * Signature Pad
 * Máscaras de Entrada
 * Toggle de Senha
-* Listas Dinâmicas (FieldList)
+* Listas Dinâmicas (FieldList com runtime)
+* Script JS (jQuery com templates)
+* HTML Raw
 
 ---
 
@@ -448,4 +481,4 @@ Obrigado por apoiar o software livre e o desenvolvimento open source.
 ![License](https://img.shields.io/github/license/marcoscarraro/dev-studio-builder)
 ![Stars](https://img.shields.io/github/stars/marcoscarraro/dev-studio-builder)
 ![Issues](https://img.shields.io/github/issues/marcoscarraro/dev-studio-builder)
-![Version](https://img.shields.io/badge/version-MVP-blue)
+![Version](https://img.shields.io/badge/version-Vers%C3%A3o%201-blue)

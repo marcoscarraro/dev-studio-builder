@@ -5,13 +5,18 @@
 
   function renderHeadingComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};
-    let level;
-    if (["h1", "h2", "h3"].includes(props.level)) {
-      level = props.level;
-    } else {
-      level = "h2";
+    const level = ["h1", "h2", "h3"].includes(props.level) ? props.level : "h2";
+    const align = props.align || "";
+    const subtitle = props.subtitle || "";
+
+    const baseClass = context.getComponentClass(component);
+    const headingClass = align ? context.mergeClassNames(baseClass, align) : baseClass;
+    const heading = `<${level}${context.classAttr(headingClass)}>${context.escapeHtml(props.text || "Titulo")}</${level}>`;
+
+    if (subtitle) {
+      return `<div><div class="page-pretitle">${context.escapeHtml(subtitle)}</div>${heading}</div>`;
     }
 
-    return `<${level}${cssClassAttr}>${context.escapeHtml(props.text || "Titulo")}</${level}>`;
+    return heading;
   }
 }());

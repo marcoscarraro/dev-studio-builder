@@ -145,6 +145,23 @@
     }
 
     const action = button.dataset.propertyAction;
+
+    if (action === "copy-code-info") {
+      const textarea = button.closest(".field").querySelector("textarea");
+      if (textarea) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textarea.value).catch(() => {
+            textarea.select();
+            document.execCommand("copy");
+          });
+        } else {
+          textarea.select();
+          document.execCommand("copy");
+        }
+      }
+      return;
+    }
+
     if (action === "duplicate") {
       context.duplicateSelected();
     }
@@ -222,6 +239,11 @@
     }
 
     node.props[field.dataset.prop] = value;
+
+    // Sincroniza page-name com o titulo da pagina (rerenderAfterPropertyInput chama syncPageName)
+    if (node.type === "page" && field.dataset.prop === "title") {
+      node.name = value;
+    }
 
     // Checkbox pode controlar a visibilidade de outros campos (showWhen no
     // components.json): re-renderiza o painel inteiro para mostrar/esconder na hora.
@@ -302,6 +324,8 @@
   //   de propriedades) para nao perder o foco enquanto o usuario digita.
   // debounceHistory garante que um snapshot so e criado 300ms apos a ultima tecla.
   function rerenderAfterPropertyInput(context) {
+    context.renderPageNavbar();
+    context.renderPageSidebar();
     context.renderPageHeader();
     context.renderCanvas();
     context.renderPageFooter();

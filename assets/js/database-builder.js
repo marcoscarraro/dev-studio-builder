@@ -255,11 +255,12 @@
   // MODELO: COLUNA E TABELA (toSQL portado do original)
   // ============================================
   class Column {
-    constructor(id, name, type, size, isPK, isNotNull, isAI, defaultValue, comment) {
+    constructor(id, name, type, size, isPK, isNotNull, isAI, defaultValue, comment, isUnique) {
       this.id = id; this.name = name; this.type = type; this.size = size;
       this.isPK = isPK; this.isNotNull = isNotNull; this.isAI = isAI;
       this.defaultValue = defaultValue; this.comment = comment || "";
       this.isFK = false; this.fkRef = null;
+      this.isUnique = isUnique || false;
     }
 
     getSQLType() {
@@ -301,21 +302,35 @@
     toSQL() {
       const config = dbConfig[currentDatabase];
       const q = config.quotes;
-      let sql = `CREATE TABLE ${q}${this.name}${q} (\n`;
+      const parts = [];
       const cols = Object.values(this.columns);
-      const pkCols = cols.filter((c) => c.isPK && !c.isAI);
+      // SQLite auto-increment já emite PRIMARY KEY inline na coluna; demais bancos precisam da constraint.
+      const pkCols = cols.filter((c) => c.isPK && (currentDatabase !== "sqlite" || !c.isAI));
 
-      cols.forEach((col, idx) => {
-        sql += `  ${col.toSQL()}`;
-        if (idx < cols.length - 1 || pkCols.length > 0) sql += `,`;
-        sql += `\n`;
-      });
-      if (pkCols.length > 0) sql += `  PRIMARY KEY (${pkCols.map((c) => `${q}${c.name}${q}`).join(", ")}),\n`;
+      cols.forEach((col) => parts.push(`  ${col.toSQL()}`));
+
+      if (pkCols.length > 0) {
+        parts.push(`  PRIMARY KEY (${pkCols.map((c) => `${q}${c.name}${q}`).join(", ")})`);
+      }
 
       const tableIndexes = indexes.filter((idx) => idx.tableId === this.id);
       tableIndexes.forEach((idx) => {
         const idxColumns = idx.columns.map((colId) => `${q}${this.columns[colId]?.name}${q}`).join(", ");
-        if (idxColumns) sql += `  ${idx.type} ${q}${idx.name || `${idx.type}_${idxColumns.replace(/`/g, "")}`}${q} (${idxColumns}),\n`;
+        if (idxColumns) {
+          const idxType = (idx.type === "UNIQUE" && currentDatabase === "mysql") ? "UNIQUE KEY" : idx.type;
+          const autoName = `${idx.type}_${idxColumns.replace(/[`"[\]]/g, "")}`;
+          parts.push(`  ${idxType} ${q}${idx.name || autoName}${q} (${idxColumns})`);
+        }
+      });
+
+      // UNIQUE por coluna (checkbox "UNIQUE" no painel)
+      cols.filter((c) => c.isUnique && !c.isPK).forEach((col) => {
+        const uqName = `uq_${this.name}_${col.name}`;
+        if (currentDatabase === "mysql") {
+          parts.push(`  UNIQUE KEY ${q}${uqName}${q} (${q}${col.name}${q})`);
+        } else {
+          parts.push(`  CONSTRAINT ${q}${uqName}${q} UNIQUE (${q}${col.name}${q})`);
+        }
       });
 
       if (config.supportsFK) {
@@ -326,15 +341,15 @@
           const targetCol = target?.columns[fk.targetColumnId];
           if (sourceCol && targetCol) {
             const fkName = fk.name || `fk_${this.name}_${target.name}`;
-            sql += `  CONSTRAINT ${q}${fkName}${q} FOREIGN KEY (${q}${sourceCol.name}${q}) REFERENCES ${q}${target.name}${q}(${q}${targetCol.name}${q})`;
-            if (fk.onDelete && config.fkActions) sql += ` ON DELETE ${fk.onDelete}`;
-            if (fk.onUpdate && config.fkActions) sql += ` ON UPDATE ${fk.onUpdate}`;
-            sql += `,\n`;
+            let fkDef = `  CONSTRAINT ${q}${fkName}${q} FOREIGN KEY (${q}${sourceCol.name}${q}) REFERENCES ${q}${target.name}${q}(${q}${targetCol.name}${q})`;
+            if (fk.onDelete && config.fkActions) fkDef += ` ON DELETE ${fk.onDelete}`;
+            if (fk.onUpdate && config.fkActions) fkDef += ` ON UPDATE ${fk.onUpdate}`;
+            parts.push(fkDef);
           }
         });
       }
 
-      sql = sql.replace(/,\n$/, "\n") + `)`;
+      let sql = `CREATE TABLE ${q}${this.name}${q} (\n${parts.join(",\n")}\n)`;
       if (currentDatabase === "mysql") {
         sql += ` ENGINE=${this.engine} DEFAULT CHARSET=${this.charset}`;
         if (this.collation) sql += ` COLLATE=${this.collation}`;
@@ -723,6 +738,7 @@
       if (currentDatabase !== "sqlite") {
         body += fieldCheckbox("Auto Increment", "colAI", col.isAI, ` data-col-id="${col.id}"`);
       }
+      body += fieldCheckbox("UNIQUE", "colUnique", col.isUnique, ` data-col-id="${col.id}"`);
       body += "</div>";
       body += fieldInput("Valor padrao", "colDefault", col.defaultValue, ` data-col-id="${col.id}" placeholder="Ex: 0, 'ativo', CURRENT_TIMESTAMP"`);
       body += fieldInput("Comentario", "colComment", col.comment, ` data-col-id="${col.id}"`);
@@ -962,9 +978,119 @@
   }
 
   // ============================================
+  // HISTORICO (undo / redo)
+  // ============================================
+  const DB_HISTORY_LIMIT = 60;
+  let dbHistory = [];
+  let dbFuture = [];
+  let dbHistoryTimer = null;
+
+  function buildStateSnapshot() {
+    const data = {
+      tables: {}, views: {},
+      foreignKeys, indexes, triggers,
+      nextTableId, nextColumnId, nextFkId, nextIndexId, nextTriggerId, nextViewId,
+      databaseType: currentDatabase
+    };
+    Object.values(tables).forEach((table) => {
+      data.tables[table.id] = {
+        id: table.id, name: table.name, x: table.x, y: table.y,
+        comment: table.comment, engine: table.engine, charset: table.charset,
+        collation: table.collation, columns: {}
+      };
+      Object.values(table.columns).forEach((col) => {
+        data.tables[table.id].columns[col.id] = {
+          id: col.id, name: col.name, type: col.type, size: col.size,
+          isPK: col.isPK, isNotNull: col.isNotNull, isAI: col.isAI,
+          defaultValue: col.defaultValue, isFK: col.isFK, comment: col.comment, isUnique: col.isUnique
+        };
+      });
+    });
+    Object.values(views).forEach((view) => {
+      data.views[view.id] = {
+        id: view.id, name: view.name, mode: view.mode, sql: view.sql,
+        sourceTables: view.sourceTables, selectedColumns: view.selectedColumns,
+        joins: view.joins, where: view.where, orderBy: view.orderBy,
+        limit: view.limit, comment: view.comment, x: view.x, y: view.y
+      };
+    });
+    return JSON.stringify(data);
+  }
+
+  function applyStateSnapshot(snapshot) {
+    const data = JSON.parse(snapshot);
+    tables = {}; views = {};
+    foreignKeys = data.foreignKeys || [];
+    indexes = data.indexes || [];
+    triggers = data.triggers || [];
+    nextTableId = data.nextTableId || 1;
+    nextColumnId = data.nextColumnId || 1;
+    nextFkId = data.nextFkId || 1;
+    nextIndexId = data.nextIndexId || 1;
+    nextTriggerId = data.nextTriggerId || 1;
+    nextViewId = data.nextViewId || 1;
+    if (data.databaseType && els.databaseType) {
+      els.databaseType.value = data.databaseType;
+      currentDatabase = data.databaseType;
+    }
+    Object.values(data.tables).forEach((tData) => {
+      const table = new Table(tData.id, tData.name, tData.x, tData.y, tData.comment, tData.engine, tData.charset, tData.collation);
+      Object.values(tData.columns).forEach((cData) => {
+        const col = new Column(cData.id, cData.name, cData.type, cData.size, cData.isPK, cData.isNotNull, cData.isAI, cData.defaultValue, cData.comment, cData.isUnique);
+        col.isFK = cData.isFK || false;
+        table.addColumn(col);
+      });
+      tables[table.id] = table;
+    });
+    Object.values(data.views).forEach((vData) => {
+      views[vData.id] = new View(vData.id, vData.name, vData.mode, vData.sql, vData.sourceTables, vData.selectedColumns, vData.where, vData.orderBy, vData.limit, vData.comment, vData.x, vData.y, vData.joins);
+    });
+    selected = null;
+  }
+
+  function commitDbHistory() {
+    window.clearTimeout(dbHistoryTimer);
+    const snapshot = buildStateSnapshot();
+    if (dbHistory[dbHistory.length - 1] === snapshot) return;
+    dbHistory.push(snapshot);
+    if (dbHistory.length > DB_HISTORY_LIMIT) dbHistory.shift();
+    dbFuture = [];
+  }
+
+  function debounceDbHistory() {
+    window.clearTimeout(dbHistoryTimer);
+    dbHistoryTimer = window.setTimeout(commitDbHistory, 300);
+  }
+
+  function undoDb() {
+    if (dbHistory.length <= 1) return;
+    const current = dbHistory.pop();
+    dbFuture.push(current);
+    applyStateSnapshot(dbHistory[dbHistory.length - 1]);
+    afterModelChange({ rerenderPanel: true, skipHistory: true });
+    updateStatus("Desfeito");
+  }
+
+  function redoDb() {
+    if (!dbFuture.length) return;
+    const next = dbFuture.pop();
+    dbHistory.push(next);
+    applyStateSnapshot(next);
+    afterModelChange({ rerenderPanel: true, skipHistory: true });
+    updateStatus("Refeito");
+  }
+
+  // ============================================
   // EDICAO AO VIVO (listener delegado do painel)
   // ============================================
   function afterModelChange(options) {
+    if (options && options.skipHistory) {
+      // chamado por undo/redo — nao registrar nova entrada
+    } else if (options && options.debounce) {
+      debounceDbHistory();
+    } else {
+      commitDbHistory();
+    }
     renderDiagram();
     renderTableList();
     saveToLocalStorage();
@@ -1008,6 +1134,7 @@
           }
           col.isAI = field.checked;
         }
+        if (bind === "colUnique") col.isUnique = field.checked;
         if (bind === "colDefault") col.defaultValue = field.value;
         if (bind === "colComment") col.comment = field.value;
       }
@@ -1112,7 +1239,7 @@
       if (bind === "trgDesc") trg.description = field.value;
     }
 
-    afterModelChange({ rerenderPanel });
+    afterModelChange({ rerenderPanel, debounce: !rerenderPanel });
   }
 
   function handlePanelClick(event) {
@@ -1309,6 +1436,7 @@
     const table = new Table(id, `tabela_${id}`, 100 + Object.keys(tables).length * 50, 100 + Object.keys(tables).length * 30, "", "InnoDB", "utf8mb4", "utf8mb4_unicode_ci");
     table.addColumn(new Column(nextColumnId++, "id", typeMappings[currentDatabase][0].value, "", true, true, true, "", "ID"));
     tables[id] = table;
+    commitDbHistory();
     saveToLocalStorage();
     selectObject("table", id);
     updateStatus("Tabela criada — edite no painel");
@@ -1317,6 +1445,7 @@
   function createView() {
     const id = nextViewId++;
     views[id] = new View(id, `vw_view_${id}`, "builder", "", [], [], "", "", "", "", 100 + Object.keys(views).length * 50, 200);
+    commitDbHistory();
     saveToLocalStorage();
     selectObject("view", id);
     updateStatus("View criada — edite no painel");
@@ -1334,6 +1463,7 @@
       body: "", description: "",
       x: 1300 + (triggers.length % 3) * 320, y: 100 + Math.floor(triggers.length / 3) * 220
     });
+    commitDbHistory();
     saveToLocalStorage();
     selectObject("trigger", id);
     updateStatus("Trigger criada — edite no painel");
@@ -1534,7 +1664,7 @@
     Object.values(tables).forEach((table) => {
       data.tables[table.id] = { id: table.id, name: table.name, x: table.x, y: table.y, comment: table.comment, engine: table.engine, charset: table.charset, collation: table.collation, columns: {} };
       Object.values(table.columns).forEach((col) => {
-        data.tables[table.id].columns[col.id] = { id: col.id, name: col.name, type: col.type, size: col.size, isPK: col.isPK, isNotNull: col.isNotNull, isAI: col.isAI, defaultValue: col.defaultValue, isFK: col.isFK, comment: col.comment };
+        data.tables[table.id].columns[col.id] = { id: col.id, name: col.name, type: col.type, size: col.size, isPK: col.isPK, isNotNull: col.isNotNull, isAI: col.isAI, defaultValue: col.defaultValue, isFK: col.isFK, comment: col.comment, isUnique: col.isUnique };
       });
     });
     Object.values(views).forEach((view) => {
@@ -1565,7 +1695,7 @@
       Object.values(data.tables).forEach((tData) => {
         const table = new Table(tData.id, tData.name, tData.x, tData.y, tData.comment, tData.engine, tData.charset, tData.collation);
         Object.values(tData.columns).forEach((cData) => {
-          const col = new Column(cData.id, cData.name, cData.type, cData.size, cData.isPK, cData.isNotNull, cData.isAI, cData.defaultValue, cData.comment);
+          const col = new Column(cData.id, cData.name, cData.type, cData.size, cData.isPK, cData.isNotNull, cData.isAI, cData.defaultValue, cData.comment, cData.isUnique);
           col.isFK = cData.isFK || false;
           table.addColumn(col);
         });
@@ -1641,6 +1771,8 @@
     els.importLabel = document.getElementById("importDbLabel");
 
     // Topbar
+    document.getElementById("btn-undo").addEventListener("click", undoDb);
+    document.getElementById("btn-redo").addEventListener("click", redoDb);
     document.getElementById("btn-new-table").addEventListener("click", createTable);
     document.getElementById("btn-new-view").addEventListener("click", createView);
     document.getElementById("btn-new-trigger").addEventListener("click", createTrigger);
@@ -1672,16 +1804,25 @@
       if (e.target === els.diagram) clearSelection();
     });
 
-    // Ctrl+S salva manualmente (alem do save automatico a cada edicao)
+    // Atalhos de teclado
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
         saveToLocalStorage();
         updateStatus("Salvo");
       }
+      if (e.ctrlKey && !e.shiftKey && e.key === "z") {
+        e.preventDefault();
+        undoDb();
+      }
+      if ((e.ctrlKey && e.key === "y") || (e.ctrlKey && e.shiftKey && e.key === "z")) {
+        e.preventDefault();
+        redoDb();
+      }
     });
 
-    if (!loadFromLocalStorage()) loadSampleData();
+    loadFromLocalStorage();
+    commitDbHistory();
     renderDiagram();
     renderTableList();
     renderProps();

@@ -1,6 +1,6 @@
 {
   "$schema": "./components.schema.json",
-  "version": 26,
+  "version": 28,
   "schemaVersion": 5,
   "framework": "tabler",
   "assets": {
@@ -10,7 +10,8 @@
       "public/tabler/css/tabler.css",
       "public/tabler/css/tabler-vendors.css",
       "public/tabler/css/tabler-themes.css",
-      "public/tabler/css/custom.css"
+      "public/tabler/css/custom.css",
+      "public/tema/tema.css"
     ],
     "headScripts": [
       "public/tabler/js/tabler-theme.js"
@@ -65,6 +66,7 @@
     "inputValidation": {
       "group": "Validacao",
       "properties": [
+        { "label": "Template de expressao", "prop": "_patternPicker", "field": "pattern-picker" },
         { "label": "Expressao de validacao", "prop": "pattern", "field": "text", "placeholder": "Ex.: [A-Za-z0-9]+" },
         { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" }
       ]
@@ -251,7 +253,9 @@
             { "label": "ID do painel", "prop": "paneId", "field": "text", "default": "" },
             { "label": "Title do link", "prop": "linkTitle", "field": "text", "default": "" },
             { "label": "Classe CSS item nav", "prop": "navItemCssClass", "field": "text", "default": "" },
-            { "label": "Classe CSS link nav", "prop": "navLinkCssClass", "field": "text", "default": "" }
+            { "label": "Classe CSS link nav", "prop": "navLinkCssClass", "field": "text", "default": "" },
+            { "label": "Badge", "prop": "badge", "field": "text", "default": "" },
+            { "label": "Variante badge", "prop": "badgeVariant", "field": "select", "default": "secondary", "options": [["secondary", "secondary"], ["primary", "primary"], ["success", "success"], ["danger", "danger"], ["warning", "warning"], ["info", "info"]] }
           ]
         }
       ]
@@ -378,7 +382,7 @@
           "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
           "controlName": "campo_texto",
           "assets": { "init": "passwordToggle" },
-          "defaults": { "label": "Campo texto", "inputType": "text", "inputId": "", "name": "", "placeholder": "", "value": "", "minLength": "", "maxLength": "", "pattern": "", "customAttributes": [], "autocomplete": "", "showPasswordToggle": false, "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "defaults": { "label": "Campo texto", "inputType": "text", "inputId": "", "name": "", "placeholder": "", "value": "", "prefixText": "", "suffixText": "", "minLength": "", "maxLength": "", "pattern": "", "customAttributes": [], "autocomplete": "", "showPasswordToggle": false, "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
           "properties": [
             { "label": "Tipo", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["tel", "Telefone"], ["url", "URL"], ["search", "Busca"]] },
             { "label": "Mostrar botao olho", "prop": "showPasswordToggle", "field": "checkbox" },
@@ -390,7 +394,9 @@
             { "label": "Autocomplete", "prop": "autocomplete", "field": "text", "group": "Campo" },
             { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]], "group": "Campo" },
             { "label": "Mascara (data-mask)", "prop": "dataMask", "field": "text", "placeholder": "Ex: 00/00/0000", "group": "Mascara" },
-            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox", "group": "Mascara" }
+            { "label": "Exibir mascara", "prop": "dataMaskVisible", "field": "checkbox", "group": "Mascara" },
+            { "label": "Prefixo", "prop": "prefixText", "field": "text", "placeholder": "Ex: R$", "group": "Addon" },
+            { "label": "Sufixo", "prop": "suffixText", "field": "text", "placeholder": "Ex: %", "group": "Addon" }
           ]
         },
         {
@@ -432,7 +438,7 @@
         },
         {
           "id": "textarea",
-          "label": "Area texto",
+          "label": "Textarea",
           "kind": "textarea",
           "icon": "block-icon text-box",
           "defaultCssClass": "form-control",
@@ -449,7 +455,7 @@
         },
         {
           "id": "wysiwyg",
-          "label": "Editor WYSIWYG",
+          "label": "Rich Text Editor",
           "kind": "wysiwyg",
           "icon": "block-icon text-box",
           "defaultCssClass": "",
@@ -470,7 +476,7 @@
         },
         {
           "id": "select",
-          "label": "Selecao",
+          "label": "Select",
           "kind": "select",
           "icon": "block-icon select-box",
           "defaultCssClass": "form-select",
@@ -545,7 +551,7 @@
         },
         {
           "id": "color-picker",
-          "label": "Seletor de cor",
+          "label": "Color Picker",
           "kind": "input",
           "inputType": "color",
           "icon": "block-icon select-box",
@@ -583,7 +589,7 @@
         },
         {
           "id": "separated-input",
-          "label": "Input separado + acao",
+          "label": "Input com Acao",
           "kind": "separatedInput",
           "icon": "block-icon input-buttons",
           "defaultCssClass": "row g-2",
@@ -608,7 +614,7 @@
         },
         {
           "id": "help-input",
-          "label": "Input com ajuda",
+          "label": "Input com Tooltip",
           "kind": "helpInput",
           "icon": "block-icon text-line",
           "defaultCssClass": "row g-2",
@@ -628,7 +634,7 @@
         },
         {
           "id": "floating-input",
-          "label": "Input flutuante",
+          "label": "Floating Label Input",
           "kind": "floatingInput",
           "icon": "block-icon text-line",
           "defaultCssClass": "form-floating",
@@ -652,7 +658,7 @@
         },
         {
           "id": "selectgroup",
-          "label": "Selectgroup",
+          "label": "Select Group",
           "kind": "selectGroup",
           "icon": "block-icon check",
           "defaultCssClass": "form-selectgroup",
@@ -662,7 +668,7 @@
         },
         {
           "id": "payment-method",
-          "label": "Metodo de pagamento",
+          "label": "Payment Method",
           "kind": "paymentMethod",
           "icon": "block-icon card",
           "defaultCssClass": "form-selectgroup form-selectgroup-boxes d-flex flex-column",
@@ -680,7 +686,7 @@
         },
         {
           "id": "button-group",
-          "label": "Grupo de botoes",
+          "label": "Button Group",
           "kind": "buttonGroup",
           "icon": "block-icon button",
           "defaultCssClass": "btn-group w-100",
@@ -773,14 +779,19 @@
           "kind": "button",
           "icon": "block-icon button",
           "defaultCssClass": "button-preview btn btn-{{variant}}",
-          "defaults": { "text": "Botao", "icon": "", "iconColor": "", "iconPosition": "left", "variant": "primary", "align": "left", "buttonType": "button", "fieldListAction": "" },
+          "defaults": { "text": "Botao", "icon": "", "iconColor": "", "iconPosition": "left", "variant": "primary", "outline": false, "size": "", "align": "left", "buttonType": "button", "disabled": false, "href": "", "target": "", "fieldListAction": "" },
           "properties": [
             { "label": "Texto", "prop": "text", "field": "text" },
             { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
             { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
             { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] },
             { "label": "Tipo", "prop": "buttonType", "field": "select", "options": [["button", "Button"], ["submit", "Submit"], ["reset", "Reset"]] },
-            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"]] },
+            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"], ["light", "Claro"], ["dark", "Escuro"]] },
+            { "label": "Outline", "prop": "outline", "field": "checkbox" },
+            { "label": "Tamanho", "prop": "size", "field": "select", "options": [["", "Padrao"], ["btn-sm", "Pequeno"], ["btn-lg", "Grande"]] },
+            { "label": "Desabilitado", "prop": "disabled", "field": "checkbox" },
+            { "label": "Link (href)", "prop": "href", "field": "text" },
+            { "label": "Abrir em", "prop": "target", "field": "select", "options": [["", "Mesma aba"], ["_blank", "Nova aba"]] },
             { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["left", "Esquerda"], ["center", "Centro"], ["right", "Direita"]] },
             { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"]] }
           ]
@@ -857,7 +868,7 @@
         },
         {
           "id": "input-select-group",
-          "label": "Input + Select",
+          "label": "Input Select Group",
           "kind": "inputSelectGroup",
           "icon": "block-icon input-select",
           "defaultCssClass": "input-group",
@@ -891,6 +902,7 @@
             { "label": "Valor", "prop": "value", "field": "text" },
             { "label": "Placeholder", "prop": "placeholder", "field": "text" },
             { "label": "Posicao do select", "prop": "selectPosition", "field": "select", "options": [["right", "Direita"], ["left", "Esquerda"]] },
+            { "label": "Template de expressao", "prop": "_patternPicker", "field": "pattern-picker" },
             { "label": "Expressao de validacao", "prop": "pattern", "field": "text" },
             { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
             { "label": "Alinhamento", "prop": "textAlign", "field": "select", "options": [["", "Esquerda"], ["text-end", "Direita"]] },
@@ -915,7 +927,7 @@
         },
         {
           "id": "quantity-stepper",
-          "label": "Quantidade +/-",
+          "label": "Quantity Stepper",
           "kind": "quantityStepper",
           "icon": "block-icon quantity-stepper",
           "defaultCssClass": "input-group input-group-sm",
@@ -950,6 +962,7 @@
             { "label": "Minimo", "prop": "min", "field": "text" },
             { "label": "Step", "prop": "step", "field": "text" },
             { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "Template de expressao", "prop": "_patternPicker", "field": "pattern-picker" },
             { "label": "Expressao de validacao", "prop": "pattern", "field": "text" },
             { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes" },
             { "label": "Texto botao menos", "prop": "minusText", "field": "text" },
@@ -964,7 +977,7 @@
         },
         {
           "id": "input-button-group",
-          "label": "Input + Botoes",
+          "label": "Input Button Group",
           "kind": "inputButtonGroup",
           "icon": "block-icon input-buttons",
           "defaultCssClass": "input-group",
@@ -1029,6 +1042,26 @@
               ]
             },
             { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" }
+          ]
+        },
+        {
+          "id": "rating",
+          "label": "Rating",
+          "kind": "rating",
+          "icon": "block-icon star",
+          "defaultCssClass": "",
+          "controlName": "avaliacao",
+          "generatedFields": [
+            { "idProp": "name", "base": "rating" }
+          ],
+          "defaults": { "label": "Avaliacao", "name": "", "max": 5, "value": 3, "readonly": false, "color": "#f59f00" },
+          "properties": [
+            { "label": "Label", "prop": "label", "field": "text" },
+            { "label": "Nome (name)", "prop": "name", "field": "text" },
+            { "label": "Maximo de estrelas", "prop": "max", "field": "number", "min": 1, "max": 10 },
+            { "label": "Valor atual", "prop": "value", "field": "number", "min": 0, "max": 10 },
+            { "label": "Somente leitura", "prop": "readonly", "field": "checkbox" },
+            { "label": "Cor das estrelas (hex)", "prop": "color", "field": "text", "placeholder": "#f59f00" }
           ]
         }
       ]
@@ -1130,6 +1163,90 @@
           }
         },
         {
+          "id": "modal",
+          "label": "Modal",
+          "kind": "modal",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "",
+          "controlName": "modal",
+          "generatedFields": [
+            { "idProp": "modalId", "base": "modal" }
+          ],
+          "defaults": {
+            "modalId": "",
+            "showTrigger": true,
+            "triggerText": "Abrir modal",
+            "triggerCssClass": "btn btn-primary",
+            "triggerIcon": "",
+            "triggerIconColor": "",
+            "triggerIconPosition": "left",
+            "size": "",
+            "centered": false,
+            "scrollable": false,
+            "staticBackdrop": false,
+            "showStatus": false,
+            "statusColor": "danger",
+            "showHeader": true,
+            "title": "Titulo do modal",
+            "titleTag": "h5",
+            "showClose": true,
+            "bodyCssClass": "modal-body",
+            "bodyContent": "Conteudo do corpo do modal.",
+            "showFooter": true,
+            "footerCssClass": "modal-footer",
+            "footerLayout": "default",
+            "footerButtons": [
+              { "text": "Fechar", "cssClass": "btn me-auto", "dismiss": true, "href": "" },
+              { "text": "Confirmar", "cssClass": "btn btn-primary", "dismiss": true, "href": "" }
+            ]
+          },
+          "properties": [
+            { "label": "ID do modal", "prop": "modalId", "field": "text", "group": "Geral" },
+            { "label": "Tamanho", "prop": "size", "field": "select", "group": "Geral", "options": [["", "Padrao"], ["modal-sm", "Pequeno (sm)"], ["modal-lg", "Grande (lg)"], ["modal-xl", "Extra grande (xl)"], ["modal-fullscreen", "Tela cheia"]] },
+            { "label": "Centralizado verticalmente", "prop": "centered", "field": "checkbox", "group": "Geral" },
+            { "label": "Corpo rolavel", "prop": "scrollable", "field": "checkbox", "group": "Geral" },
+            { "label": "Backdrop estatico", "prop": "staticBackdrop", "field": "checkbox", "group": "Geral" },
+            { "label": "Mostrar botao trigger", "prop": "showTrigger", "field": "checkbox", "group": "Trigger" },
+            { "label": "Texto do botao", "prop": "triggerText", "field": "text", "group": "Trigger" },
+            { "label": "Classe CSS do botao", "prop": "triggerCssClass", "field": "text", "group": "Trigger" },
+            { "label": "Icone Tabler", "prop": "triggerIcon", "field": "icon", "group": "Trigger" },
+            { "label": "Cor do icone (hex)", "prop": "triggerIconColor", "field": "text", "group": "Trigger", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "triggerIconPosition", "field": "select", "group": "Trigger", "options": [["left", "Esquerda"], ["right", "Direita"]] },
+            { "label": "Mostrar barra de status", "prop": "showStatus", "field": "checkbox", "group": "Status" },
+            { "label": "Cor da barra", "prop": "statusColor", "field": "select", "group": "Status", "options": [["danger", "Danger"], ["success", "Success"], ["warning", "Warning"], ["info", "Info"], ["primary", "Primary"], ["secondary", "Secondary"]] },
+            { "label": "Mostrar cabecalho", "prop": "showHeader", "field": "checkbox", "group": "Cabecalho" },
+            { "label": "Titulo", "prop": "title", "field": "text", "group": "Cabecalho" },
+            { "label": "Tag do titulo", "prop": "titleTag", "field": "select", "group": "Cabecalho", "options": [["h4", "H4"], ["h5", "H5"], ["h6", "H6"]] },
+            { "label": "Mostrar botao fechar", "prop": "showClose", "field": "checkbox", "group": "Cabecalho" },
+            { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text", "group": "Corpo" },
+            { "label": "Conteudo do corpo", "prop": "bodyContent", "field": "textarea", "group": "Corpo" },
+            { "label": "Mostrar rodape", "prop": "showFooter", "field": "checkbox", "group": "Rodape" },
+            { "label": "Classe CSS do rodape", "prop": "footerCssClass", "field": "text", "group": "Rodape" },
+            { "label": "Layout dos botoes", "prop": "footerLayout", "field": "select", "group": "Rodape", "options": [["default", "Padrao (linha)"], ["grid", "Grade (colunas iguais)"]] },
+            {
+              "label": "Botoes do rodape",
+              "prop": "footerButtons",
+              "field": "repeater",
+              "group": "Rodape",
+              "addLabel": "Adicionar botao",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Botao" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-secondary" },
+                { "label": "Fechar ao clicar", "prop": "dismiss", "field": "checkbox", "default": true },
+                { "label": "Href (vazio = button)", "prop": "href", "field": "text", "default": "" }
+              ]
+            },
+            {
+              "label": "Referencia de uso",
+              "prop": "_modalCodeRef",
+              "field": "code-info",
+              "group": "Referencia",
+              "rows": 9,
+              "valueTemplate": "// Trigger via HTML\n<button type=\"button\" class=\"btn btn-primary\"\n  data-bs-toggle=\"modal\"\n  data-bs-target=\"#{{modalId}}\">\n  Abrir modal\n</button>\n\n// Abrir via JavaScript\nconst modal = new bootstrap.Modal(\n  document.getElementById('{{modalId}}')\n);\nmodal.show();\n\n// Fechar via JavaScript\nmodal.hide();"
+            }
+          ]
+        },
+        {
           "id": "signature",
           "label": "Assinatura",
           "kind": "signature",
@@ -1195,6 +1312,9 @@
           "defaultCssClass": "list-group",
           "itemCssClass": "list-group-item",
           "defaults": {
+            "ordered": false,
+            "style": "",
+            "flush": false,
             "items": [
               { "text": "Item 1" },
               { "text": "Item 2" },
@@ -1202,6 +1322,9 @@
             ]
           },
           "properties": [
+            { "label": "Ordenada (ol)", "prop": "ordered", "field": "checkbox" },
+            { "label": "Estilo", "prop": "style", "field": "select", "options": [["", "Padrao (list-group)"], ["list-group", "List Group"], ["list-unstyled", "Sem estilo"]] },
+            { "label": "Sem bordas laterais (flush)", "prop": "flush", "field": "checkbox" },
             {
               "label": "Itens",
               "prop": "items",
@@ -1249,10 +1372,12 @@
           "kind": "heading",
           "icon": "block-icon heading",
           "defaultCssClass": "content-heading",
-          "defaults": { "text": "Titulo", "level": "h2" },
+          "defaults": { "text": "Titulo", "level": "h2", "subtitle": "", "align": "" },
           "properties": [
             { "label": "Texto", "prop": "text", "field": "text" },
-            { "label": "Nivel", "prop": "level", "field": "select", "options": [["h1", "H1"], ["h2", "H2"], ["h3", "H3"]] }
+            { "label": "Subtitulo (pre-title)", "prop": "subtitle", "field": "text" },
+            { "label": "Nivel", "prop": "level", "field": "select", "options": [["h1", "H1"], ["h2", "H2"], ["h3", "H3"]] },
+            { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["", "Padrao"], ["text-start", "Esquerda"], ["text-center", "Centro"], ["text-end", "Direita"]] }
           ]
         },
         {
@@ -1261,9 +1386,11 @@
           "kind": "paragraph",
           "icon": "block-icon paragraph",
           "defaultCssClass": "content-paragraph",
-          "defaults": { "text": "Texto da pagina." },
+          "defaults": { "text": "Texto da pagina.", "align": "", "muted": false },
           "properties": [
-            { "label": "Texto", "prop": "text", "field": "textarea" }
+            { "label": "Texto", "prop": "text", "field": "textarea" },
+            { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["", "Padrao"], ["text-start", "Esquerda"], ["text-center", "Centro"], ["text-end", "Direita"]] },
+            { "label": "Tom reduzido (muted)", "prop": "muted", "field": "checkbox" }
           ]
         },
         {
@@ -1271,12 +1398,33 @@
           "label": "Link",
           "kind": "link",
           "icon": "block-icon link",
-          "defaultCssClass": "btn btn-link px-0",
-          "defaults": { "text": "Abrir link", "href": "#", "target": "" },
+          "defaultCssClass": "btn btn-{{variant}}",
+          "defaults": { "text": "Abrir link", "href": "#", "target": "", "variant": "link", "align": "left", "icon": "", "iconColor": "", "iconPosition": "left" },
           "properties": [
             { "label": "Texto", "prop": "text", "field": "text" },
             { "label": "Href", "prop": "href", "field": "text" },
-            { "label": "Target", "prop": "target", "field": "select", "options": [["", "Mesma aba"], ["_blank", "Nova aba"]] }
+            { "label": "Abrir em", "prop": "target", "field": "select", "options": [["", "Mesma aba"], ["_blank", "Nova aba"]] },
+            { "label": "Estilo", "prop": "variant", "field": "select", "options": [
+              ["link", "Link (padrao)"],
+              ["primary", "Botao primario"],
+              ["secondary", "Botao secundario"],
+              ["success", "Botao sucesso"],
+              ["danger", "Botao perigo"],
+              ["warning", "Botao aviso"],
+              ["info", "Botao info"],
+              ["light", "Botao claro"],
+              ["dark", "Botao escuro"],
+              ["outline-primary", "Outline primario"],
+              ["outline-secondary", "Outline secundario"],
+              ["outline-success", "Outline sucesso"],
+              ["outline-danger", "Outline perigo"],
+              ["outline-warning", "Outline aviso"],
+              ["outline-info", "Outline info"]
+            ]},
+            { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["left", "Esquerda"], ["center", "Centro"], ["right", "Direita"]] },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "options": [["left", "Esquerda"], ["right", "Direita"]] }
           ]
         },
         {
@@ -1285,11 +1433,14 @@
           "kind": "image",
           "icon": "block-icon image",
           "defaultCssClass": "img-fluid",
-          "defaults": { "src": "", "alt": "Imagem", "width": "100%" },
+          "defaults": { "src": "", "alt": "Imagem", "width": "100%", "shape": "", "loading": "lazy", "link": "" },
           "properties": [
             { "label": "URL", "prop": "src", "field": "text" },
             { "label": "Alt", "prop": "alt", "field": "text" },
-            { "label": "Largura", "prop": "width", "field": "text" }
+            { "label": "Largura", "prop": "width", "field": "text" },
+            { "label": "Formato", "prop": "shape", "field": "select", "options": [["", "Padrao"], ["rounded", "Arredondado"], ["rounded-circle", "Circular"]] },
+            { "label": "Carregamento", "prop": "loading", "field": "select", "options": [["lazy", "Lazy (diferido)"], ["eager", "Eager (imediato)"]] },
+            { "label": "Link (href)", "prop": "link", "field": "text" }
           ]
         },
         {
@@ -1298,15 +1449,19 @@
           "kind": "card",
           "icon": "block-icon card",
           "defaultCssClass": "content-card card",
-          "defaults": { "title": "Card", "content": "Conteudo do card." },
+          "defaults": { "title": "Card", "subtitle": "", "content": "Conteudo do card.", "statusColor": "", "showFooter": false, "footerContent": "" },
           "properties": [
             { "label": "Titulo", "prop": "title", "field": "text" },
-            { "label": "Conteudo", "prop": "content", "field": "textarea" }
+            { "label": "Subtitulo", "prop": "subtitle", "field": "text" },
+            { "label": "Conteudo", "prop": "content", "field": "textarea" },
+            { "label": "Cor de status", "prop": "statusColor", "field": "select", "options": [["", "Nenhuma"], ["danger", "Vermelho"], ["success", "Verde"], ["warning", "Amarelo"], ["info", "Azul claro"], ["primary", "Primaria"]] },
+            { "label": "Exibir rodape", "prop": "showFooter", "field": "checkbox" },
+            { "label": "Conteudo do rodape", "prop": "footerContent", "field": "text", "showWhen": { "prop": "showFooter", "equals": true } }
           ]
         },
         {
           "id": "card-custom",
-          "label": "Card Personalizado",
+          "label": "Card Container",
           "kind": "cardCustom",
           "icon": "block-icon card-custom",
           "defaultCssClass": "card",
@@ -1342,12 +1497,20 @@
             "bodyWrapper": true,
             "bodyCssClass": "card-body",
             "labelCssClass": "subheader",
-            "valueCssClass": "h2 mb-0"
+            "valueCssClass": "h2 mb-0",
+            "icon": "",
+            "iconColor": "",
+            "trend": "",
+            "trendValue": ""
           },
           "properties": [
             { "label": "Titulo", "prop": "label", "field": "text" },
             { "label": "Valor", "prop": "value", "field": "text" },
             { "label": "ID do valor", "prop": "valueId", "field": "text" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4" },
+            { "label": "Tendencia", "prop": "trend", "field": "select", "options": [["", "Nenhuma"], ["up", "Alta ↑"], ["down", "Baixa ↓"]] },
+            { "label": "Valor da tendencia", "prop": "trendValue", "field": "text", "placeholder": "+12% este mes" },
             { "label": "Usar corpo", "prop": "bodyWrapper", "field": "checkbox" },
             { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text" },
             { "label": "Classe CSS do titulo", "prop": "labelCssClass", "field": "text" },
@@ -1356,7 +1519,7 @@
         },
         {
           "id": "info-kpi",
-          "label": "Informativo",
+          "label": "KPI Informativo",
           "kind": "kpi",
           "icon": "block-icon info-kpi",
           "defaultCssClass": "bg-primary-lt rounded p-3",
@@ -1367,12 +1530,20 @@
             "bodyWrapper": false,
             "bodyCssClass": "",
             "labelCssClass": "subheader",
-            "valueCssClass": "display-6"
+            "valueCssClass": "display-6",
+            "icon": "",
+            "iconColor": "",
+            "trend": "",
+            "trendValue": ""
           },
           "properties": [
             { "label": "Titulo", "prop": "label", "field": "text" },
             { "label": "Valor", "prop": "value", "field": "text" },
             { "label": "ID do valor", "prop": "valueId", "field": "text" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4" },
+            { "label": "Tendencia", "prop": "trend", "field": "select", "options": [["", "Nenhuma"], ["up", "Alta ↑"], ["down", "Baixa ↓"]] },
+            { "label": "Valor da tendencia", "prop": "trendValue", "field": "text", "placeholder": "+12% este mes" },
             { "label": "Usar corpo", "prop": "bodyWrapper", "field": "checkbox" },
             { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text" },
             { "label": "Classe CSS do titulo", "prop": "labelCssClass", "field": "text" },
@@ -1394,7 +1565,14 @@
             "rows": [
               { "cells": ["Maria", "maria@email.com", "Ativo"] },
               { "cells": ["Joao", "joao@email.com", "Inativo"] }
-            ]
+            ],
+            "responsive": true,
+            "striped": false,
+            "hover": false,
+            "bordered": false,
+            "small": false,
+            "showThead": true,
+            "showTfoot": false
           },
           "properties": [
             {
@@ -1409,7 +1587,14 @@
                 { "label": "Largura", "prop": "width", "field": "text", "default": "" }
               ]
             },
-            { "label": "Linhas", "prop": "rows", "field": "matrix", "columnsProp": "columns", "addLabel": "Adicionar linha" }
+            { "label": "Linhas", "prop": "rows", "field": "matrix", "columnsProp": "columns", "addLabel": "Adicionar linha" },
+            { "label": "Responsiva", "prop": "responsive", "field": "checkbox" },
+            { "label": "Listrada (striped)", "prop": "striped", "field": "checkbox" },
+            { "label": "Hover", "prop": "hover", "field": "checkbox" },
+            { "label": "Com bordas", "prop": "bordered", "field": "checkbox" },
+            { "label": "Compacta (sm)", "prop": "small", "field": "checkbox" },
+            { "label": "Exibir cabecalho (thead)", "prop": "showThead", "field": "checkbox" },
+            { "label": "Exibir rodape (tfoot)", "prop": "showTfoot", "field": "checkbox" }
           ]
         },
         {
@@ -1422,6 +1607,264 @@
           "properties": [
             { "label": "HTML", "prop": "html", "field": "textarea", "rows": 10 }
           ]
+        },
+        {
+          "id": "badge",
+          "label": "Badge",
+          "kind": "badge",
+          "icon": "block-icon badge",
+          "defaultCssClass": "",
+          "defaults": { "text": "Ativo", "variant": "success", "pill": false, "outline": false },
+          "properties": [
+            { "label": "Texto", "prop": "text", "field": "text" },
+            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"], ["dark", "Escuro"]] },
+            { "label": "Pill (arredondado)", "prop": "pill", "field": "checkbox" },
+            { "label": "Outline", "prop": "outline", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "progress",
+          "label": "Progress Bar",
+          "kind": "progress",
+          "icon": "block-icon progress",
+          "defaultCssClass": "",
+          "defaults": { "label": "", "value": 60, "variant": "primary", "showLabel": true, "striped": false, "animated": false },
+          "properties": [
+            { "label": "Rotulo", "prop": "label", "field": "text" },
+            { "label": "Valor (%)", "prop": "value", "field": "number", "min": 0, "max": 100 },
+            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"]] },
+            { "label": "Exibir porcentagem", "prop": "showLabel", "field": "checkbox" },
+            { "label": "Listrada (striped)", "prop": "striped", "field": "checkbox" },
+            { "label": "Animada", "prop": "animated", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "spinner",
+          "label": "Spinner",
+          "kind": "spinner",
+          "icon": "block-icon spinner",
+          "defaultCssClass": "",
+          "defaults": { "type": "border", "size": "", "variant": "primary", "label": "Carregando...", "align": "left" },
+          "properties": [
+            { "label": "Tipo", "prop": "type", "field": "select", "options": [["border", "Border"], ["grow", "Grow"]] },
+            { "label": "Tamanho", "prop": "size", "field": "select", "options": [["", "Padrao"], ["spinner-sm", "Pequeno"]] },
+            { "label": "Cor", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"], ["dark", "Escuro"]] },
+            { "label": "Texto acessivel", "prop": "label", "field": "text" },
+            { "label": "Alinhamento", "prop": "align", "field": "select", "options": [["left", "Esquerda"], ["center", "Centro"], ["right", "Direita"]] }
+          ]
+        },
+        {
+          "id": "avatar",
+          "label": "Avatar",
+          "kind": "avatar",
+          "icon": "block-icon avatar",
+          "defaultCssClass": "",
+          "defaults": { "initials": "JS", "imageUrl": "", "size": "avatar", "color": "primary", "shape": "circle", "status": "" },
+          "properties": [
+            { "label": "Iniciais", "prop": "initials", "field": "text" },
+            { "label": "URL da imagem", "prop": "imageUrl", "field": "text" },
+            { "label": "Tamanho", "prop": "size", "field": "select", "options": [["avatar-sm", "Pequeno (sm)"], ["avatar", "Padrao"], ["avatar-lg", "Grande (lg)"], ["avatar-xl", "Extra grande (xl)"], ["avatar-2xl", "2XL"]] },
+            { "label": "Cor de fundo", "prop": "color", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"], ["dark", "Escuro"]] },
+            { "label": "Formato", "prop": "shape", "field": "select", "options": [["circle", "Circular"], ["rounded", "Arredondado"]] },
+            { "label": "Status", "prop": "status", "field": "select", "options": [["", "Nenhum"], ["online", "Online"], ["offline", "Offline"], ["busy", "Ocupado"]] }
+          ]
+        },
+        {
+          "id": "stat-card",
+          "label": "Stat Card",
+          "kind": "statCard",
+          "icon": "block-icon kpi",
+          "defaultCssClass": "card card-sm",
+          "defaults": { "title": "Total de vendas", "value": "R$ 12.400", "valueId": "", "icon": "shopping-cart", "iconColor": "", "iconBgColor": "primary", "trend": "up", "trendValue": "+12%", "trendLabel": "vs mes anterior" },
+          "properties": [
+            { "label": "Titulo", "prop": "title", "field": "text" },
+            { "label": "Valor", "prop": "value", "field": "text" },
+            { "label": "ID do valor", "prop": "valueId", "field": "text" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4" },
+            { "label": "Cor de fundo do icone", "prop": "iconBgColor", "field": "select", "options": [["primary", "Primaria"], ["secondary", "Secundaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"]] },
+            { "label": "Tendencia", "prop": "trend", "field": "select", "options": [["", "Nenhuma"], ["up", "Alta ↑"], ["down", "Baixa ↓"]] },
+            { "label": "Valor da tendencia", "prop": "trendValue", "field": "text", "placeholder": "+12%" },
+            { "label": "Descricao da tendencia", "prop": "trendLabel", "field": "text", "placeholder": "vs mes anterior" }
+          ]
+        },
+        {
+          "id": "empty-state",
+          "label": "Empty State",
+          "kind": "emptyState",
+          "icon": "block-icon info-kpi",
+          "defaultCssClass": "empty",
+          "defaults": { "icon": "mood-sad", "iconColor": "", "title": "Nenhum resultado encontrado", "description": "Tente ajustar os filtros ou adicione um novo item.", "showAction": true, "actionText": "Adicionar item", "actionHref": "#", "actionCssClass": "btn btn-primary" },
+          "properties": [
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4" },
+            { "label": "Titulo", "prop": "title", "field": "text" },
+            { "label": "Descricao", "prop": "description", "field": "textarea" },
+            { "label": "Exibir botao de acao", "prop": "showAction", "field": "checkbox" },
+            { "label": "Texto do botao", "prop": "actionText", "field": "text", "showWhen": { "prop": "showAction", "equals": true } },
+            { "label": "Link do botao (href)", "prop": "actionHref", "field": "text", "showWhen": { "prop": "showAction", "equals": true } },
+            { "label": "Classe CSS do botao", "prop": "actionCssClass", "field": "text", "showWhen": { "prop": "showAction", "equals": true } }
+          ]
+        },
+        {
+          "id": "offcanvas",
+          "label": "Offcanvas",
+          "kind": "offcanvas",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "",
+          "controlName": "painel",
+          "generatedFields": [
+            { "idProp": "offcanvasId", "base": "offcanvas" }
+          ],
+          "defaults": { "offcanvasId": "", "showTrigger": true, "triggerText": "Abrir painel", "triggerCssClass": "btn btn-primary", "title": "Painel lateral", "placement": "end", "backdrop": true, "scroll": false, "bodyContent": "Conteudo do painel lateral.", "showClose": true },
+          "properties": [
+            { "label": "ID do offcanvas", "prop": "offcanvasId", "field": "text", "group": "Geral" },
+            { "label": "Posicao", "prop": "placement", "field": "select", "group": "Geral", "options": [["end", "Direita"], ["start", "Esquerda"], ["top", "Topo"], ["bottom", "Rodape"]] },
+            { "label": "Backdrop", "prop": "backdrop", "field": "checkbox", "group": "Geral" },
+            { "label": "Scroll da pagina ativo", "prop": "scroll", "field": "checkbox", "group": "Geral" },
+            { "label": "Exibir botao trigger", "prop": "showTrigger", "field": "checkbox", "group": "Trigger" },
+            { "label": "Texto do botao", "prop": "triggerText", "field": "text", "group": "Trigger", "showWhen": { "prop": "showTrigger", "equals": true } },
+            { "label": "Classe CSS do botao", "prop": "triggerCssClass", "field": "text", "group": "Trigger", "showWhen": { "prop": "showTrigger", "equals": true } },
+            { "label": "Titulo do painel", "prop": "title", "field": "text", "group": "Conteudo" },
+            { "label": "Exibir botao fechar", "prop": "showClose", "field": "checkbox", "group": "Conteudo" },
+            { "label": "Conteudo do corpo", "prop": "bodyContent", "field": "textarea", "group": "Conteudo" },
+            { "label": "Referencia de uso", "prop": "_offcanvasCodeRef", "field": "code-info", "group": "Referencia", "rows": 7, "valueTemplate": "// Trigger via HTML\n<button type=\"button\" class=\"btn btn-primary\"\n  data-bs-toggle=\"offcanvas\"\n  data-bs-target=\"#{{offcanvasId}}\">\n  Abrir painel\n</button>\n\n// Abrir via JavaScript\nconst panel = new bootstrap.Offcanvas(\n  document.getElementById('{{offcanvasId}}')\n);\npanel.show();" }
+          ]
+        },
+        {
+          "id": "timeline",
+          "label": "Timeline",
+          "kind": "timeline",
+          "icon": "block-icon list",
+          "defaultCssClass": "timeline",
+          "defaults": {
+            "items": [
+              { "title": "Pedido criado", "description": "Pedido recebido pelo sistema.", "date": "10/06/2025 09:00", "icon": "shopping-cart", "iconColor": "", "variant": "primary" },
+              { "title": "Pagamento confirmado", "description": "Pagamento processado com sucesso.", "date": "10/06/2025 10:30", "icon": "check", "iconColor": "", "variant": "success" },
+              { "title": "Em separacao", "description": "Produto sendo separado no estoque.", "date": "11/06/2025 08:00", "icon": "package", "iconColor": "", "variant": "warning" }
+            ]
+          },
+          "properties": [
+            {
+              "label": "Eventos",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar evento",
+              "itemFields": [
+                { "label": "Titulo", "prop": "title", "field": "text", "default": "Evento" },
+                { "label": "Descricao", "prop": "description", "field": "text", "default": "" },
+                { "label": "Data/hora", "prop": "date", "field": "text", "default": "" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor (variante)", "prop": "variant", "field": "select", "default": "primary", "options": [["primary", "Primaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"], ["secondary", "Secundaria"]] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stepper",
+          "label": "Stepper",
+          "kind": "stepper",
+          "icon": "block-icon steps",
+          "defaultCssClass": "steps",
+          "defaults": {
+            "orientation": "horizontal",
+            "showDescription": false,
+            "steps": [
+              { "label": "Dados pessoais", "description": "Nome e contato", "status": "completed" },
+              { "label": "Endereco", "description": "Logradouro e CEP", "status": "active" },
+              { "label": "Revisao", "description": "Confirmar dados", "status": "pending" }
+            ]
+          },
+          "properties": [
+            { "label": "Orientacao", "prop": "orientation", "field": "select", "options": [["horizontal", "Horizontal"], ["vertical", "Vertical"]] },
+            { "label": "Exibir descricao", "prop": "showDescription", "field": "checkbox" },
+            {
+              "label": "Etapas",
+              "prop": "steps",
+              "field": "repeater",
+              "addLabel": "Adicionar etapa",
+              "itemFields": [
+                { "label": "Titulo", "prop": "label", "field": "text", "default": "Etapa" },
+                { "label": "Descricao", "prop": "description", "field": "text", "default": "" },
+                { "label": "Status", "prop": "status", "field": "select", "default": "pending", "options": [["pending", "Pendente"], ["active", "Ativo"], ["completed", "Concluido"], ["error", "Erro"]] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "callout",
+          "label": "Callout",
+          "kind": "callout",
+          "icon": "block-icon alert",
+          "defaultCssClass": "",
+          "defaults": { "variant": "primary", "title": "Observacao importante", "content": "Verifique os dados antes de continuar.", "icon": "", "iconColor": "" },
+          "properties": [
+            { "label": "Variante", "prop": "variant", "field": "select", "options": [["primary", "Primaria"], ["success", "Sucesso"], ["danger", "Perigo"], ["warning", "Aviso"], ["info", "Info"]] },
+            { "label": "Titulo", "prop": "title", "field": "text" },
+            { "label": "Conteudo", "prop": "content", "field": "textarea" },
+            { "label": "Icone Tabler", "prop": "icon", "field": "icon", "placeholder": "Busque um icone" },
+            { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "placeholder": "#206bc4" }
+          ]
+        },
+        {
+          "id": "skeleton",
+          "label": "Skeleton",
+          "kind": "skeleton",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "",
+          "defaults": { "rows": 3, "showAvatar": false, "showImage": false, "animated": true },
+          "properties": [
+            { "label": "Linhas de texto", "prop": "rows", "field": "number", "min": 1, "max": 10 },
+            { "label": "Exibir avatar", "prop": "showAvatar", "field": "checkbox" },
+            { "label": "Exibir imagem", "prop": "showImage", "field": "checkbox" },
+            { "label": "Animado", "prop": "animated", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "divider",
+          "label": "Divisor",
+          "kind": "divider",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "my-2",
+          "defaults": { "label": "" },
+          "properties": [
+            { "label": "Texto (vazio = linha pura)", "prop": "label", "field": "text" }
+          ]
+        },
+        {
+          "id": "page-header",
+          "label": "Page Header",
+          "kind": "pageHeader",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "page-header d-print-none",
+          "defaults": {
+            "title": "Titulo da Pagina",
+            "subtitle": "",
+            "showActions": true,
+            "actions": [
+              { "text": "Nova acao", "href": "#", "cssClass": "btn btn-primary", "icon": "", "iconColor": "", "iconPosition": "left" }
+            ]
+          },
+          "properties": [
+            { "label": "Titulo", "prop": "title", "field": "text", "group": "Geral" },
+            { "label": "Subtitulo (pretitle)", "prop": "subtitle", "field": "text", "group": "Geral" },
+            { "label": "Mostrar acoes", "prop": "showActions", "field": "checkbox", "group": "Acoes" },
+            {
+              "label": "Acoes",
+              "prop": "actions",
+              "field": "repeater",
+              "group": "Acoes",
+              "addLabel": "Adicionar acao",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Acao" },
+                { "label": "Href", "prop": "href", "field": "text", "default": "#" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-primary" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1431,7 +1874,7 @@
       "blocks": [
         {
           "id": "js-snippet",
-          "label": "Script JS",
+          "label": "JS Snippet",
           "kind": "jsSnippet",
           "icon": "block-icon html",
           "assets": {
@@ -1941,7 +2384,7 @@
       "blocks": [
         {
           "id": "fullcalendar",
-          "label": "Calendario",
+          "label": "Full Calendar",
           "kind": "fullcalendar",
           "icon": "block-icon calendar",
           "defaultCssClass": "card",
@@ -1975,6 +2418,195 @@
             { "label": "Abrir clique do evento em", "prop": "eventClickTarget", "field": "select", "options": [["_blank", "Nova aba"], ["_self", "Mesma aba"]], "group": "Comportamento" },
             { "label": "URL dos eventos JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" }
           ]
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "label": "Menu",
+      "blocks": [
+        {
+          "id": "menu-item",
+          "label": "Item de menu",
+          "kind": "component",
+          "icon": "block-icon menu-item",
+          "defaults": {
+            "label": "Item",
+            "icon": "",
+            "href": "#",
+            "target": "_self"
+          },
+          "properties": [
+            { "label": "Texto", "prop": "label", "field": "text" },
+            { "label": "Icone", "prop": "icon", "field": "icon" },
+            { "label": "Link (href)", "prop": "href", "field": "text" },
+            { "label": "Abrir em", "prop": "target", "field": "select", "options": [["_self", "Mesma aba"], ["_blank", "Nova aba"]] }
+          ]
+        },
+        {
+          "id": "menu-dropdown",
+          "label": "Dropdown de menu",
+          "kind": "component",
+          "icon": "block-icon menu-dropdown",
+          "defaults": {
+            "label": "Dropdown",
+            "icon": "",
+            "items": [
+              { "label": "Sub-item 1", "icon": "", "href": "#", "target": "_self" },
+              { "label": "Sub-item 2", "icon": "", "href": "#", "target": "_self" }
+            ]
+          },
+          "properties": [
+            { "label": "Texto", "prop": "label", "field": "text" },
+            { "label": "Icone", "prop": "icon", "field": "icon" },
+            {
+              "label": "Sub-itens",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar sub-item",
+              "itemLabel": "Sub-item",
+              "itemKey": "label",
+              "fields": [
+                { "label": "Texto", "prop": "label", "field": "text" },
+                { "label": "Icone", "prop": "icon", "field": "icon" },
+                { "label": "Link (href)", "prop": "href", "field": "text" },
+                { "label": "Abrir em", "prop": "target", "field": "select", "options": [["_self", "Mesma aba"], ["_blank", "Nova aba"]] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "menu-divider",
+          "label": "Divisor de menu",
+          "kind": "component",
+          "icon": "block-icon menu-divider",
+          "defaults": {},
+          "properties": []
+        },
+        {
+          "id": "menu-label",
+          "label": "Rotulo de secao",
+          "kind": "component",
+          "icon": "block-icon menu-label",
+          "defaults": {
+            "label": "Secao"
+          },
+          "properties": [
+            { "label": "Texto", "prop": "label", "field": "text" }
+          ]
+        },
+        {
+          "id": "menu-brand",
+          "label": "Marca / Logo",
+          "kind": "component",
+          "icon": "block-icon menu-brand",
+          "defaults": {
+            "text": "Minha Marca",
+            "logoUrl": "",
+            "href": "#",
+            "target": "_self"
+          },
+          "properties": [
+            { "label": "Texto da marca", "prop": "text", "field": "text" },
+            { "label": "URL da imagem (logo)", "prop": "logoUrl", "field": "text" },
+            { "label": "Link (href)", "prop": "href", "field": "text" },
+            { "label": "Abrir em", "prop": "target", "field": "select", "options": [["_self", "Mesma aba"], ["_blank", "Nova aba"]] }
+          ]
+        },
+        {
+          "id": "menu-badge-item",
+          "label": "Item com badge",
+          "kind": "component",
+          "icon": "block-icon menu-badge-item",
+          "defaults": {
+            "label": "Notificacoes",
+            "icon": "bell",
+            "href": "#",
+            "target": "_self",
+            "badgeText": "3",
+            "badgeColor": "red"
+          },
+          "properties": [
+            { "label": "Texto", "prop": "label", "field": "text" },
+            { "label": "Icone", "prop": "icon", "field": "icon" },
+            { "label": "Link (href)", "prop": "href", "field": "text" },
+            { "label": "Abrir em", "prop": "target", "field": "select", "options": [["_self", "Mesma aba"], ["_blank", "Nova aba"]] },
+            { "label": "Texto do badge", "prop": "badgeText", "field": "text" },
+            { "label": "Cor do badge", "prop": "badgeColor", "field": "select", "options": [
+              ["red", "Vermelho"],
+              ["green", "Verde"],
+              ["blue", "Azul"],
+              ["yellow", "Amarelo"],
+              ["orange", "Laranja"],
+              ["purple", "Roxo"],
+              ["cyan", "Ciano"]
+            ]}
+          ]
+        },
+        {
+          "id": "menu-user",
+          "label": "Perfil do usuario",
+          "kind": "component",
+          "icon": "block-icon menu-user",
+          "defaults": {
+            "name": "Joao Silva",
+            "role": "Administrador",
+            "avatarUrl": "",
+            "avatarInitials": "JS",
+            "avatarColor": "blue",
+            "items": [
+              { "label": "Perfil", "href": "#" },
+              { "label": "Configuracoes", "href": "#" },
+              { "label": "Sair", "href": "#" }
+            ]
+          },
+          "properties": [
+            { "label": "Nome", "prop": "name", "field": "text" },
+            { "label": "Cargo / papel", "prop": "role", "field": "text" },
+            { "label": "URL do avatar (imagem)", "prop": "avatarUrl", "field": "text" },
+            { "label": "Iniciais do avatar", "prop": "avatarInitials", "field": "text" },
+            { "label": "Cor do avatar", "prop": "avatarColor", "field": "select", "options": [
+              ["blue", "Azul"],
+              ["red", "Vermelho"],
+              ["green", "Verde"],
+              ["orange", "Laranja"],
+              ["purple", "Roxo"],
+              ["pink", "Rosa"],
+              ["cyan", "Ciano"]
+            ]},
+            {
+              "label": "Itens do menu",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar item",
+              "itemLabel": "Item",
+              "itemKey": "label",
+              "fields": [
+                { "label": "Texto", "prop": "label", "field": "text" },
+                { "label": "Link (href)", "prop": "href", "field": "text" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "menu-search",
+          "label": "Campo de busca",
+          "kind": "component",
+          "icon": "block-icon menu-search",
+          "defaults": {
+            "placeholder": "Buscar..."
+          },
+          "properties": [
+            { "label": "Placeholder", "prop": "placeholder", "field": "text" }
+          ]
+        },
+        {
+          "id": "menu-spacer",
+          "label": "Espacador",
+          "kind": "component",
+          "icon": "block-icon menu-spacer",
+          "defaults": {},
+          "properties": []
         }
       ]
     }

@@ -425,7 +425,14 @@
       return "";
     }
 
-    return `<span>${context.escapeHtml(item.label || getFallbackLabel(index))}</span>`;
+    const labelSpan = `<span>${context.escapeHtml(item.label || getFallbackLabel(index))}</span>`;
+
+    if (item.badge) {
+      const variant = item.badgeVariant || "secondary";
+      return labelSpan + `<span class="badge bg-${context.escapeAttr(variant)} ms-1">${context.escapeHtml(String(item.badge))}</span>`;
+    }
+
+    return labelSpan;
   }
 
   function getDropdownActions(props) {

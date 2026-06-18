@@ -14,6 +14,8 @@
     const inputType = props.inputType || definition.inputType || component.type || "text";
     const showToggle = inputType === "password" && context.toBooleanValue(props.showPasswordToggle);
     const allowNegative = inputType === "number" && context.toBooleanValue(props.allowNegative);
+    const prefixText = props.prefixText || "";
+    const suffixText = props.suffixText || "";
     const inputAttrs = context.renderInputAttributes({
       type: inputType,
       id: props.inputId || props.id,
@@ -39,7 +41,9 @@
     });
     const inputEl = `<input${context.classAttr(context.mergeClassNames(cssClass, props.textAlign, context.getValidationClass(props)))}${inputAttrs}>`;
 
-    if (!showToggle) {
+    const hasGroupAddons = prefixText || suffixText || showToggle;
+
+    if (!hasGroupAddons) {
       return [
         context.renderFormLabel(label, required),
         inputEl,
@@ -49,13 +53,21 @@
     }
 
     const inputId = context.sanitizeElementId(props.inputId, context.sanitizeElementId(component.id, "input"));
-    const toggleId = inputId + "-toggle";
-    const eyeIcon = context.renderTablerIcon("eye", "");
-    const toggleBtn = `<span class="input-group-text"><a href="#" id="${context.escapeAttr(toggleId)}" class="link-secondary" title="Mostrar senha" data-password-toggle>${eyeIcon}</a></span>`;
+    const prefixHtml = prefixText ? `<span class="input-group-text">${context.escapeHtml(prefixText)}</span>` : "";
+    const suffixHtml = suffixText ? `<span class="input-group-text">${context.escapeHtml(suffixText)}</span>` : "";
+
+    let toggleHtml = "";
+    if (showToggle) {
+      const toggleId = inputId + "-toggle";
+      const eyeIcon = context.renderTablerIcon("eye", "");
+      toggleHtml = `<span class="input-group-text"><a href="#" id="${context.escapeAttr(toggleId)}" class="link-secondary" title="Mostrar senha" data-password-toggle>${eyeIcon}</a></span>`;
+    }
+
+    const groupCls = showToggle ? "input-group input-group-flat" : "input-group";
 
     return [
       context.renderFormLabel(label, required),
-      `<div class="input-group input-group-flat">${inputEl}${toggleBtn}</div>`,
+      `<div class="${groupCls}">${prefixHtml}${inputEl}${suffixHtml}${toggleHtml}</div>`,
       help,
       context.renderValidationFeedback(props)
     ].join("");

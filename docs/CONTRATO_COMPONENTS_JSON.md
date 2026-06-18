@@ -307,6 +307,9 @@ Campos principais:
   aparecer so quando a prop indicada tem o valor esperado. Quando a prop controladora e um
   checkbox, o painel se atualiza na hora ao marcar/desmarcar. Exemplo: no Dropzone, a
   "URL de upload" so aparece com "Envio automatico" ligado.
+  **Limitacao importante**: so suporta igualdade (`equals`). Nao ha suporte a "diferente
+  de", "maior que", ou logica booleana. Se precisar mostrar um campo quando outra prop
+  NAO tem certo valor, o caminho e remover o `showWhen` e sempre exibir o campo.
 - `valueTemplate`: usado pelo field `info` — texto com placeholders `{{prop}}` resolvidos
   com os valores atuais (ex.: `"{{storeId}}"` no Dropzone).
 
@@ -333,11 +336,34 @@ attributes
 repeater
 matrix
 info
+code-info
 ```
 
 `info`: campo somente leitura, sem gravacao (nao emite `data-prop`). Mostra um valor
 derivado via `valueTemplate` — util para exibir convencoes como o id do input oculto
 do Dropzone (`{{storeId}}`, no formato `dropzone-store-<sufixo>`).
+
+`code-info`: como `info`, mas renderizado como `<textarea readonly>` com botao
+"Copiar", tamanho configuravel via `rows`, e destinado a snippets de codigo. Suporta
+o mesmo `valueTemplate` com `{{prop}}`. Use quando quiser mostrar ao usuario como
+referenciar o componente em JS ou HTML (ex: `data-bs-target="#{{offcanvasId}}"`,
+`new bootstrap.Modal(document.getElementById('{{modalId}}'))`).
+
+Exemplo:
+
+```json
+{
+  "label": "Referencia de uso",
+  "prop": "_codeRef",
+  "field": "code-info",
+  "group": "Referencia",
+  "rows": 6,
+  "valueTemplate": "const el = document.getElementById('{{panelId}}');\nconst offcanvas = new bootstrap.Offcanvas(el);\noffcanvas.show();"
+}
+```
+
+O `prop` pode comecar com `_` por convencao para indicar que e informativo (nao
+armazenado no JSON da pagina).
 
 ## `keyvalue`
 
@@ -595,9 +621,8 @@ Exemplo:
 
 ## `controlName` e `generatedFields`
 
-Usado para gerar automaticamente `id` e `name` padronizados.
-
-Exemplo:
+Usado para gerar automaticamente `id` e `name` padronizados ao arrastar o componente
+para a pagina. O builder nunca sobrescreve um valor ja preenchido.
 
 ```json
 "controlName": "campo_texto",
@@ -606,10 +631,38 @@ Exemplo:
 ]
 ```
 
-O builder cria valores como:
+O builder preenche `inputId` e `name` com valores como:
 
 ```text
-campo_texto-a1b2c3
+campo_texto_a1b2c3
+```
+
+### Campos de `generatedFields`
+
+| Campo | Obrigatorio | Significado |
+|---|---|---|
+| `idProp` | sim | Nome da prop que recebera o ID gerado |
+| `nameProp` | nao | Nome da prop que recebera o name (mesmo valor que o ID) |
+| `base` | sim | Prefixo humano do valor gerado |
+
+Exemplos reais:
+
+```json
+// Input: gera inputId e name juntos
+{ "idProp": "inputId", "nameProp": "name", "base": "campo_texto" }
+
+// Offcanvas: gera so o ID (name nao faz sentido para paineis)
+{ "idProp": "offcanvasId", "base": "offcanvas" }
+
+// Rating: name e o identificador do grupo de radio buttons
+{ "idProp": "name", "base": "rating" }
+```
+
+No renderer, leia a prop gerada via `context.sanitizeElementId` para ter o fallback
+correto quando o valor estiver vazio:
+
+```js
+const panelId = context.sanitizeElementId(props.offcanvasId, context.sanitizeElementId(component.id, "offcanvas"));
 ```
 
 ## Regras de Ouro
@@ -621,3 +674,9 @@ campo_texto-a1b2c3
 - `properties` edita os valores.
 - Renderer le os valores em `component.props`.
 - Runtime so roda no HTML exportado.
+
+**CRITICO: nunca altere `id` ou `kind` de um componente depois que projetos foram
+salvos.** O `id` e o `kind` sao armazenados no JSON de cada pagina do usuario.
+Mudar qualquer um quebra projetos existentes — o componente some ao carregar ou
+aponta para um renderer errado. Para renomear o que aparece na paleta, mude apenas
+o campo `label`.

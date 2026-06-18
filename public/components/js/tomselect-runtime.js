@@ -180,6 +180,13 @@
 
   window[runtimeName] = { init: init };
 
+  // Inicializa TomSelects em linhas adicionadas dinamicamente pelo fieldlist-runtime
+  document.addEventListener("fieldlist:row-added", function (e) {
+    if (e.detail && e.detail.row) {
+      init(e.detail.row);
+    }
+  });
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () { init(); });
   } else {

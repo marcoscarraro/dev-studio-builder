@@ -5,19 +5,12 @@
 
   function renderLinkComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};
-    let target;
-    if (props.target) {
-      target = ` target="${context.escapeAttr(props.target)}"`;
-    } else {
-      target = "";
-    }
-    let rel;
-    if (props.target === "_blank") {
-      rel = ' rel="noopener noreferrer"';
-    } else {
-      rel = "";
-    }
+    const align = props.align || "left";
+    const target = props.target ? ` target="${context.escapeAttr(props.target)}"` : "";
+    const rel = props.target === "_blank" ? ' rel="noopener noreferrer"' : "";
+    const href = context.escapeAttr(props.href || "#");
+    const content = context.renderButtonContent(props.text || "Link", props.icon, props.iconPosition, props.iconColor);
 
-    return `<a${cssClassAttr} href="${context.escapeAttr(props.href || "#")}"${target}${rel}>${context.escapeHtml(props.text || "Link")}</a>`;
+    return `<div style="text-align:${context.escapeAttr(align)}"><a${cssClassAttr} href="${href}"${target}${rel}>${content}</a></div>`;
   }
 }());

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Template Builder MVP</title>
+  <title>DEV STUDIO BUILDER</title>
   <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
   <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="public/tabler/css/custom.css">
   <link rel="stylesheet" href="public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/css/builder.css?v=14">
+  <link rel="stylesheet" href="public/tema/tema.css">
 </head>
 <body class="layout-fluid" data-page="template-builder">
   <script src="public/tabler/js/tabler-theme.js"></script>
@@ -23,8 +24,8 @@
       <div class="brand">
         <span class="brand-mark avatar avatar-sm bg-primary-lt text-primary" aria-hidden="true">TB</span>
         <div>
-          <strong>Template Builder</strong>
-          <span>MVP</span>
+          <strong>DEV STUDIO BUILDER</strong>
+          <span>Versão 1</span>
         </div>
       </div>
 
@@ -66,17 +67,19 @@
             <input id="page-name" class="page-name-input" type="text" placeholder="Nome da pagina" autocomplete="off" spellcheck="false">
             <span id="document-summary">0 componentes</span>
           </div>
-          <div class="segmented-control" aria-label="Largura do preview">
-            <button type="button" data-device="desktop" class="active">Desktop</button>
-            <button type="button" data-device="tablet">Tablet</button>
-            <button type="button" data-device="mobile">Mobile</button>
-          </div>
+
         </div>
 
         <div class="canvas-scroll">
-          <div id="editor-page-header" class="editor-page-header page-header d-print-none"></div>
-          <div id="canvas" class="canvas desktop" data-drop-zone="page" tabindex="0" aria-label="Area da pagina"></div>
-          <div id="editor-page-footer" class="editor-page-footer page-footer d-print-none"></div>
+          <div id="editor-page-navbar" class="editor-page-navbar"></div>
+          <div id="editor-page-body-wrapper" class="editor-page-body-wrapper">
+            <div id="editor-page-sidebar" class="editor-page-sidebar"></div>
+            <div class="editor-page-main">
+              <div id="editor-page-header" class="editor-page-header page-header d-print-none"></div>
+              <div id="canvas" class="canvas desktop" data-drop-zone="page" tabindex="0" aria-label="Area da pagina"></div>
+              <div id="editor-page-footer" class="editor-page-footer page-footer d-print-none"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -110,33 +113,48 @@
   <script src="public/tabler/libs/imask/dist/imask.min.js" defer></script>
   <script src="public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="assets/js/core/helpers.js?v=2"></script>
-  <script src="assets/js/core/export-html.js?v=28"></script>
+  <script src="assets/js/core/export-html.js?v=29"></script>
   <script src="assets/js/core/drag-drop.js?v=2"></script>
   <script src="assets/js/core/properties.js?v=5"></script>
   <script src="assets/js/renderers/registry.js?v=1"></script>
   <script src="assets/js/renderers/hidden-input.js?v=2"></script>
   <script src="assets/js/renderers/alert.js?v=2"></script>
   <script src="assets/js/renderers/accordion.js?v=2"></script>
-  <script src="assets/js/renderers/tabs.js?v=2"></script>
-  <script src="assets/js/renderers/input.js?v=5"></script>
-  <script src="assets/js/renderers/button.js?v=1"></script>
-  <script src="assets/js/renderers/card.js?v=1"></script>
+  <script src="assets/js/renderers/tabs.js?v=3"></script>
+  <script src="assets/js/renderers/modal.js?v=1"></script>
+  <script src="assets/js/renderers/badge.js?v=1"></script>
+  <script src="assets/js/renderers/progress.js?v=1"></script>
+  <script src="assets/js/renderers/spinner.js?v=1"></script>
+  <script src="assets/js/renderers/avatar.js?v=1"></script>
+  <script src="assets/js/renderers/stat-card.js?v=1"></script>
+  <script src="assets/js/renderers/empty-state.js?v=1"></script>
+  <script src="assets/js/renderers/offcanvas.js?v=1"></script>
+  <script src="assets/js/renderers/timeline.js?v=1"></script>
+  <script src="assets/js/renderers/stepper.js?v=1"></script>
+  <script src="assets/js/renderers/callout.js?v=1"></script>
+  <script src="assets/js/renderers/skeleton.js?v=1"></script>
+  <script src="assets/js/renderers/rating.js?v=1"></script>
+  <script src="assets/js/renderers/divider.js?v=1"></script>
+  <script src="assets/js/renderers/page-header.js?v=1"></script>
+  <script src="assets/js/renderers/input.js?v=6"></script>
+  <script src="assets/js/renderers/button.js?v=2"></script>
+  <script src="assets/js/renderers/card.js?v=2"></script>
   <script src="assets/js/renderers/input-button-group.js?v=4"></script>
-  <script src="assets/js/renderers/table.js?v=7"></script>
+  <script src="assets/js/renderers/table.js?v=8"></script>
   <script src="assets/js/renderers/fieldlist.js?v=3"></script>
   <script src="assets/js/renderers/chart.js?v=3"></script>
   <script src="assets/js/renderers/signature.js?v=3"></script>
   <script src="assets/js/renderers/wysiwyg.js?v=3"></script>
   <script src="assets/js/renderers/dropzone.js?v=7"></script>
   <script src="assets/js/renderers/fullcalendar.js?v=5"></script>
-  <script src="assets/js/renderers/heading.js?v=2"></script>
-  <script src="assets/js/renderers/paragraph.js?v=1"></script>
+  <script src="assets/js/renderers/heading.js?v=3"></script>
+  <script src="assets/js/renderers/paragraph.js?v=2"></script>
   <script src="assets/js/renderers/element.js?v=1"></script>
   <script src="assets/js/renderers/label.js?v=2"></script>
-  <script src="assets/js/renderers/list.js?v=1"></script>
-  <script src="assets/js/renderers/link.js?v=2"></script>
-  <script src="assets/js/renderers/image.js?v=1"></script>
-  <script src="assets/js/renderers/kpi.js?v=2"></script>
+  <script src="assets/js/renderers/list.js?v=2"></script>
+  <script src="assets/js/renderers/link.js?v=3"></script>
+  <script src="assets/js/renderers/image.js?v=2"></script>
+  <script src="assets/js/renderers/kpi.js?v=3"></script>
   <script src="assets/js/renderers/html.js?v=1"></script>
   <script src="assets/js/renderers/breadcrumb.js?v=2"></script>
   <script src="assets/js/renderers/textarea.js?v=1"></script>
@@ -155,6 +173,15 @@
   <script src="assets/js/renderers/quantity-stepper.js?v=1"></script>
   <script src="assets/js/renderers/payment-method.js?v=1"></script>
   <script src="assets/js/renderers/js-snippet.js?v=1"></script>
-  <script src="assets/js/builder.js?v=64"></script>
+  <script src="assets/js/renderers/menu-item.js?v=1"></script>
+  <script src="assets/js/renderers/menu-dropdown.js?v=2"></script>
+  <script src="assets/js/renderers/menu-divider.js?v=1"></script>
+  <script src="assets/js/renderers/menu-label.js?v=1"></script>
+  <script src="assets/js/renderers/menu-brand.js?v=1"></script>
+  <script src="assets/js/renderers/menu-badge-item.js?v=1"></script>
+  <script src="assets/js/renderers/menu-user.js?v=1"></script>
+  <script src="assets/js/renderers/menu-search.js?v=1"></script>
+  <script src="assets/js/renderers/menu-spacer.js?v=1"></script>
+  <script src="assets/js/builder.js?v=68"></script>
 </body>
 </html>

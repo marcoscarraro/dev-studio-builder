@@ -170,21 +170,106 @@ Verifique:
 
 Depois de qualquer alteracao estrutural, teste estes componentes:
 
-- Input;
+**Formulario:**
+- Campo texto (Input) — incluindo prefix/suffix addon;
 - Hidden Input;
-- Button;
+- Numero;
+- Textarea;
+- Select;
+- Checkbox / Radio;
+- Switch (Choice com `displayStyle: switch`);
+- Button — incluindo variantes outline, tamanho, disabled, href;
 - Input + Botoes;
+
+**Layout e containers:**
+- Form;
 - Card;
 - Card Personalizado;
-- Form;
+- Tabs — incluindo badge por aba;
+- Modal;
+- Accordion;
+
+**Conteudo:**
+- Heading (com pretitle/align);
+- Paragraph (com align/muted);
+- Badge;
+- Alert;
+- Divider (linha pura e com texto);
+- Page Header (com e sem botoes de acao);
+
+**Dados:**
 - Table;
+- DataTable;
+
+**Avancados:**
 - FieldList;
-- Datatable;
 - TomSelect;
 - Datepicker;
-- Grafico (qualquer tipo do grupo Graficos).
+- Grafico (qualquer tipo do grupo Graficos);
+- Offcanvas (verificar ID gerado no painel e no botao trigger);
+- Rating (verificar name gerado, modo readonly).
 
-## 11b. Teste de Graficos (ApexCharts)
+## 11b. Novos Componentes de Conteudo (Batch 2025)
+
+Quando alterar qualquer dos componentes adicionados no ciclo de jun/2025:
+
+**Badge, Progress, Spinner, Avatar:**
+- arrastar cada um;
+- alterar variante/cor no painel — preview atualiza;
+- verificar que nao quebra layout quando dentro de colunas estreitas.
+
+**Stat Card, Empty State:**
+- alterar icone, titulo, valor, trend — canvas atualiza sem erro;
+- Empty State: botao aparece quando `showButton: true`; some quando false.
+
+**Offcanvas:**
+- arrastar: ID e gerado automaticamente (`offcanvas-xxxxx`);
+- botao trigger tem `data-bs-toggle="offcanvas"` e `data-bs-target="#<id>"`;
+- alterar o `offcanvasId` no painel: o `data-bs-target` do botao atualiza;
+- o campo "Referencia de uso" (code-info) mostra o snippet com o ID correto;
+- exportar HTML: verificar `data-bs-target` e `id` coincidem.
+
+**Timeline, Stepper:**
+- adicionar, reordenar e remover itens no repeater;
+- Stepper horizontal: usa `steps`; vertical: `steps-vertical` (verificar);
+- item com `status: error` recebe classe visual de erro.
+
+**Callout:**
+- variante muda a cor da borda esquerda (callout-success, callout-danger, etc.);
+- icone e titulo opcionais — aparecem so quando preenchidos.
+
+**Skeleton:**
+- `animated: true` → `placeholder-glow`; `false` → `placeholder-wave`;
+- `showAvatar`, `showImage` mostram secoes extras acima das linhas.
+
+**Rating:**
+- name e gerado automaticamente na criacao (`rating-xxxxx`);
+- `readonly: true`: renderiza SVGs sem `<input type="radio">`;
+- `readonly: false`: cada estrela e um `<label><input radio>`;
+- exportar HTML: sem `<script>` extra (e HTML puro, sem runtime).
+
+**Divider:**
+- sem `label`: renderiza `<hr>`;
+- com `label`: renderiza `<div class="hr-text">Texto</div>`;
+- o spacing vem do `defaultCssClass: "my-2"` (editavel pelo usuario).
+
+**Page Header:**
+- `showActions: false`: oculta o bloco de botoes da direita;
+- cada item do repeater de acoes gera um `<a href>` com classe CSS e icone;
+- `subtitle` (pretitle) renderiza acima do titulo com `page-pretitle`.
+
+**Input addon (prefix/suffix):**
+- prefixText preenchido: input ganha wrapper `div.input-group` com `span.input-group-text` antes;
+- suffixText preenchido: mesmo, depois;
+- ambos preenchidos: prefix + input + suffix na mesma linha;
+- com `showPasswordToggle: true`: combina com suffix na mesma `input-group-flat`.
+
+**Tabs com badge:**
+- adicionar badge no repeater de abas: `<span class="badge">` aparece na aba;
+- `badgeVariant` muda a cor (`bg-primary`, `bg-danger`, etc.);
+- sem badge: aba exibe so o texto (sem regressao).
+
+## 11c. Teste de Graficos (ApexCharts)
 
 Quando alterar `chart.js`, `export-html.js`, `builder.js` ou `components.json` (grupo Graficos):
 
@@ -198,7 +283,7 @@ Quando alterar `chart.js`, `export-html.js`, `builder.js` ou `components.json` (
 - verificar que o script `apexcharts.min.js` foi incluido no HTML exportado;
 - testar com mais de um grafico na mesma pagina (IDs nao podem colidir).
 
-## 11c. DataTable — Server-side e Selecao por Checkbox
+## 11d. DataTable — Server-side e Selecao por Checkbox
 
 Quando alterar `table.js` (renderer datatable), `datatable-runtime.js` ou o bloco datatable do `components.json`:
 
@@ -224,7 +309,7 @@ Quando alterar `table.js` (renderer datatable), `datatable-runtime.js` ou o bloc
 - ColReorder nao move a coluna do checkbox (fixedColumnsLeft); no modo responsivo ela fica sempre visivel (classe `all`);
 - datatable SEM selecao segue identico ao comportamento anterior (regressao).
 
-## 11d. TomSelect — Busca Remota (server-side)
+## 11e. TomSelect — Busca Remota (server-side)
 
 Quando alterar `tom-select.js` (renderer), `tomselect-runtime.js`, `initializePreviewTomSelects` (builder.js) ou o bloco tom-select do `components.json`:
 

@@ -10,6 +10,16 @@
     const props = component.props || {};
     const columns = context.parseTableColumns(props.columns);
     const rows = context.parseTableRows(props.rows);
+
+    // Build table class with optional modifiers
+    let tableCls = context.getComponentClass(component);
+    if (context.toBooleanValue(props.striped)) tableCls = context.mergeClassNames(tableCls, "table-striped");
+    if (context.toBooleanValue(props.hover)) tableCls = context.mergeClassNames(tableCls, "table-hover");
+    if (context.toBooleanValue(props.bordered)) tableCls = context.mergeClassNames(tableCls, "table-bordered");
+    if (context.toBooleanValue(props.small)) tableCls = context.mergeClassNames(tableCls, "table-sm");
+
+    const tableClassAttr = component.props && component.props.cssClass !== undefined ? cssClassAttr : context.classAttr(tableCls);
+
     const header = columns.map((column) => {
       return `<th${context.classAttr(column.thClass)}${context.styleAttr(column.width)}>${context.escapeHtml(column.label)}</th>`;
     }).join("");
@@ -20,14 +30,26 @@
       return `<tr>${cells}</tr>`;
     }).join("");
 
-    return [
-      '<div class="table-responsive">',
-      `  <table${cssClassAttr}>`,
-      `    <thead><tr>${header}</tr></thead>`,
+    const showThead = props.showThead == null ? true : context.toBooleanValue(props.showThead);
+    const showTfoot = context.toBooleanValue(props.showTfoot);
+    const responsive = props.responsive == null ? true : context.toBooleanValue(props.responsive);
+
+    const theadHtml = showThead ? `    <thead><tr>${header}</tr></thead>\n` : "";
+    const tfootHtml = showTfoot ? `    <tfoot><tr>${header}</tr></tfoot>\n` : "";
+
+    const tableHtml = [
+      `  <table${tableClassAttr}>`,
+      theadHtml ? `    <thead><tr>${header}</tr></thead>` : null,
       `    <tbody>${body}</tbody>`,
-      "  </table>",
-      "</div>"
-    ].join("\n");
+      showTfoot ? `    <tfoot><tr>${header}</tr></tfoot>` : null,
+      "  </table>"
+    ].filter(Boolean).join("\n");
+
+    if (responsive) {
+      return `<div class="table-responsive">\n${tableHtml}\n</div>`;
+    }
+
+    return tableHtml.replace(/^  /gm, "");
   }
 
   function renderDataTableComponent(component, cssClassAttr, definition, context) {
