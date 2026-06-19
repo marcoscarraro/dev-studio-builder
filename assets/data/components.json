@@ -1865,6 +1865,41 @@
               ]
             }
           ]
+        },
+        {
+          "id": "page-footer",
+          "label": "Page Footer",
+          "kind": "pageFooter",
+          "icon": "block-icon paragraph",
+          "defaultCssClass": "page-footer",
+          "defaults": {
+            "sticky": false,
+            "buttons": [
+              { "text": "Salvar", "type": "submit", "href": "#", "cssClass": "btn btn-primary", "icon": "device-floppy", "iconColor": "", "iconPosition": "left" },
+              { "text": "Voltar", "type": "link", "href": "#", "cssClass": "btn btn-secondary", "icon": "arrow-left", "iconColor": "", "iconPosition": "left" },
+              { "text": "Cancelar", "type": "button", "href": "#", "cssClass": "btn btn-secondary", "icon": "x", "iconColor": "", "iconPosition": "left" },
+              { "text": "Limpar", "type": "reset", "href": "#", "cssClass": "btn btn-outline-secondary", "icon": "eraser", "iconColor": "", "iconPosition": "left" }
+            ]
+          },
+          "properties": [
+            { "label": "Fixo no rodape da tela (sticky)", "prop": "sticky", "field": "checkbox", "group": "Geral" },
+            {
+              "label": "Botoes",
+              "prop": "buttons",
+              "field": "repeater",
+              "group": "Botoes",
+              "addLabel": "Adicionar botao",
+              "itemFields": [
+                { "label": "Texto", "prop": "text", "field": "text", "default": "Botao" },
+                { "label": "Tipo", "prop": "type", "field": "select", "default": "button", "options": [["button", "Botao"], ["submit", "Submit (enviar form)"], ["reset", "Reset (limpar form)"], ["link", "Link (href)"]] },
+                { "label": "Href (apenas tipo Link)", "prop": "href", "field": "text", "default": "#" },
+                { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-secondary" },
+                { "label": "Icone Tabler", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Cor do icone (hex)", "prop": "iconColor", "field": "text", "default": "" },
+                { "label": "Posicao do icone", "prop": "iconPosition", "field": "select", "default": "left", "options": [["left", "Esquerda"], ["right", "Direita"]] }
+              ]
+            }
+          ]
         }
       ]
     },
