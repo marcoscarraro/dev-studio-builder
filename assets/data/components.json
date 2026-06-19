@@ -34,6 +34,9 @@
       "apexchart": "public/components/js/apexchart-runtime.js",
       "fullcalendar": "public/components/js/fullcalendar-runtime.js",
       "dropzone": "public/components/js/dropzone-runtime.js",
+      "barcodeScanner": "public/components/js/barcode-scanner-runtime.js",
+      "audioRecorder": "public/components/js/audio-recorder-runtime.js",
+      "clipboard": "public/components/js/clipboard-runtime.js",
       "passwordToggle": "public/components/js/password-toggle-runtime.js",
       "quantityStepper": "public/components/js/quantity-stepper-runtime.js"
     }
@@ -383,10 +386,11 @@
           "propertySets": ["fieldBase", "fieldState", "readonlyState", "inputValidation", "validationState"],
           "controlName": "campo_texto",
           "assets": { "init": "passwordToggle" },
-          "defaults": { "label": "Campo texto", "inputType": "text", "inputId": "", "name": "", "placeholder": "", "value": "", "prefixText": "", "suffixText": "", "minLength": "", "maxLength": "", "pattern": "", "customAttributes": [], "autocomplete": "", "showPasswordToggle": false, "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
+          "defaults": { "label": "Campo texto", "inputType": "text", "inputId": "", "name": "", "placeholder": "", "value": "", "prefixText": "", "suffixText": "", "minLength": "", "maxLength": "", "pattern": "", "customAttributes": [], "autocomplete": "", "showPasswordToggle": false, "showCopy": false, "dataMask": "", "dataMaskVisible": false, "textAlign": "", "required": false, "disabled": false, "readonly": false, "help": "", "validationState": "", "validationLite": false, "validFeedback": "", "invalidFeedback": "" },
           "properties": [
             { "label": "Tipo", "prop": "inputType", "field": "select", "options": [["text", "Texto"], ["password", "Senha"], ["email", "Email"], ["tel", "Telefone"], ["url", "URL"], ["search", "Busca"]] },
             { "label": "Mostrar botao olho", "prop": "showPasswordToggle", "field": "checkbox" },
+            { "label": "Botao copiar", "prop": "showCopy", "field": "checkbox" },
             { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
             { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Campo" },
             { "label": "Valor", "prop": "value", "field": "text", "group": "Campo" },
@@ -445,11 +449,12 @@
           "defaultCssClass": "form-control",
           "propertySets": ["fieldBase", "fieldState", "readonlyState", "validationState"],
           "controlName": "area_texto",
-          "defaults": { "label": "Area texto", "inputId": "", "name": "", "placeholder": "", "required": false, "disabled": false, "readonly": false, "rows": 4, "maxLength": "", "customAttributes": [], "help": "" },
+          "defaults": { "label": "Area texto", "inputId": "", "name": "", "placeholder": "", "required": false, "disabled": false, "readonly": false, "rows": 4, "maxLength": "", "customAttributes": [], "help": "", "showCopy": false },
           "properties": [
             { "label": "ID", "prop": "inputId", "field": "text", "group": "Campo" },
             { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Campo" },
             { "label": "Linhas", "prop": "rows", "field": "number", "min": 1, "max": 30, "group": "Campo" },
+            { "label": "Botao copiar", "prop": "showCopy", "field": "checkbox", "group": "Campo" },
             { "label": "Tamanho maximo", "prop": "maxLength", "field": "number", "min": 0, "group": "Validacao" },
             { "label": "Atributos personalizados", "prop": "customAttributes", "field": "attributes", "group": "Campo" }
           ]
@@ -1446,6 +1451,108 @@
           ]
         },
         {
+          "id": "audio-player",
+          "label": "Player de Audio",
+          "kind": "audioPlayer",
+          "icon": "block-icon audio-player",
+          "defaultCssClass": "",
+          "defaults": {
+            "src": "",
+            "label": "",
+            "preload": "metadata",
+            "autoplay": false,
+            "loop": false,
+            "muted": false,
+            "width": "100%"
+          },
+          "properties": [
+            { "label": "URL do audio", "prop": "src", "field": "text" },
+            { "label": "Legenda", "prop": "label", "field": "text" },
+            { "label": "Largura", "prop": "width", "field": "text" },
+            { "label": "Preload", "prop": "preload", "field": "select", "options": [["metadata", "Metadata (padrao)"], ["auto", "Auto (carrega tudo)"], ["none", "Nenhum"]] },
+            { "label": "Autoplay", "prop": "autoplay", "field": "checkbox" },
+            { "label": "Loop", "prop": "loop", "field": "checkbox" },
+            { "label": "Mudo (muted)", "prop": "muted", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "video-player",
+          "label": "Player de Video",
+          "kind": "videoPlayer",
+          "icon": "block-icon video-player",
+          "defaultCssClass": "",
+          "defaults": {
+            "src": "",
+            "poster": "",
+            "label": "",
+            "width": "100%",
+            "controls": true,
+            "preload": "metadata",
+            "autoplay": false,
+            "loop": false,
+            "muted": false
+          },
+          "properties": [
+            { "label": "URL do video", "prop": "src", "field": "text" },
+            { "label": "Poster (thumbnail)", "prop": "poster", "field": "text" },
+            { "label": "Legenda", "prop": "label", "field": "text" },
+            { "label": "Largura", "prop": "width", "field": "text" },
+            { "label": "Preload", "prop": "preload", "field": "select", "options": [["metadata", "Metadata (padrao)"], ["auto", "Auto (carrega tudo)"], ["none", "Nenhum"]] },
+            { "label": "Controles", "prop": "controls", "field": "checkbox" },
+            { "label": "Autoplay", "prop": "autoplay", "field": "checkbox" },
+            { "label": "Loop", "prop": "loop", "field": "checkbox" },
+            { "label": "Mudo (muted)", "prop": "muted", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "youtube-embed",
+          "label": "Video YouTube / Vimeo",
+          "kind": "youtubeEmbed",
+          "icon": "block-icon youtube-embed",
+          "defaultCssClass": "",
+          "defaults": {
+            "url": "",
+            "ratio": "16x9",
+            "controls": true,
+            "autoplay": false,
+            "start": 0,
+            "rel": false,
+            "title": "Video do YouTube"
+          },
+          "properties": [
+            { "label": "URL do YouTube ou Vimeo", "prop": "url", "field": "text" },
+            { "label": "Proporcao", "prop": "ratio", "field": "select", "options": [["16x9", "16:9 (padrao)"], ["4x3", "4:3"], ["1x1", "1:1 (quadrado)"], ["21x9", "21:9 (cinema)"]] },
+            { "label": "Mostrar controles", "prop": "controls", "field": "checkbox" },
+            { "label": "Autoplay", "prop": "autoplay", "field": "checkbox" },
+            { "label": "Iniciar em (segundos)", "prop": "start", "field": "number", "min": 0 },
+            { "label": "Videos relacionados ao final (YouTube)", "prop": "rel", "field": "checkbox" },
+            { "label": "Titulo (acessibilidade)", "prop": "title", "field": "text" }
+          ]
+        },
+        {
+          "id": "iframe-embed",
+          "label": "Iframe (Incorporar pagina)",
+          "kind": "iframeEmbed",
+          "icon": "block-icon iframe-embed",
+          "defaultCssClass": "",
+          "defaults": {
+            "url": "",
+            "ratio": "16x9",
+            "height": 400,
+            "title": "Conteudo incorporado",
+            "scrolling": true,
+            "allowFullscreen": true
+          },
+          "properties": [
+            { "label": "URL", "prop": "url", "field": "text" },
+            { "label": "Proporcao", "prop": "ratio", "field": "select", "options": [["16x9", "16:9"], ["4x3", "4:3"], ["1x1", "Quadrado"], ["21x9", "Cinema"], ["none", "Altura fixa"]] },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100 },
+            { "label": "Titulo (acessibilidade)", "prop": "title", "field": "text" },
+            { "label": "Scroll", "prop": "scrolling", "field": "checkbox" },
+            { "label": "Tela cheia", "prop": "allowFullscreen", "field": "checkbox" }
+          ]
+        },
+        {
           "id": "card",
           "label": "Card",
           "kind": "card",
@@ -2307,6 +2414,80 @@
             { "label": "Descricao", "prop": "description", "field": "text" },
             { "label": "Ajuda", "prop": "help", "field": "text" },
             { "label": "Controller de upload", "prop": "_laravelDropzoneRef", "field": "code-info", "group": "Laravel", "rows": 12, "valueTemplate": "// A Blade deve ter: <meta name=\"csrf-token\" content=\"{{ csrf_token() }}\">\n// O runtime envia X-CSRF-TOKEN automaticamente apos o fix abaixo.\n\n// Route: POST /{{action:#}}\npublic function store(Request $request)\n{\n    $request->validate([\n        '{{name:file}}' => 'required|file|max:10240',\n    ]);\n\n    $path = $request->file('{{name:file}}')\n        ->store('uploads', 'public');\n\n    return response()->json(['path' => $path], 201);\n}" }
+          ]
+        },
+        {
+          "id": "barcode-scanner",
+          "label": "Scanner QR / Codigo de Barras",
+          "kind": "barcodeScanner",
+          "icon": "block-icon qrcode",
+          "defaultCssClass": "",
+          "generatedFields": [
+            { "idProp": "scannerId", "base": "scanner" },
+            { "nameProp": "inputName", "base": "barcode" }
+          ],
+          "assets": {
+            "scripts": [
+              { "src": "public/tabler/libs/html5-qrcode/html5-qrcode.min.js" }
+            ],
+            "init": "barcodeScanner"
+          },
+          "defaults": {
+            "scannerId": "",
+            "inputName": "",
+            "facingMode": "environment",
+            "formats": "all",
+            "mode": "single",
+            "fps": 10,
+            "qrboxSize": 250,
+            "showResult": true,
+            "btnStartLabel": "Iniciar Camera",
+            "btnStopLabel": "Parar"
+          },
+          "properties": [
+            { "label": "ID do scanner", "prop": "scannerId", "field": "text", "group": "Elemento" },
+            { "label": "Nome do campo (form)", "prop": "inputName", "field": "text", "group": "Elemento" },
+            { "label": "Camera", "prop": "facingMode", "field": "select", "group": "Scanner", "options": [["environment", "Traseira (padrao)"], ["user", "Frontal"]] },
+            { "label": "Formatos aceitos", "prop": "formats", "field": "select", "group": "Scanner", "options": [["all", "Todos (QR + codigo de barras)"], ["qr_code", "Apenas QR Code"], ["ean_13", "EAN-13"], ["code_128", "Code 128"]] },
+            { "label": "Modo de leitura", "prop": "mode", "field": "select", "group": "Scanner", "options": [["single", "Unica (para apos primeira leitura)"], ["continuous", "Continua"]] },
+            { "label": "FPS de analise", "prop": "fps", "field": "number", "min": 1, "group": "Scanner" },
+            { "label": "Tamanho da caixa (px)", "prop": "qrboxSize", "field": "number", "min": 50, "group": "Scanner" },
+            { "label": "Mostrar resultado na tela", "prop": "showResult", "field": "checkbox", "group": "Scanner" },
+            { "label": "Rotulo botao iniciar", "prop": "btnStartLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Rotulo botao parar", "prop": "btnStopLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Controller Laravel", "prop": "_laravelScannerRef", "field": "code-info", "group": "Laravel", "rows": 10, "valueTemplate": "// O campo hidden name='{{inputName:barcode}}' e enviado com o codigo lido.\n// Route: POST /processar\npublic function processar(Request $request)\n{\n    $codigo = $request->input('{{inputName:barcode}}');\n\n    $produto = Produto::where('codigo_barras', $codigo)->firstOrFail();\n\n    return response()->json(['produto' => $produto]);\n}" }
+          ]
+        },
+        {
+          "id": "audio-recorder",
+          "label": "Gravador de Audio",
+          "kind": "audioRecorder",
+          "icon": "block-icon audio-recorder",
+          "defaultCssClass": "",
+          "generatedFields": [
+            { "idProp": "recorderId", "base": "gravador" },
+            { "nameProp": "inputName", "base": "audio" }
+          ],
+          "assets": {
+            "init": "audioRecorder"
+          },
+          "defaults": {
+            "recorderId": "",
+            "inputName": "",
+            "maxSeconds": 60,
+            "showPreview": true,
+            "btnRecordLabel": "Gravar",
+            "btnStopLabel": "Parar",
+            "btnClearLabel": "Descartar"
+          },
+          "properties": [
+            { "label": "ID do gravador", "prop": "recorderId", "field": "text", "group": "Elemento" },
+            { "label": "Nome do campo (form)", "prop": "inputName", "field": "text", "group": "Elemento" },
+            { "label": "Tempo maximo (segundos)", "prop": "maxSeconds", "field": "number", "min": 5, "group": "Gravacao" },
+            { "label": "Mostrar playback apos gravar", "prop": "showPreview", "field": "checkbox", "group": "Gravacao" },
+            { "label": "Botao gravar", "prop": "btnRecordLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Botao parar", "prop": "btnStopLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Botao descartar", "prop": "btnClearLabel", "field": "text", "group": "Rotulos" }
           ]
         }
       ]

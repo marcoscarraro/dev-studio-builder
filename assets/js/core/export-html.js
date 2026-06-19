@@ -460,6 +460,9 @@
       if (componentAssets.init === "apexchart") { neededRuntimes.add("apexchart"); }
       if (componentAssets.init === "fullcalendar") { neededRuntimes.add("fullcalendar"); }
       if (componentAssets.init === "dropzone") { neededRuntimes.add("dropzone"); }
+      if (componentAssets.init === "barcodeScanner") { neededRuntimes.add("barcodeScanner"); }
+      if (componentAssets.init === "audioRecorder") { neededRuntimes.add("audioRecorder"); }
+      if (context.toBooleanValue(props.showCopy)) { neededRuntimes.add("clipboard"); }
       if (componentAssets.init === "passwordToggle") {
         const inputType = props.inputType || definition.inputType || component.type || "text";
         if (inputType === "password" && context.toBooleanValue(props.showPasswordToggle)) {

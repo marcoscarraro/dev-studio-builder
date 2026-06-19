@@ -23,6 +23,15 @@
       context.toBooleanValue(props.readonly) ? " readonly" : ""
     ].join("");
 
-    return `<label class="form-label">${label}${required}</label><textarea${context.classAttr(context.mergeClassNames(cssClass, context.getValidationClass(props)))}${textareaAttrs}></textarea>${help}${context.renderValidationFeedback(props)}`;
+    const showCopy = context.toBooleanValue(props.showCopy);
+    const textareaEl = `<textarea${context.classAttr(context.mergeClassNames(cssClass, context.getValidationClass(props)))}${textareaAttrs}></textarea>`;
+    const labelEl = `<label class="form-label">${label}${required}</label>`;
+
+    if (!showCopy) {
+      return `${labelEl}${textareaEl}${help}${context.renderValidationFeedback(props)}`;
+    }
+
+    const copyBtn = `<button type="button" class="btn btn-outline-secondary" data-copy-btn title="Copiar">${context.renderTablerIcon("copy", "")}</button>`;
+    return `${labelEl}<div class="input-group align-items-start">${textareaEl}${copyBtn}</div>${help}${context.renderValidationFeedback(props)}`;
   }
 }());

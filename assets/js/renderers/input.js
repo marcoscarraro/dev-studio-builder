@@ -13,6 +13,7 @@
     const cssClass = context.getComponentClass(component);
     const inputType = props.inputType || definition.inputType || component.type || "text";
     const showToggle = inputType === "password" && context.toBooleanValue(props.showPasswordToggle);
+    const showCopy = inputType !== "password" && inputType !== "file" && context.toBooleanValue(props.showCopy);
     const allowNegative = inputType === "number" && context.toBooleanValue(props.allowNegative);
     const prefixText = props.prefixText || "";
     const suffixText = props.suffixText || "";
@@ -41,7 +42,7 @@
     });
     const inputEl = `<input${context.classAttr(context.mergeClassNames(cssClass, props.textAlign, context.getValidationClass(props)))}${inputAttrs}>`;
 
-    const hasGroupAddons = prefixText || suffixText || showToggle;
+    const hasGroupAddons = prefixText || suffixText || showToggle || showCopy;
 
     if (!hasGroupAddons) {
       return [
@@ -63,11 +64,15 @@
       toggleHtml = `<span class="input-group-text"><a href="#" id="${context.escapeAttr(toggleId)}" class="link-secondary" title="Mostrar senha" data-password-toggle>${eyeIcon}</a></span>`;
     }
 
+    const copyHtml = showCopy
+      ? `<button type="button" class="btn btn-outline-secondary" data-copy-btn title="Copiar">${context.renderTablerIcon("copy", "")}</button>`
+      : "";
+
     const groupCls = showToggle ? "input-group input-group-flat" : "input-group";
 
     return [
       context.renderFormLabel(label, required),
-      `<div class="${groupCls}">${prefixHtml}${inputEl}${suffixHtml}${toggleHtml}</div>`,
+      `<div class="${groupCls}">${prefixHtml}${inputEl}${suffixHtml}${toggleHtml}${copyHtml}</div>`,
       help,
       context.renderValidationFeedback(props)
     ].join("");

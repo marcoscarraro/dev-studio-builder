@@ -53,11 +53,13 @@ assets/js/core/export-html.js
 assets/js/renderers/registry.js
 assets/js/renderers/<um arquivo por componente>.js
   (heading, paragraph, input, select, choice, card, fieldlist, chart, date-picker,
-   js-snippet, dropzone, fullcalendar, ...)
+   js-snippet, dropzone, fullcalendar, barcode-scanner,
+   audio-player, audio-recorder, video-player, youtube-embed, ...)
 
 public/components/js/<um runtime por lib viva>.js
   (datatable, tomselect, litepicker, signature, hugerte, apexchart, fullcalendar,
-   dropzone, mask, password-toggle, quantity-stepper, fieldlist, ajax-fill)
+   dropzone, mask, password-toggle, quantity-stepper, fieldlist, ajax-fill,
+   barcode-scanner, audio-recorder)
 
 mock/*.json            <- dados de exemplo (GET)
 mock/form-post.php     <- endpoint de teste do Envio AJAX (POST; ecoa o que recebeu)
@@ -160,7 +162,7 @@ O padrao e:
 }
 ```
 
-2. Em `builder.js`, a funcao `initializePreviewComponents` ja carrega os scripts dinamicamente para os valores de `init` conhecidos (`litepicker`, `apexchart`, `dropzone`, `fullcalendar`) e chama a funcao de inicializacao correspondente no canvas.
+2. Em `builder.js`, a funcao `initializePreviewComponents` ja carrega os scripts dinamicamente para os valores de `init` conhecidos (`litepicker`, `apexchart`, `dropzone`, `fullcalendar`) e chama a funcao de inicializacao correspondente no canvas. **Excecao:** `barcodeScanner` nao e inicializado no canvas (acesso a camera e intrusivo no editor) — o canvas exibe apenas o HTML estatico do renderer; o runtime so roda na pagina exportada.
 
 3. Em `export-html.js`, a funcao `collectExportAssets` verifica o valor de `init` e inclui o **runtime** correspondente de `public/components/js/` (a pagina exportada **nao tem mais JS inline**). O runtime varre o DOM por `[data-xxx]` e inicializa lendo os `data-*` emitidos pelo renderer.
 
@@ -176,6 +178,11 @@ Valores de `init` reconhecidos atualmente:
 | `apexchart` | ApexCharts | `apexchart-runtime.js` |
 | `fullcalendar` | FullCalendar | `fullcalendar-runtime.js` |
 | `dropzone` | Dropzone | `dropzone-runtime.js` |
+| `barcodeScanner` | html5-qrcode | `barcode-scanner-runtime.js` |
+| `audioRecorder` | MediaRecorder (nativo) | `audio-recorder-runtime.js` |
+| `audioPlayer` | `<audio>` nativo | — (sem runtime) |
+| `videoPlayer` | `<video>` nativo | — (sem runtime) |
+| `youtubeEmbed` | `<iframe>` YouTube | — (sem runtime) |
 | `passwordToggle` | toggle de senha | `password-toggle-runtime.js` |
 | `mask` | IMask | `mask-runtime.js` |
 

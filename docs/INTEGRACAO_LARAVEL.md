@@ -27,6 +27,10 @@ Alterar "URL AJAX", "Campo valor" etc. atualiza o snippet em tempo real.
 | Graficos (XY / Pizza) | `ajaxUrl` |
 | Dropzone | `action`, `name` |
 | Input Button Group | — (exemplo generico) |
+| Scanner QR / Codigo de Barras | `inputName` |
+| Gravador de Audio | `inputName` |
+| Player de Video | — |
+| Video YouTube | — |
 
 ---
 
@@ -392,8 +396,222 @@ CORS no Laravel:
 
 ---
 
+## Scanner QR / Codigo de Barras
+
+O scanner e inteiramente client-side: a camera le o codigo e preenche um
+`<input type="hidden">` com o valor lido. Nao ha requisicao AJAX — o codigo
+chega ao backend apenas no submit do formulario que envolve o componente.
+
+### Requisito: HTTPS
+
+O acesso a camera (`getUserMedia`) so funciona em **contexto seguro** (HTTPS
+ou `localhost`). Em producao Laravel, confirme que a URL da pagina e HTTPS.
+
+### Como o valor chega ao controller
+
+O campo hidden gerado tem `name` igual ao "Nome do campo (form)" configurado
+no painel (default auto-gerado, ex.: `barcode-558fmqibcr89`). Esse valor e
+enviado junto com todos os outros campos do formulario no submit:
+
+```blade
+{{-- No Blade, o HTML exportado vai dentro de um form normal --}}
+<form method="POST" action="/processar">
+    @csrf
+    {{-- ... outros campos ... --}}
+    {{-- HTML do scanner: div + input hidden gerado pelo builder --}}
+    <input type="hidden" name="barcode-558fmqibcr89" data-barcode-result-input="...">
+
+    <button type="submit">Enviar</button>
+</form>
+```
+
+```php
+// Route: POST /processar
+public function processar(Request $request)
+{
+    $codigo = $request->input('barcode-558fmqibcr89');
+
+    $produto = Produto::where('codigo_barras', $codigo)->firstOrFail();
+
+    return redirect()->back()->with('produto', $produto);
+}
+```
+
+> O snippet no grupo **"Laravel"** do painel ja usa `{{inputName}}` e atualiza
+> o nome do campo em tempo real conforme voce altera "Nome do campo (form)".
+
+### Modos de leitura
+
+| Modo | Comportamento |
+|---|---|
+| `single` (padrao) | Camera para automaticamente apos a primeira leitura |
+| `continuous` | Camera permanece ativa; cada leitura sobrescreve o campo hidden |
+
+### Formatos suportados
+
+| Opcao | Formatos ativos |
+|---|---|
+| Todos (padrao) | QR Code, EAN-13, EAN-8, UPC-A, UPC-E, Code-128, Code-39, Code-93, ITF, Codabar, DataMatrix, Aztec, PDF-417 |
+| Apenas QR Code | QR Code |
+| EAN-13 | EAN-13 |
+| Code 128 | Code 128 |
+
+Restringir o formato melhora a velocidade de deteccao quando voce sabe
+exatamente o tipo de codigo que sera lido.
+
+---
+
+## Gravador de Audio
+
+O gravador captura audio pelo microfone do dispositivo usando as APIs nativas
+`getUserMedia` + `MediaRecorder` (sem biblioteca externa). Ao parar a gravacao,
+o audio e convertido para **DataURL base64** e armazenado num
+`<input type="hidden">` para ser enviado junto com o formulario.
+
+### Requisito: HTTPS
+
+O acesso ao microfone (`getUserMedia`) exige **contexto seguro** (HTTPS ou
+`localhost`) — igual ao scanner de camera.
+
+### Como o valor chega ao controller
+
+O campo hidden gerado tem `name` igual ao "Nome do campo (form)" configurado no
+painel (auto-gerado, ex.: `audio-558fmqibcr89`). O valor e uma string DataURL:
+`data:audio/webm;base64,GkXfoZ...`.
+
+```php
+// Route: POST /processar
+public function processar(Request $request)
+{
+    $audioBase64 = $request->input('audio-558fmqibcr89');
+
+    // Decodifica e salva no disco
+    if ($audioBase64 && str_starts_with($audioBase64, 'data:audio/')) {
+        [$header, $data] = explode(',', $audioBase64, 2);
+        $extension = str_contains($header, 'webm') ? 'webm'
+                   : (str_contains($header, 'ogg') ? 'ogg' : 'mp4');
+
+        $filename = 'audio-' . uniqid() . '.' . $extension;
+        Storage::disk('public')->put('audios/' . $filename, base64_decode($data));
+    }
+
+    return redirect()->back()->with('success', 'Audio salvo.');
+}
+```
+
+> Para gravacoes longas prefira enviar via AJAX separado — um DataURL de
+> audio de 60s ocupa ~1-3 MB de base64, o que pode exceder `post_max_size`
+> ou `max_input_size` do PHP. Ajuste em `php.ini` ou use upload direto.
+
+### Formatos gerados
+
+O runtime detecta automaticamente o melhor formato suportado pelo navegador:
+`audio/webm;codecs=opus` (Chrome), `audio/ogg;codecs=opus` (Firefox) ou
+`audio/mp4` (Safari/iOS). O arquivo salvo deve usar a extensao correta
+(extraida do header da DataURL, como no exemplo acima).
+
+---
+
+## Player de Video
+
+O componente gera um `<video controls>` nativo do HTML5. Nao ha runtime nem
+biblioteca externa — o proprio navegador cuida da reproducao.
+
+### URL do video no Laravel
+
+Para videos armazenados no disco, use o helper `asset()` ou `Storage::url()`:
+
+```blade
+{{-- URL gerada dinamicamente (nao use o builder para este caso) --}}
+<video controls src="{{ Storage::url('videos/meu-video.mp4') }}" style="width:100%">
+  Seu navegador nao suporta o player de video HTML5.
+</video>
+```
+
+No builder, insira a URL absoluta ou relativa diretamente na prop "URL do video".
+Em producao Laravel isso costuma ser um link publico do `public/storage/` ou de
+um CDN/bucket.
+
+### CORS para videos em outros dominios
+
+Se o video estiver em um dominio diferente (S3, CDN), o servidor de origem deve
+enviar o header `Access-Control-Allow-Origin`. Sem ele, o navegador bloqueia a
+requisicao quando `crossorigin` esta definido.
+
+### Autoplay
+
+A maioria dos navegadores modernos bloqueia autoplay com som. Para autoplay
+funcionar, ative simultaneamente **Autoplay** e **Mudo (muted)** nas propriedades
+do componente — e o unico modo garantido por politica dos navegadores.
+
+---
+
+## Video YouTube
+
+O componente gera um `<iframe>` apontando para `youtube.com/embed/{id}` dentro
+de um container responsivo (`ratio ratio-16x9` do Bootstrap). Nao ha runtime.
+
+O campo "URL ou ID do video" aceita qualquer formato:
+
+| Entrada | Exemplo |
+|---|---|
+| URL completa | `https://www.youtube.com/watch?v=dQw4w9WgXcQ` |
+| URL curta | `https://youtu.be/dQw4w9WgXcQ` |
+| URL embed | `https://www.youtube.com/embed/dQw4w9WgXcQ` |
+| URL Shorts | `https://www.youtube.com/shorts/dQw4w9WgXcQ` |
+| ID direto | `dQw4w9WgXcQ` |
+
+O renderer extrai o ID automaticamente de qualquer um dos formatos acima.
+
+### CSP (Content-Security-Policy) no Laravel
+
+Se o projeto usa o middleware `ContentSecurityPolicy` (ex.: pacote `spatie/laravel-csp`
+ou header manual), o iframe do YouTube sera bloqueado por padrao. Adicione a
+diretiva `frame-src`:
+
+```php
+// Exemplo com spatie/laravel-csp — no seu Policy customizado:
+public function addDirectives(Directive $policy): void
+{
+    $policy->add(Directive::FRAME_SRC, 'https://www.youtube.com');
+    // ... outras diretivas
+}
+```
+
+Ou, se o CSP e definido como header HTTP manual:
+
+```php
+// app/Http/Middleware/SetSecurityHeaders.php
+$response->headers->set(
+    'Content-Security-Policy',
+    "frame-src 'self' https://www.youtube.com; ..."
+);
+```
+
+### Autoplay
+
+Assim como no player nativo, autoplay do YouTube no iframe requer que o video
+inicie mutado (`muted=1` e adicionado automaticamente ao parametro da URL
+quando "Autoplay" esta ativo) — caso contrario o navegador bloqueia.
+
+O atributo `allow="autoplay"` ja e incluido no iframe pelo renderer.
+
+### Videos relacionados ao final
+
+A prop "Videos relacionados ao final" controla o parametro `rel` do YouTube:
+- Desligada (padrao): `rel=0` — o YouTube exibe apenas videos do mesmo canal ao fim
+- Ligada: `rel=1` — exibe qualquer video relacionado
+
+> Desde 2018 o YouTube ignora `rel=0` para mostrar videos de outros canais;
+> com `rel=0` ele ainda pode exibir videos do mesmo canal, mas reduz a
+> dispersao do usuario.
+
+---
+
 ## Checklist de producao
 
+- [ ] Pagina servida via **HTTPS** (obrigatorio para acesso a camera e microfone)
+- [ ] CSP permite `frame-src https://www.youtube.com` (se o projeto usa CSP)
 - [ ] Blade tem `<meta name="csrf-token" content="{{ csrf_token() }}">` (Dropzone)
 - [ ] Rotas AJAX protegidas com middleware de autenticacao
 - [ ] Token no HTML (se necessario) e de baixo privilegio — apenas leitura
