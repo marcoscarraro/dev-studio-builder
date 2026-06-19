@@ -55,6 +55,14 @@
     var ajaxAttr;
     if (ajaxUrl) {
       ajaxAttr = " data-chart-ajax-url=\"" + context.escapeAttr(ajaxUrl) + "\"";
+      var authType = (props.ajaxAuthType || "none").trim();
+      if (authType !== "none") {
+        ajaxAttr += " data-chart-auth-type=\"" + context.escapeAttr(authType) + "\""
+          + " data-chart-auth-token=\"" + context.escapeAttr(props.ajaxAuthToken || "") + "\"";
+        if (authType === "header") {
+          ajaxAttr += " data-chart-auth-header=\"" + context.escapeAttr(props.ajaxAuthHeader || "X-API-Key") + "\"";
+        }
+      }
     } else {
       ajaxAttr = "";
     }

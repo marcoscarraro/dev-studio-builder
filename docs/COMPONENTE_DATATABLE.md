@@ -153,47 +153,72 @@ e sem selecao, sem ajuste de indice.
 Referencia funcional completa: `mock/datatable-server-side.php` (aceita GET,
 POST form e POST JSON; busca global; ordenacao com whitelist de campos).
 
-### Esqueleto Laravel (Eloquent)
+### Snippets no painel de propriedades
+
+O painel exibe um grupo **"Laravel"** com o controller sugerido, ja adaptado ao
+modo ativo:
+
+- **`_laravelSimpleRef`** (`showWhen serverSide = false`): retorno simples com
+  `response()->json(['data' => ...])`. O placeholder `{{ajaxDataSrc}}` usa o
+  JSON path configurado.
+- **`_laravelServerRef`** (`showWhen serverSide = true`): controller completo com
+  busca global, ordenacao com whitelist e paginacao.
+
+Ambos atualizam em tempo real conforme `ajaxUrl` e `ajaxDataSrc` mudam. Use
+o botao "Copiar" e cole direto no controller.
+
+### Esqueleto Laravel (Eloquent) — carga simples
 
 ```php
-public function index(Request $request)
+// Route: GET /api/usuarios
+public function index()
 {
-    $query = Usuario::query();
-
-    $busca = $request->input('search.value', '');
-    if ($busca !== '') {
-        $query->where(function ($q) use ($busca) {
-            $q->where('nome', 'like', "%{$busca}%")
-              ->orWhere('email', 'like', "%{$busca}%")
-              ->orWhere('situacao', 'like', "%{$busca}%");
-        });
-    }
-
-    // Campo de ordenacao via columns[i][data], com whitelist (nunca confiar direto)
-    $permitidos = ['id', 'nome', 'email', 'situacao'];
-    $idx = (int) $request->input('order.0.column', 0);
-    $campo = $request->input("columns.{$idx}.data", 'id');
-    if (in_array($campo, $permitidos, true)) {
-        $query->orderBy($campo, $request->input('order.0.dir') === 'desc' ? 'desc' : 'asc');
-    }
-
-    $total = Usuario::count();
-    $filtrados = (clone $query)->count();
-    $registros = $query->skip((int) $request->input('start', 0))
-                       ->take(min(500, max(1, (int) $request->input('length', 10))))
-                       ->get(['id', 'nome', 'email', 'situacao']);
-
     return response()->json([
-        'draw' => (int) $request->input('draw', 0),
-        'recordsTotal' => $total,
-        'recordsFiltered' => $filtrados,
-        'data' => $registros,
+        'data' => Usuario::select('id', 'nome', 'email')
+            ->orderBy('nome')
+            ->get(),
     ]);
 }
 ```
 
-Regras de seguranca que o exemplo ja aplica: `draw` como int, whitelist no campo
-de ordenacao, `length` limitado, busca via binding (nada de SQL concatenado).
+### Esqueleto Laravel (Eloquent) — server-side
+
+```php
+// Route: GET /api/usuarios  (ou POST, configuravel em "Metodo AJAX")
+public function index(Request $request)
+{
+    $columns = ['id', 'nome', 'email', 'situacao'];
+    $query   = Usuario::query();
+
+    if ($busca = $request->input('search.value')) {
+        $query->where(fn($q) =>
+            $q->where('nome', 'like', '%' . $busca . '%')
+              ->orWhere('email', 'like', '%' . $busca . '%')
+              ->orWhere('situacao', 'like', '%' . $busca . '%'));
+    }
+
+    // Ordenacao com whitelist — nunca confiar no indice da coluna direto
+    $total  = $query->count();
+    $idx    = (int) $request->input('order.0.column', 0);
+    $col    = $columns[$idx] ?? 'id';
+    $dir    = $request->input('order.0.dir', 'asc') === 'desc' ? 'desc' : 'asc';
+
+    $data = $query->orderBy($col, $dir)
+        ->skip((int) $request->input('start', 0))
+        ->take(min(500, max(1, (int) $request->input('length', 10))))
+        ->get(['id', 'nome', 'email', 'situacao']);
+
+    return response()->json([
+        'draw'            => (int) $request->input('draw', 0),
+        'recordsTotal'    => Usuario::count(),
+        'recordsFiltered' => $total,
+        'data'            => $data,
+    ]);
+}
+```
+
+Regras de seguranca que o exemplo ja aplica: `draw` como `(int)`, whitelist no
+campo de ordenacao, `length` limitado, busca via binding parametrizado.
 
 ---
 

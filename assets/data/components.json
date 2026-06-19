@@ -27,6 +27,7 @@
       "maskInit": "public/components/js/mask-runtime.js",
       "datatable": "public/components/js/datatable-runtime.js",
       "tomselect": "public/components/js/tomselect-runtime.js",
+      "tomselectCreate": "public/components/js/tomselect-create-runtime.js",
       "litepicker": "public/components/js/litepicker-runtime.js",
       "signature": "public/components/js/signature-runtime.js",
       "hugerte": "public/components/js/hugerte-runtime.js",
@@ -1041,7 +1042,8 @@
                 { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" }
               ]
             },
-            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" }
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" },
+            { "label": "Controller AJAX Fill", "prop": "_laravelAjaxFillRef", "field": "code-info", "group": "Laravel", "rows": 11, "valueTemplate": "// URL template do botao usa {{value}} — ex: /api/produtos/{{value}}\n// Route: GET /api/produtos/{id}\npublic function show(string $id)\n{\n    $item = Produto::findOrFail($id);\n\n    return response()->json([\n        // Retorne os mesmos campos dos \"Mapeamentos JSON\":\n        'logradouro' => $item->logradouro,\n        'bairro'     => $item->bairro,\n        'cidade'     => $item->localidade,\n    ]);\n}" }
           ]
         },
         {
@@ -2018,7 +2020,9 @@
             { "label": "Botao de colunas", "prop": "buttons", "field": "checkbox" },
             { "label": "Busca", "prop": "searching", "field": "checkbox" },
             { "label": "Seletor de quantidade", "prop": "lengthChange", "field": "checkbox" },
-            { "label": "Texto vazio", "prop": "emptyText", "field": "text" }
+            { "label": "Texto vazio", "prop": "emptyText", "field": "text" },
+            { "label": "Controller Laravel (carga simples)", "prop": "_laravelSimpleRef", "field": "code-info", "group": "Laravel", "rows": 8, "showWhen": { "prop": "serverSide", "equals": false }, "valueTemplate": "// O DataTable espera o JSON path '{{ajaxDataSrc:data}}'\n// Route: GET /{{ajaxUrl:api/registros}}\npublic function index()\n{\n    return response()->json([\n        '{{ajaxDataSrc:data}}' => Modelo::select('id', 'nome', 'email')\n            ->orderBy('nome')\n            ->get(),\n    ]);\n}" },
+            { "label": "Controller Laravel (server-side)", "prop": "_laravelServerRef", "field": "code-info", "group": "Laravel", "rows": 22, "showWhen": { "prop": "serverSide", "equals": true }, "valueTemplate": "// Route: GET /{{ajaxUrl:api/registros}}\npublic function index(Request $request)\n{\n    $columns = ['id', 'nome', 'email'];\n    $query   = Modelo::query();\n\n    if ($search = $request->input('search.value')) {\n        $query->where(fn($q) =>\n            $q->where('nome', 'like', '%' . $search . '%')\n              ->orWhere('email', 'like', '%' . $search . '%'));\n    }\n\n    $total = $query->count();\n    $col   = $columns[$request->input('order.0.column', 0)] ?? 'id';\n    $dir   = $request->input('order.0.dir', 'asc') === 'desc' ? 'desc' : 'asc';\n\n    $data = $query->orderBy($col, $dir)\n        ->skip((int) $request->input('start', 0))\n        ->take((int) $request->input('length', 10))\n        ->get();\n\n    return response()->json([\n        'draw'            => (int) $request->input('draw'),\n        'recordsTotal'    => $total,\n        'recordsFiltered' => $total,\n        'data'            => $data,\n    ]);\n}" }
           ]
         },
         {
@@ -2086,7 +2090,90 @@
             { "label": "Max opcoes", "prop": "maxOptions", "field": "number", "group": "Comportamento" },
             { "label": "Permitir criar", "prop": "create", "field": "checkbox", "group": "Comportamento" },
             { "label": "URL do formulario de criacao", "prop": "createUrl", "field": "text", "group": "Comportamento" },
-            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text", "group": "Validacao" }
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text", "group": "Validacao" },
+            { "label": "Controller Laravel (carga completa)", "prop": "_laravelRef", "field": "code-info", "group": "Laravel", "rows": 8, "showWhen": { "prop": "remoteSearch", "equals": false }, "valueTemplate": "// Route: GET /{{ajaxUrl:api/itens}}\npublic function index()\n{\n    return response()->json(\n        Item::select('{{valueField:id}}', '{{labelField:text}}')\n            ->orderBy('{{labelField:text}}')\n            ->get()\n    );\n}" },
+            { "label": "Controller Laravel (busca remota)", "prop": "_laravelRemoteRef", "field": "code-info", "group": "Laravel", "rows": 10, "showWhen": { "prop": "remoteSearch", "equals": true }, "valueTemplate": "// Route: GET /{{ajaxUrl:api/itens}}?{{searchParam:q}}=termo\npublic function index(Request $request)\n{\n    $query = Item::select('{{valueField:id}}', '{{labelField:text}}');\n\n    if ($request->filled('{{searchParam:q}}')) {\n        $query->where('{{labelField:text}}', 'like',\n            '%' . $request->input('{{searchParam:q}}') . '%');\n    }\n\n    return response()->json($query->limit({{maxOptions:50}})->get());\n}" }
+          ]
+        },
+        {
+          "id": "tom-select-create",
+          "label": "TomSelect + Criar",
+          "kind": "tomSelectCreate",
+          "icon": "block-icon tom-select",
+          "defaultCssClass": "form-select",
+          "propertySets": ["fieldBase", "fieldState", "validationState"],
+          "controlName": "tom_select_create",
+          "generatedFields": [
+            { "idProp": "modalId", "base": "create-modal" }
+          ],
+          "assets": {
+            "styles": [
+              "public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css"
+            ],
+            "scripts": [
+              "public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"
+            ],
+            "init": "tomselectCreate"
+          },
+          "defaults": {
+            "label": "Categoria",
+            "selectId": "",
+            "name": "",
+            "placeholder": "Selecione...",
+            "ajaxUrl": "mock/tom-select.json",
+            "jsonPath": "categorias",
+            "remoteSearch": false,
+            "searchParam": "q",
+            "loadThrottle": 300,
+            "preload": true,
+            "required": true,
+            "disabled": false,
+            "multiple": false,
+            "valueField": "id",
+            "labelField": "text",
+            "searchField": "text",
+            "allowEmptyOption": true,
+            "sortField": "text",
+            "sortDirection": "asc",
+            "maxOptions": 100,
+            "createLabel": "Criar novo",
+            "createUrl": "",
+            "modalId": "",
+            "modalTitle": "Novo Registro",
+            "modalSize": "modal-lg",
+            "responseValueField": "id",
+            "responseLabelField": "text",
+            "invalidFeedback": "",
+            "help": ""
+          },
+          "properties": [
+            { "label": "ID", "prop": "selectId", "field": "text", "group": "Geral" },
+            { "label": "Placeholder", "prop": "placeholder", "field": "text", "group": "Geral" },
+            { "label": "URL AJAX", "prop": "ajaxUrl", "field": "text", "group": "Dados remotos" },
+            { "label": "JSON path", "prop": "jsonPath", "field": "text", "group": "Dados remotos" },
+            { "label": "Busca remota (server-side)", "prop": "remoteSearch", "field": "checkbox", "group": "Dados remotos" },
+            { "label": "Parametro da busca (query string)", "prop": "searchParam", "field": "text", "group": "Dados remotos", "showWhen": { "prop": "remoteSearch", "equals": true } },
+            { "label": "Debounce da digitacao (ms)", "prop": "loadThrottle", "field": "number", "min": 0, "group": "Dados remotos", "showWhen": { "prop": "remoteSearch", "equals": true } },
+            { "label": "Carregar ao abrir (preload)", "prop": "preload", "field": "checkbox", "group": "Dados remotos", "showWhen": { "prop": "remoteSearch", "equals": true } },
+            { "label": "Campo valor", "prop": "valueField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo texto", "prop": "labelField", "field": "text", "group": "Dados remotos" },
+            { "label": "Campo busca", "prop": "searchField", "field": "text", "group": "Dados remotos" },
+            { "label": "Multiplo", "prop": "multiple", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Permitir opcao vazia", "prop": "allowEmptyOption", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Campo de ordenacao", "prop": "sortField", "field": "text", "group": "Comportamento" },
+            { "label": "Direcao da ordenacao", "prop": "sortDirection", "field": "select", "options": [["asc", "Crescente"], ["desc", "Decrescente"]], "group": "Comportamento" },
+            { "label": "Max opcoes", "prop": "maxOptions", "field": "number", "group": "Comportamento" },
+            { "label": "Texto da opcao criar", "prop": "createLabel", "field": "text", "group": "Criar novo" },
+            { "label": "URL do formulario (iframe)", "prop": "createUrl", "field": "text", "group": "Criar novo" },
+            { "label": "ID do modal", "prop": "modalId", "field": "text", "group": "Criar novo" },
+            { "label": "Titulo do modal", "prop": "modalTitle", "field": "text", "group": "Criar novo" },
+            { "label": "Tamanho do modal", "prop": "modalSize", "field": "select", "group": "Criar novo", "options": [["modal-lg", "Grande (lg)"], ["modal-xl", "Extra grande (xl)"], ["modal-fullscreen", "Tela cheia"]] },
+            { "label": "Campo ID na resposta", "prop": "responseValueField", "field": "text", "group": "Criar novo" },
+            { "label": "Campo texto na resposta", "prop": "responseLabelField", "field": "text", "group": "Criar novo" },
+            { "label": "Snippet para o iframe (copie e cole)", "prop": "_createRef", "field": "code-info", "group": "Criar novo", "rows": 7, "valueTemplate": "// Cole isto no formulario do iframe apos salvar:\nwindow.parent.postMessage({\n  dsb_action: 'select_created',\n  {{responseValueField:id}}: novoRegistro.{{responseValueField:id}},\n  {{responseLabelField:text}}: novoRegistro.{{responseLabelField:text}}\n}, '*');" },
+            { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text", "group": "Validacao" },
+            { "label": "Controller Laravel (carga completa)", "prop": "_laravelRef", "field": "code-info", "group": "Laravel", "rows": 8, "showWhen": { "prop": "remoteSearch", "equals": false }, "valueTemplate": "// Route: GET /{{ajaxUrl:api/itens}}\npublic function index()\n{\n    return response()->json(\n        Item::select('{{valueField:id}}', '{{labelField:text}}')\n            ->orderBy('{{labelField:text}}')\n            ->get()\n    );\n}" },
+            { "label": "Controller Laravel (busca remota)", "prop": "_laravelRemoteRef", "field": "code-info", "group": "Laravel", "rows": 10, "showWhen": { "prop": "remoteSearch", "equals": true }, "valueTemplate": "// Route: GET /{{ajaxUrl:api/itens}}?{{searchParam:q}}=termo\npublic function index(Request $request)\n{\n    $query = Item::select('{{valueField:id}}', '{{labelField:text}}');\n\n    if ($request->filled('{{searchParam:q}}')) {\n        $query->where('{{labelField:text}}', 'like',\n            '%' . $request->input('{{searchParam:q}}') . '%');\n    }\n\n    return response()->json($query->limit({{maxOptions:50}})->get());\n}" }
           ]
         },
         {
@@ -2218,7 +2305,8 @@
             { "label": "Tamanho maximo (MB)", "prop": "maxFileSizeMb", "field": "text" },
             { "label": "Titulo", "prop": "title", "field": "text" },
             { "label": "Descricao", "prop": "description", "field": "text" },
-            { "label": "Ajuda", "prop": "help", "field": "text" }
+            { "label": "Ajuda", "prop": "help", "field": "text" },
+            { "label": "Controller de upload", "prop": "_laravelDropzoneRef", "field": "code-info", "group": "Laravel", "rows": 12, "valueTemplate": "// A Blade deve ter: <meta name=\"csrf-token\" content=\"{{ csrf_token() }}\">\n// O runtime envia X-CSRF-TOKEN automaticamente apos o fix abaixo.\n\n// Route: POST /{{action:#}}\npublic function store(Request $request)\n{\n    $request->validate([\n        '{{name:file}}' => 'required|file|max:10240',\n    ]);\n\n    $path = $request->file('{{name:file}}')\n        ->store('uploads', 'public');\n\n    return response()->json(['path' => $path], 201);\n}" }
           ]
         }
       ]
@@ -2249,15 +2337,22 @@
             "series2Data": "",
             "categories": "",
             "colors": "primary",
-            "legendShow": false
+            "legendShow": false,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
             { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
             { "label": "Cores", "prop": "colors", "field": "select", "options": [["primary","Primaria"],["multi","Multicolor Tabler"],["primary-multi","Primaria multipla"]] },
-            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 9, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'series'     => [\n            ['name' => 'Vendas', 'data' => [10, 20, 30, 40]],\n        ],\n        'categories' => ['Jan', 'Fev', 'Mar', 'Abr'],\n    ]);\n}" }
           ]
         },
         {
@@ -2282,14 +2377,21 @@
             "series2Data": "",
             "categories": "",
             "colors": "primary",
-            "legendShow": false
+            "legendShow": false,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
             { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
-            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 9, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'series'     => [\n            ['name' => 'Vendas', 'data' => [10, 20, 30, 40]],\n        ],\n        'categories' => ['Jan', 'Fev', 'Mar', 'Abr'],\n    ]);\n}" }
           ]
         },
         {
@@ -2314,15 +2416,22 @@
             "series2Data": "",
             "categories": "",
             "colors": "primary",
-            "legendShow": false
+            "legendShow": false,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
             { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
             { "label": "Cores", "prop": "colors", "field": "select", "options": [["primary","Primaria"],["multi","Multicolor Tabler"],["primary-multi","Primaria multipla"]] },
-            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 9, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'series'     => [\n            ['name' => 'Vendas', 'data' => [10, 20, 30, 40]],\n        ],\n        'categories' => ['Jan', 'Fev', 'Mar', 'Abr'],\n    ]);\n}" }
           ]
         },
         {
@@ -2347,13 +2456,20 @@
             "series2Data": "",
             "categories": "",
             "colors": "multi",
-            "legendShow": false
+            "legendShow": false,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
-            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" }
+            { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 9, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'series'     => [\n            ['name' => 'Vendas', 'data' => [10, 20, 30, 40]],\n        ],\n        'categories' => ['Jan', 'Fev', 'Mar', 'Abr'],\n    ]);\n}" }
           ]
         },
         {
@@ -2374,14 +2490,21 @@
             "ajaxUrl": "mock/chart-pie.json",
             "labels": "",
             "values": "",
-            "legendShow": true
+            "legendShow": true,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
             { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
-            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 8, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'values' => [30, 45, 25],\n        'labels' => ['Categoria A', 'Categoria B', 'Categoria C'],\n    ]);\n}" }
           ]
         },
         {
@@ -2402,14 +2525,21 @@
             "ajaxUrl": "mock/chart-pie.json",
             "labels": "",
             "values": "",
-            "legendShow": true
+            "legendShow": true,
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
             { "label": "ID do grafico", "prop": "chartId", "field": "text" },
             { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100, "max": 600 },
             { "label": "URL dos dados JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
-            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" }
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none","Nenhuma"],["bearer","Bearer token"],["header","Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Mostrar legenda", "prop": "legendShow", "field": "checkbox" },
+            { "label": "Controller Laravel", "prop": "_laravelChartRef", "field": "code-info", "group": "Laravel", "rows": 8, "valueTemplate": "// Route: GET /{{ajaxUrl:api/grafico}}\npublic function index()\n{\n    return response()->json([\n        'values' => [30, 45, 25],\n        'labels' => ['Categoria A', 'Categoria B', 'Categoria C'],\n    ]);\n}" }
           ]
         }
       ]
@@ -2438,7 +2568,10 @@
             "dayClickTarget": "_blank",
             "eventClickUrl": "",
             "eventClickTarget": "_blank",
-            "ajaxUrl": "mock/fullcalendar.json"
+            "ajaxUrl": "mock/fullcalendar.json",
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key"
           },
           "properties": [
             { "label": "Titulo do card", "prop": "title", "field": "text" },
@@ -2451,7 +2584,11 @@
             { "label": "Abrir clique do dia em", "prop": "dayClickTarget", "field": "select", "options": [["_blank", "Nova aba"], ["_self", "Mesma aba"]], "group": "Comportamento" },
             { "label": "URL ao clicar no evento (use {{id}})", "prop": "eventClickUrl", "field": "text", "group": "Comportamento" },
             { "label": "Abrir clique do evento em", "prop": "eventClickTarget", "field": "select", "options": [["_blank", "Nova aba"], ["_self", "Mesma aba"]], "group": "Comportamento" },
-            { "label": "URL dos eventos JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" }
+            { "label": "URL dos eventos JSON", "prop": "ajaxUrl", "field": "text", "group": "Dados" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none", "Nenhuma"], ["bearer", "Bearer token"], ["header", "Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Controller Laravel", "prop": "_laravelFcRef", "field": "code-info", "group": "Laravel", "rows": 13, "valueTemplate": "// Route: GET /{{ajaxUrl:api/eventos}}\npublic function index()\n{\n    return response()->json(\n        Evento::all()->map(fn($e) => [\n            'id'              => $e->id,\n            'title'           => $e->titulo,\n            'start'           => $e->inicio->toIso8601String(),\n            'end'             => $e->fim?->toIso8601String(),\n            'allDay'          => $e->dia_inteiro,\n            'backgroundColor' => $e->cor ?? '#206bc4',\n            'url'             => route('eventos.show', $e->id),\n        ])\n    );\n}" }
           ]
         }
       ]

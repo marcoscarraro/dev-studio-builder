@@ -44,6 +44,7 @@
     //   input oculto "<id>-store" e vao junto no submit do formulario.
     var autoProcess = form.getAttribute("data-dropzone-auto") === "true";
 
+    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
     var options = {
       autoProcessQueue: autoProcess,
       url: form.getAttribute("data-dropzone-url") || form.getAttribute("action") || "#",
@@ -51,6 +52,10 @@
       maxFilesize: parseInt(form.getAttribute("data-dropzone-max-filesize"), 10) || 10,
       addRemoveLinks: true
     };
+
+    if (csrfMeta && csrfMeta.content) {
+      options.headers = { "X-CSRF-TOKEN": csrfMeta.content };
+    }
 
     var acceptedFiles = form.getAttribute("data-dropzone-accepted-files") || "";
     if (acceptedFiles) {

@@ -20,6 +20,14 @@
     var ajaxAttr;
     if (ajaxUrl) {
       ajaxAttr = " data-fc-ajax-url=\"" + context.escapeAttr(ajaxUrl) + "\"";
+      var authType = (props.ajaxAuthType || "none").trim();
+      if (authType !== "none") {
+        ajaxAttr += " data-fc-auth-type=\"" + context.escapeAttr(authType) + "\""
+          + " data-fc-auth-token=\"" + context.escapeAttr(props.ajaxAuthToken || "") + "\"";
+        if (authType === "header") {
+          ajaxAttr += " data-fc-auth-header=\"" + context.escapeAttr(props.ajaxAuthHeader || "X-API-Key") + "\"";
+        }
+      }
     } else {
       ajaxAttr = "";
     }

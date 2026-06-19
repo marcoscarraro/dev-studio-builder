@@ -42,7 +42,19 @@
     var ajaxUrl = (el.getAttribute("data-fc-ajax-url") || "").trim();
 
     if (ajaxUrl) {
-      options.events = ajaxUrl;
+      var authHeaders = buildAuthHeaders(el, "data-fc-auth-type", "data-fc-auth-token", "data-fc-auth-header");
+      if (Object.keys(authHeaders).length) {
+        options.events = (function (url, headers) {
+          return function (info, successCallback, failureCallback) {
+            fetch(url, { headers: headers })
+              .then(function (r) { return r.ok ? r.json() : []; })
+              .then(function (data) { successCallback(Array.isArray(data) ? data : []); })
+              .catch(function () { failureCallback(); });
+          };
+        }(ajaxUrl, authHeaders));
+      } else {
+        options.events = ajaxUrl;
+      }
     }
 
     var dayClick = buildDayClick(el);
@@ -96,6 +108,20 @@
       var url = urlTemplate.replace(/\{\{\s*id\s*\}\}/g, encodeURIComponent(info.event.id || ""));
       window.open(url, target);
     };
+  }
+
+  function buildAuthHeaders(el, typeAttr, tokenAttr, headerAttr) {
+    var authType = (el.getAttribute(typeAttr) || "none").trim();
+    var headers = {};
+    if (authType === "bearer") {
+      var token = (el.getAttribute(tokenAttr) || "").trim();
+      if (token) { headers["Authorization"] = "Bearer " + token; }
+    } else if (authType === "header") {
+      var headerName = (el.getAttribute(headerAttr) || "X-API-Key").trim();
+      var key = (el.getAttribute(tokenAttr) || "").trim();
+      if (key) { headers[headerName] = key; }
+    }
+    return headers;
   }
 
   function parseOptions(raw) {

@@ -310,8 +310,11 @@ Campos principais:
   **Limitacao importante**: so suporta igualdade (`equals`). Nao ha suporte a "diferente
   de", "maior que", ou logica booleana. Se precisar mostrar um campo quando outra prop
   NAO tem certo valor, o caminho e remover o `showWhen` e sempre exibir o campo.
-- `valueTemplate`: usado pelo field `info` — texto com placeholders `{{prop}}` resolvidos
-  com os valores atuais (ex.: `"{{storeId}}"` no Dropzone).
+- `valueTemplate`: usado pelos fields `info` e `code-info` — texto com placeholders
+  `{{prop}}`, `{{prop:fallback}}` ou `{{prop||outraProp}}` resolvidos com os valores
+  atuais. Exemplo: `"// Route: GET /{{ajaxUrl:api/itens}}"` mostra a URL configurada
+  ou `api/itens` quando vazio.
+- `rows`: numero de linhas do `<textarea>` em `code-info` (default 6).
 
 ## Tipos de `field`
 
@@ -345,11 +348,10 @@ do Dropzone (`{{storeId}}`, no formato `dropzone-store-<sufixo>`).
 
 `code-info`: como `info`, mas renderizado como `<textarea readonly>` com botao
 "Copiar", tamanho configuravel via `rows`, e destinado a snippets de codigo. Suporta
-o mesmo `valueTemplate` com `{{prop}}`. Use quando quiser mostrar ao usuario como
-referenciar o componente em JS ou HTML (ex: `data-bs-target="#{{offcanvasId}}"`,
-`new bootstrap.Modal(document.getElementById('{{modalId}}'))`).
+o mesmo `valueTemplate` com `{{prop:fallback}}`. Use quando quiser mostrar ao usuario
+como referenciar o componente em JS, HTML ou como implementar o backend.
 
-Exemplo:
+Exemplo (referencia JS):
 
 ```json
 {
@@ -362,8 +364,25 @@ Exemplo:
 }
 ```
 
-O `prop` pode comecar com `_` por convencao para indicar que e informativo (nao
-armazenado no JSON da pagina).
+Exemplo (snippet Laravel — convencao `_laravelXxxRef`):
+
+```json
+{
+  "label": "Controller Laravel",
+  "prop": "_laravelRef",
+  "field": "code-info",
+  "group": "Laravel",
+  "rows": 8,
+  "showWhen": { "prop": "remoteSearch", "equals": false },
+  "valueTemplate": "// Route: GET /{{ajaxUrl:api/itens}}\npublic function index()\n{\n    return response()->json(\n        Item::select('{{valueField:id}}', '{{labelField:text}}')\n            ->orderBy('{{labelField:text}}')\n            ->get()\n    );\n}"
+}
+```
+
+Convencoes:
+- `prop` comeca com `_` para indicar que e informativo (nao armazenado no JSON da pagina).
+- Para snippets de integracao com Laravel, use `group: "Laravel"` e `prop` no padrao
+  `_laravelXxxRef`. Todos os componentes AJAX do builder seguem essa convencao —
+  o snippet atualiza em tempo real conforme o desenvolvedor altera as propriedades.
 
 ## `keyvalue`
 
@@ -471,6 +490,42 @@ Por isso o **renderer do componente precisa emitir toda a config em `data-*`** (
 ja escreve `data-chart-options`, `data-chart-type`, `data-chart-ajax-url`). O canvas do editor
 carrega a biblioteca dinamicamente na primeira vez que o componente e arrastado — caminho de
 inicializacao **separado**, dentro de `builder.js`, que nao usa estes runtimes.
+
+### Autenticacao em FullCalendar e ApexChart
+
+Ambos os componentes suportam as props `ajaxAuthType` / `ajaxAuthToken` /
+`ajaxAuthHeader`. O renderer serializa esses valores em atributos `data-*` no HTML
+exportado; o runtime monta o header e usa `fetch()` com ele:
+
+| Componente | Atributos gerados |
+|---|---|
+| FullCalendar | `data-fc-auth-type`, `data-fc-auth-token`, `data-fc-auth-header` |
+| ApexChart | `data-chart-auth-type`, `data-chart-auth-token`, `data-chart-auth-header` |
+
+Modos suportados (`ajaxAuthType`):
+
+- `"none"` — nenhum header (default). O runtime continua passando a URL diretamente
+  ao FullCalendar (`options.events = url`), sem `fetch()` intermediario.
+- `"bearer"` — adiciona `Authorization: Bearer <token>` ao `fetch()`. No FullCalendar,
+  o runtime muda para `options.events = function(...)` para poder controlar o fetch.
+- `"header"` — adiciona `<ajaxAuthHeader>: <token>` ao `fetch()`.
+
+> O token fica visivel no HTML exportado. Para apps Laravel com sessao/cookie, prefira
+> proteger a rota com middleware e deixar `ajaxAuthType = "none"`.
+
+### CSRF automatico no Dropzone
+
+O runtime `dropzone-runtime.js` le `<meta name="csrf-token">` do `<head>` da pagina
+e injeta `X-CSRF-TOKEN` no header de cada upload automatico (`Envio automatico: ligado`).
+A Blade precisa ter:
+
+```blade
+<meta name="csrf-token" content="{{ csrf_token() }}">
+```
+
+Sem esse meta tag, uploads diretos ao Laravel retornam 419 (TokenMismatchException).
+Em modo de formulario (Dropzone acumulando arquivos para submit junto), o token vem
+do `@csrf` do Blade — sem necessidade de meta tag extra.
 
 ### DataTable com AJAX e server-side
 

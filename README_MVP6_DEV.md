@@ -14,6 +14,8 @@ Este guia explica a arquitetura atual para manutencao sem depender de IA.
 - [Como criar uma feature](docs/COMO_CRIAR_FEATURE.md)
 - [Componente DataTable (server-side e selecao)](docs/COMPONENTE_DATATABLE.md)
 - [Componentes TomSelect e Tags (busca remota)](docs/COMPONENTE_TOMSELECT.md)
+- [TomSelect+Criar — integracao Laravel (iframe)](docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md)
+- [Integracao com Laravel 13 (todos os componentes)](docs/INTEGRACAO_LARAVEL.md)
 
 ## Visao Geral
 

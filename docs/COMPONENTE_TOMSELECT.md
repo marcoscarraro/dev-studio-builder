@@ -78,7 +78,26 @@ mesmo principio do server-side do DataTable: trafega so o necessario.
 
 ---
 
-## 3. O contrato do backend (busca remota)
+## 3. Snippets Laravel no painel
+
+O painel exibe um grupo **"Laravel"** com o controller sugerido ja adaptado ao
+modo ativo:
+
+- **Carga completa** (`showWhen remoteSearch = false`): snippet `_laravelRef` —
+  `response()->json(Item::select(...)->get())`.
+- **Busca remota** (`showWhen remoteSearch = true`): snippet `_laravelRemoteRef` —
+  inclui `$request->filled('q')` e `->limit(maxOptions)`.
+
+Os placeholders `{{ajaxUrl}}`, `{{valueField}}`, `{{labelField}}`, `{{searchParam}}`
+e `{{maxOptions}}` sao resolvidos em tempo real conforme as props mudam. Use o botao
+"Copiar" e cole direto no controller.
+
+O **TomSelect+Criar** tem os mesmos dois snippets, mais o guia de iframe em
+`docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md`.
+
+---
+
+## 4. O contrato do backend (busca remota)
 
 A requisicao e um GET simples com um unico parametro:
 
@@ -127,7 +146,7 @@ public function buscar(Request $request)
 
 ---
 
-## 4. Armadilhas conhecidas
+## 5. Armadilhas conhecidas
 
 - **"Max opcoes" nao e limite de servidor**: ele so corta a EXIBICAO do
   dropdown. O limite de trafego e responsabilidade do backend (regra 1 acima).
@@ -148,7 +167,7 @@ public function buscar(Request $request)
 
 ---
 
-## 5. Teste rapido
+## 6. Teste rapido
 
 Roteiro completo: `docs/CHECKLIST_TESTES.md` secao 11d. Resumo:
 

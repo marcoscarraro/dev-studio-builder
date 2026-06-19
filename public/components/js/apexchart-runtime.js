@@ -46,7 +46,8 @@
       return;
     }
 
-    fetch(ajaxUrl).then(function (r) {
+    var authHeaders = buildAuthHeaders(el);
+    fetch(ajaxUrl, authHeaders ? { headers: authHeaders } : undefined).then(function (r) {
       if (r.ok) {
         return r.json();
       } else {
@@ -69,6 +70,20 @@
     }).catch(function () {
       new window.ApexCharts(el, opts).render();
     });
+  }
+
+  function buildAuthHeaders(el) {
+    var authType = (el.getAttribute("data-chart-auth-type") || "none").trim();
+    var headers = {};
+    if (authType === "bearer") {
+      var token = (el.getAttribute("data-chart-auth-token") || "").trim();
+      if (token) { headers["Authorization"] = "Bearer " + token; }
+    } else if (authType === "header") {
+      var headerName = (el.getAttribute("data-chart-auth-header") || "X-API-Key").trim();
+      var key = (el.getAttribute("data-chart-auth-token") || "").trim();
+      if (key) { headers[headerName] = key; }
+    }
+    return Object.keys(headers).length ? headers : null;
   }
 
   function parseOptions(raw) {
