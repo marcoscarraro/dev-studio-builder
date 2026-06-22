@@ -27,17 +27,25 @@
       footer = "";
     }
 
+    const pageType = context.state.page.props.pageType || "normal";
+    const isLoginPage = pageType !== "normal";
+
     const menuLayout = context.state.page.props.menuLayout || "none";
     const menuTheme = context.state.page.props.menuTheme || "dark";
     const menuPosition = context.state.page.props.menuPosition || "left";
     const themeAttr = menuTheme === "dark" ? ' data-bs-theme="dark"' : "";
-    const hasSidebar = menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill";
-    const hasNavbar = menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill";
-    const isPillLayout = menuLayout === "combo-pill";
+    const hasSidebar = !isLoginPage && (menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill");
+    const hasNavbar = !isLoginPage && (menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill");
+    const isPillLayout = !isLoginPage && menuLayout === "combo-pill";
     const sidebarHtml = hasSidebar ? (isPillLayout ? exportIconSidebar(context) : exportSidebar(context, menuPosition, themeAttr)) : "";
     const navbarHtml = hasNavbar ? (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr)) : "";
 
     const title = context.escapeHtml(context.state.page.props.title || "Pagina");
+
+    if (isLoginPage) {
+      return buildLoginPageHtml(context, assets, body, pageType, title);
+    }
+
     const lines = [
       "<!doctype html>",
       '<html lang="pt-BR">',
@@ -121,6 +129,69 @@
       "</html>"
     );
 
+    return lines.join("\n");
+  }
+
+  function buildLoginPageHtml(context, assets, body, pageType, title) {
+    const loginSideColor = context.escapeAttr(context.state.page.props.loginSideColor || "#206bc4");
+    const loginSideImageRaw = (context.state.page.props.loginSideImage || "").trim();
+    const loginSideImageStyle = loginSideImageRaw
+      ? `background-image:url('${context.escapeAttr(loginSideImageRaw)}');background-size:cover;background-position:center;`
+      : "";
+
+    const lines = [
+      "<!doctype html>",
+      '<html lang="pt-BR">',
+      "<head>",
+      '  <meta charset="utf-8">',
+      '  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
+      '  <meta http-equiv="X-UA-Compatible" content="ie=edge">',
+      `  <title>${title}</title>`,
+      ...[renderFaviconAsset(context, assets.favicon)].filter(Boolean).map((line) => `  ${line}`),
+      ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
+      "</head>",
+      '<body class="d-flex flex-column">',
+      ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`)
+    ];
+
+    if (pageType === "login-split") {
+      lines.push(
+        '  <div class="page">',
+        '    <div class="row g-0 min-vh-100 flex-column flex-md-row">',
+        `      <div class="col-6 d-none d-lg-block" style="background-color:${loginSideColor};${loginSideImageStyle}"></div>`,
+        '      <div class="col-12 col-lg-6 d-flex flex-column">',
+        '        <div class="container-tight my-auto py-5">',
+        context.indent(body, 10),
+        '        </div>',
+        '      </div>',
+        '    </div>',
+        '  </div>'
+      );
+    } else {
+      lines.push(
+        '  <div class="page page-center">',
+        '    <div class="container-tight py-4">',
+        context.indent(body, 6),
+        '    </div>',
+        '  </div>'
+      );
+    }
+
+    lines.push(
+      ...assets.scripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`)
+    );
+
+    if (assets.pageScripts.length) {
+      lines.push("  <script>");
+      lines.push("  // === Scripts da pagina ===");
+      assets.pageScripts.forEach((snippet) => {
+        lines.push(`  // --- ${snippet.title} ---`);
+        lines.push(context.indent(sanitizeInlineScript(snippet.code), 2));
+      });
+      lines.push("  </script>");
+    }
+
+    lines.push("</body>", "</html>");
     return lines.join("\n");
   }
 

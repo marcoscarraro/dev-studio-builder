@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Report Builder — DEV STUDIO BUILDER</title>
+  <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
+  <link rel="stylesheet" href="public/tabler/css/tabler.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-vendors.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/tabler-themes.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/demo.css?1778257825">
+  <link rel="stylesheet" href="public/tabler/css/custom.css">
+  <link rel="stylesheet" href="assets/css/builder.css?v=14">
+  <link rel="stylesheet" href="assets/css/report-builder.css?v=4">
+  <link rel="stylesheet" href="public/tema/tema.css">
+</head>
+<body class="layout-fluid" data-page="report-builder">
+  <script src="public/tabler/js/tabler-theme.js"></script>
+  <div class="app-shell" data-preview="false">
+    <header class="topbar navbar navbar-expand-md d-print-none">
+      <div class="brand">
+        <span class="brand-mark avatar avatar-sm bg-red-lt text-red" aria-hidden="true">RP</span>
+        <div>
+          <strong>Report Builder</strong>
+          <span>DOMPDF / Laravel</span>
+        </div>
+      </div>
+
+      <div class="toolbar btn-list" aria-label="Acoes do report builder">
+        <button type="button" id="btn-undo" class="tool-button btn btn-icon btn-outline-secondary" title="Desfazer" aria-label="Desfazer">&#8630;</button>
+        <button type="button" id="btn-redo" class="tool-button btn btn-icon btn-outline-secondary" title="Refazer" aria-label="Refazer">&#8631;</button>
+        <button type="button" id="btn-new" class="tool-button text btn btn-outline-secondary">Novo</button>
+        <button type="button" id="btn-save" class="tool-button text btn btn-primary">Salvar</button>
+        <button type="button" id="btn-load" class="tool-button text btn btn-outline-secondary">Carregar</button>
+        <button type="button" id="btn-import" class="tool-button text btn btn-outline-secondary">Importar</button>
+        <button type="button" id="btn-clear" class="tool-button text btn btn-outline-danger">Limpar</button>
+        <button type="button" id="btn-export" class="tool-button text btn btn-outline-primary">Exportar HTML</button>
+        <button type="button" id="btn-export-json" class="tool-button text btn btn-outline-primary">Exportar JSON</button>
+        <a href="index.html" class="tool-button text btn btn-outline-secondary">Paginas</a>
+        <a href="database_builder.html" class="tool-button text btn btn-outline-secondary">Banco de Dados</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="palette-panel" aria-label="Secoes do relatorio">
+        <div class="panel-header">
+          <h1>Secoes</h1>
+        </div>
+
+        <div class="palette-scroll">
+          <p class="palette-hint">Clique para adicionar uma secao ao relatorio</p>
+
+          <div class="palette-section-group">
+            <div class="palette-section-item" data-add-section="reportInfo">
+              <span class="palette-section-icon">&#9776;</span>
+              <div>
+                <strong>Informacoes</strong>
+                <small>Filtros e parametros do relatorio</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="dataTable">
+              <span class="palette-section-icon">&#9783;</span>
+              <div>
+                <strong>Tabela de Dados</strong>
+                <small>Listagem com colunas configuráveis</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="gridTable">
+              <span class="palette-section-icon">&#9638;</span>
+              <div>
+                <strong>Tabela de Layout</strong>
+                <small>Grade com celulas e blocos (DANFE)</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="summary">
+              <span class="palette-section-icon">&#931;</span>
+              <div>
+                <strong>Resumo / Totais</strong>
+                <small>Linhas de subtotais e totais</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="divider">
+              <span class="palette-section-icon">&#8212;</span>
+              <div>
+                <strong>Divisor</strong>
+                <small>Linha horizontal separadora</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="customHtml">
+              <span class="palette-section-icon">&lt;/&gt;</span>
+              <div>
+                <strong>HTML Livre</strong>
+                <small>Bloco de texto ou HTML personalizado</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="qrCode">
+              <span class="palette-section-icon">&#9636;</span>
+              <div>
+                <strong>QR Code</strong>
+                <small>Imagem gerada no servidor (NFC-e)</small>
+              </div>
+            </div>
+            <div class="palette-section-item" data-add-section="barcode">
+              <span class="palette-section-icon">|||</span>
+              <div>
+                <strong>Codigo de Barras</strong>
+                <small>Imagem gerada no servidor</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="palette-section-separator"></div>
+
+          <p class="palette-hint palette-hint-sm">Estrutura fixa (sempre presente)</p>
+          <div class="palette-section-group">
+            <div class="palette-section-item palette-section-fixed" data-select-zone="header">
+              <span class="palette-section-icon rpt-blue">&#9650;</span>
+              <div>
+                <strong>Cabecalho da Pagina</strong>
+                <small>Repete em todas as paginas</small>
+              </div>
+            </div>
+            <div class="palette-section-item palette-section-fixed" data-select-zone="footer">
+              <span class="palette-section-icon rpt-blue">&#9660;</span>
+              <div>
+                <strong>Rodape da Pagina</strong>
+                <small>Repete em todas as paginas</small>
+              </div>
+            </div>
+            <div class="palette-section-item palette-section-fixed" data-select-zone="settings">
+              <span class="palette-section-icon rpt-gray">&#9881;</span>
+              <div>
+                <strong>Configuracoes da Pagina</strong>
+                <small>Tamanho, margens, fontes e cores</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="canvas-panel" aria-label="Preview do relatorio">
+        <div class="canvas-toolbar rpt-canvas-toolbar">
+          <span id="rpt-page-info" class="rpt-page-info">A4 · Retrato</span>
+          <span id="rpt-section-count" class="rpt-section-count">0 secoes</span>
+        </div>
+        <div class="canvas-scroll rpt-canvas-scroll" id="rpt-canvas-scroll">
+          <div class="paper-canvas" id="paper-canvas">
+            <div class="paper-header-zone" id="paper-header-zone" data-zone="header">
+              <span class="paper-zone-label">&#9650; Cabecalho da Pagina (repete em todas as paginas)</span>
+              <div class="paper-zone-preview" id="header-preview"></div>
+            </div>
+            <div class="paper-body-zone" id="paper-body-zone">
+              <div class="paper-body-empty" id="paper-body-empty">
+                <p>Clique em uma secao na paleta para adicionar ao relatorio</p>
+              </div>
+              <div id="sections-container"></div>
+            </div>
+            <div class="paper-footer-zone" id="paper-footer-zone" data-zone="footer">
+              <span class="paper-zone-label">&#9660; Rodape da Pagina (repete em todas as paginas)</span>
+              <div class="paper-zone-preview" id="footer-preview"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="properties-panel" aria-label="Propriedades">
+        <div class="panel-header">
+          <h1>Propriedades</h1>
+        </div>
+        <form id="rpt-properties-form" class="properties-form" autocomplete="off"></form>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="export-dialog" class="output-dialog">
+    <form method="dialog" class="dialog-shell">
+      <header>
+        <strong id="export-title">HTML Exportado (DOMPDF)</strong>
+        <button type="submit" aria-label="Fechar">&times;</button>
+      </header>
+      <textarea id="export-output" spellcheck="false" readonly></textarea>
+      <footer>
+        <button type="button" id="export-copy" class="tool-button text btn btn-outline-secondary">Copiar</button>
+        <button type="button" id="export-download" class="tool-button text btn btn-primary">Baixar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <input type="file" id="rpt-import-file" accept=".json,application/json" style="display:none">
+
+  <script src="assets/js/report-builder.js?v=8"></script>
+</body>
+</html>

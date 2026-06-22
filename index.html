@@ -38,11 +38,13 @@
         </button>
         <button type="button" class="tool-button text btn btn-primary" data-action="save">Salvar</button>
         <button type="button" class="tool-button text btn btn-outline-secondary" data-action="load">Carregar</button>
+        <button type="button" class="tool-button text btn btn-outline-danger" data-action="clear">Limpar</button>
         <button type="button" class="tool-button text btn btn-outline-secondary" data-action="import-json">Importar</button>
         <button type="button" class="tool-button text btn btn-outline-primary" data-action="export-json">JSON</button>
         <button type="button" class="tool-button text btn btn-outline-primary" data-action="export-html">HTML</button>
         <button type="button" class="tool-button text btn btn-outline-secondary" data-action="preview">Preview</button>
         <a href="database_builder.html" target="_blank" class="tool-button text btn btn-outline-secondary">Banco de Dados</a>
+        <a href="report_builder.html" target="_blank" class="tool-button text btn btn-outline-secondary">Relatorios</a>
       </div>
     </header>
 
@@ -67,7 +69,9 @@
             <input id="page-name" class="page-name-input" type="text" placeholder="Nome da pagina" autocomplete="off" spellcheck="false">
             <span id="document-summary">0 componentes</span>
           </div>
-
+          <button type="button" id="btn-page-settings" class="btn-page-settings" data-action="page-settings" title="Propriedades da pagina" aria-label="Propriedades da pagina">
+            <img src="public/tabler/icons/outline/settings.svg" width="18" height="18" alt="" aria-hidden="true">
+          </button>
         </div>
 
         <div class="canvas-scroll">
@@ -190,6 +194,6 @@
   <script src="assets/js/renderers/menu-user.js?v=1"></script>
   <script src="assets/js/renderers/menu-search.js?v=1"></script>
   <script src="assets/js/renderers/menu-spacer.js?v=1"></script>
-  <script src="assets/js/builder.js?v=68"></script>
+  <script src="assets/js/builder.js?v=69"></script>
 </body>
 </html>

@@ -1176,6 +1176,13 @@
           "icon": "block-icon paragraph",
           "defaultCssClass": "",
           "controlName": "modal",
+          "container": {
+            "enabled": true,
+            "storage": "rows",
+            "renderer": "modal",
+            "accepts": ["layout", "component"],
+            "rejectKinds": []
+          },
           "generatedFields": [
             { "idProp": "modalId", "base": "modal" }
           ],
@@ -1191,6 +1198,7 @@
             "centered": false,
             "scrollable": false,
             "staticBackdrop": false,
+            "backdropStyle": "blur",
             "showStatus": false,
             "statusColor": "danger",
             "showHeader": true,
@@ -1213,6 +1221,7 @@
             { "label": "Centralizado verticalmente", "prop": "centered", "field": "checkbox", "group": "Geral" },
             { "label": "Corpo rolavel", "prop": "scrollable", "field": "checkbox", "group": "Geral" },
             { "label": "Backdrop estatico", "prop": "staticBackdrop", "field": "checkbox", "group": "Geral" },
+            { "label": "Estilo do backdrop", "prop": "backdropStyle", "field": "select", "group": "Geral", "options": [["blur", "Desfocado (blur)"], ["dark", "Escuro (padrao)"]] },
             { "label": "Mostrar botao trigger", "prop": "showTrigger", "field": "checkbox", "group": "Trigger" },
             { "label": "Texto do botao", "prop": "triggerText", "field": "text", "group": "Trigger" },
             { "label": "Classe CSS do botao", "prop": "triggerCssClass", "field": "text", "group": "Trigger" },
@@ -1226,7 +1235,6 @@
             { "label": "Tag do titulo", "prop": "titleTag", "field": "select", "group": "Cabecalho", "options": [["h4", "H4"], ["h5", "H5"], ["h6", "H6"]] },
             { "label": "Mostrar botao fechar", "prop": "showClose", "field": "checkbox", "group": "Cabecalho" },
             { "label": "Classe CSS do corpo", "prop": "bodyCssClass", "field": "text", "group": "Corpo" },
-            { "label": "Conteudo do corpo", "prop": "bodyContent", "field": "textarea", "group": "Corpo" },
             { "label": "Mostrar rodape", "prop": "showFooter", "field": "checkbox", "group": "Rodape" },
             { "label": "Classe CSS do rodape", "prop": "footerCssClass", "field": "text", "group": "Rodape" },
             { "label": "Layout dos botoes", "prop": "footerLayout", "field": "select", "group": "Rodape", "options": [["default", "Padrao (linha)"], ["grid", "Grade (colunas iguais)"]] },

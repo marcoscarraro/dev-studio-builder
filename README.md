@@ -169,6 +169,26 @@ Editor visual para modelagem de bancos de dados.
 
 ---
 
+## Report Builder
+
+Gerador visual de **templates de relatório** para impressão em PDF via **DOMPDF** (Laravel).
+Monta o layout (cabeçalho, rodapé, seções, tabelas, QR Code, código de barras) e exporta
+HTML com placeholders; os dados e a geração do PDF ficam a cargo do backend.
+
+### Funcionalidades
+
+* Configuração de página (A4/Letter/A3, orientação, margens, fontes, cores)
+* Cabeçalho e rodapé que se repetem em todas as páginas (numeração automática)
+* Seções: Informações, Tabela de Dados (com `@foreach`), Resumo/Totais, Divisor, HTML Livre
+* QR Code e Código de Barras (imagem gerada no servidor)
+* **Tabela de Layout**: grade com células e blocos aninhados (base para DANFE de NF-e)
+* Propriedades de aparência (cor, fundo, fonte, alinhamento)
+* Exportação de HTML pronto para DOMPDF + persistência em `localStorage`
+
+Documentação completa: [`docs/REPORT_BUILDER.md`](docs/REPORT_BUILDER.md).
+
+---
+
 # Capturas de Tela
 
 ## Editor de Páginas
@@ -444,6 +464,8 @@ Documentação para desenvolvedores:
 * Mapa da Arquitetura
 * Checklist de Testes
 * Como Criar Novas Funcionalidades
+* [Report Builder (templates de relatório para DOMPDF)](docs/REPORT_BUILDER.md)
+* [Integração com Laravel](docs/INTEGRACAO_LARAVEL.md)
 
 ---
 

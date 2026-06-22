@@ -102,6 +102,7 @@
     els.outputTitle = document.getElementById("output-title");
     els.outputContent = document.getElementById("output-content");
     els.pageName = document.getElementById("page-name");
+    els.pageSettingsBtn = document.getElementById("btn-page-settings");
     els.importJsonFile = document.getElementById("import-json-file");
 
     await Promise.all([loadComponentRegistry(), loadTablerIcons()]).catch((err) => {
@@ -147,7 +148,10 @@
         menuPosition: "left",
         menuTheme: "dark",
         menuSticky: false,
-        menuSidebarWidth: "normal"
+        menuSidebarWidth: "normal",
+        pageType: "normal",
+        loginSideColor: "#206bc4",
+        loginSideImage: ""
       },
       navbar: [],
       sidebar: [],
@@ -536,6 +540,16 @@
         loadFromStorage();
       }
 
+      if (action === "clear") {
+        if (window.confirm("Limpar o conteudo da area principal? Cabecalho, rodape, menus e configuracoes da pagina sao mantidos.")) {
+          state.page.children = [];
+          state.selectedId = null;
+          state.selectedSection = null;
+          commitHistory();
+          render();
+        }
+      }
+
       if (action === "import-json") {
         els.importJsonFile.click();
       }
@@ -558,6 +572,21 @@
 
       if (action === "redo") {
         redo();
+      }
+    });
+
+    document.querySelector(".canvas-toolbar").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "page-settings") {
+        const alreadySelected = state.selectedId === state.page.id && state.selectedSection === null;
+        if (alreadySelected) {
+          state.selectedId = null;
+          state.selectedSection = null;
+          render();
+        } else {
+          selectNode(state.page.id);
+        }
       }
     });
 
@@ -1148,9 +1177,30 @@
   // initializePreviewComponents(): carrega scripts de bibliotecas externas
   //   (ApexCharts, Litepicker) de forma dinamica e inicializa os componentes no canvas.
   //   Os guards _apexChart / _templateBuilderLitepicker evitam dupla inicializacao.
+  function applyLoginCanvasMode() {
+    const pageType = state.page.props.pageType || "normal";
+    const wrapper = els.pageBodyWrapper;
+    if (!wrapper) return;
+    if (pageType !== "normal") {
+      wrapper.dataset.pageType = pageType;
+    } else {
+      delete wrapper.dataset.pageType;
+    }
+    if (pageType === "login-split") {
+      const color = state.page.props.loginSideColor || "#206bc4";
+      const img = state.page.props.loginSideImage || "";
+      wrapper.style.setProperty("--login-side-color", color);
+      wrapper.style.setProperty("--login-side-image", img ? `url("${img}")` : "none");
+    } else {
+      wrapper.style.removeProperty("--login-side-color");
+      wrapper.style.removeProperty("--login-side-image");
+    }
+  }
+
   function render() {
     renderPageNavbar();
     renderPageSidebar();
+    applyLoginCanvasMode();
     renderPageHeader();
     renderCanvas();
     renderPageFooter();
@@ -1158,6 +1208,10 @@
     renderSummary();
     initializePreviewComponents();
     initializePreviewPasswordToggles();
+    const pageSelected = state.selectedId === state.page.id && state.selectedSection === null;
+    if (els.pageSettingsBtn) {
+      els.pageSettingsBtn.classList.toggle("active", pageSelected);
+    }
   }
 
   function initializePreviewComponents() {
@@ -1500,6 +1554,13 @@
   // renderRow: cria o elemento DOM de uma linha com suas colunas e componentes.
 
   function renderPageNavbar() {
+    if ((state.page.props.pageType || "normal") !== "normal") {
+      els.pageNavbar.className = "editor-page-navbar hidden";
+      els.pageNavbar.removeAttribute("data-drop-zone");
+      els.pageNavbar.removeAttribute("data-section");
+      els.pageNavbar.innerHTML = "";
+      return;
+    }
     const menuLayout = state.page.props.menuLayout || "none";
     const showNavbar = menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill";
     const theme = state.page.props.menuTheme || "dark";
@@ -1542,6 +1603,14 @@
   }
 
   function renderPageSidebar() {
+    if ((state.page.props.pageType || "normal") !== "normal") {
+      els.pageSidebar.className = "editor-page-sidebar hidden";
+      els.pageSidebar.removeAttribute("data-drop-zone");
+      els.pageSidebar.removeAttribute("data-section");
+      els.pageSidebar.innerHTML = "";
+      if (els.pageBodyWrapper) els.pageBodyWrapper.classList.remove("sidebar-right");
+      return;
+    }
     const menuLayout = state.page.props.menuLayout || "none";
     const showSidebar = menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill";
     const position = state.page.props.menuPosition || "left";
@@ -1600,6 +1669,13 @@
   }
 
   function renderPageHeader() {
+    if ((state.page.props.pageType || "normal") !== "normal") {
+      els.pageHeader.className = "editor-page-header page-header d-print-none hidden";
+      els.pageHeader.removeAttribute("data-drop-zone");
+      els.pageHeader.removeAttribute("data-section");
+      els.pageHeader.innerHTML = "";
+      return;
+    }
     let selected;
     if (state.selectedId === state.page.id && state.selectedSection === "header") {
       selected = " selected";
@@ -1635,6 +1711,13 @@
   }
 
   function renderPageFooter() {
+    if ((state.page.props.pageType || "normal") !== "normal") {
+      els.pageFooter.className = "editor-page-footer page-footer d-print-none hidden";
+      els.pageFooter.removeAttribute("data-drop-zone");
+      els.pageFooter.removeAttribute("data-section");
+      els.pageFooter.innerHTML = "";
+      return;
+    }
     let selected;
     if (state.selectedId === state.page.id && state.selectedSection === "footer") {
       selected = " selected";
@@ -1774,6 +1857,8 @@
       renderFormContainerComponent(component, preview);
     } else if (isFieldListComponent(component)) {
       renderFieldListComponent(component, preview);
+    } else if (isModalContainerComponent(component)) {
+      renderModalContainerComponent(component, preview);
     } else {
       const previewRenderer = getComponentPreviewRenderer(component);
       if (previewRenderer) {
@@ -1820,6 +1905,97 @@
       zone.appendChild(renderRow(row, "row-container", component.id, zoneId));
     });
     return zone;
+  }
+
+  function renderModalContainerComponent(component, preview) {
+    const props = component.props || {};
+    const wrapper = document.createElement("div");
+    wrapper.className = "modal-builder-wrapper";
+
+    if (toBooleanValue(props.showTrigger) !== false) {
+      const triggerArea = document.createElement("div");
+      triggerArea.className = "modal-builder-trigger";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = props.triggerCssClass || "btn btn-primary";
+      btn.disabled = true;
+      btn.textContent = props.triggerText || "Abrir modal";
+      triggerArea.appendChild(btn);
+      wrapper.appendChild(triggerArea);
+    }
+
+    const panel = document.createElement("div");
+    panel.className = "modal-builder-panel";
+
+    if (toBooleanValue(props.showStatus)) {
+      const status = document.createElement("div");
+      status.className = `modal-status bg-${escapeAttr(props.statusColor || "danger")}`;
+      panel.appendChild(status);
+    }
+
+    if (toBooleanValue(props.showHeader) !== false) {
+      const header = document.createElement("div");
+      header.className = "modal-header";
+      const titleEl = document.createElement("h5");
+      titleEl.className = "modal-title";
+      titleEl.textContent = props.title || "Titulo do modal";
+      header.appendChild(titleEl);
+      if ((props.backdropStyle || "blur") === "blur") {
+        const badge = document.createElement("span");
+        badge.className = "badge bg-blue-lt ms-2";
+        badge.textContent = "blur";
+        titleEl.appendChild(badge);
+      }
+      if (toBooleanValue(props.showClose) !== false) {
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "btn-close";
+        closeBtn.disabled = true;
+        header.appendChild(closeBtn);
+      }
+      panel.appendChild(header);
+    }
+
+    const body = document.createElement("div");
+    body.className = mergeClassNames(props.bodyCssClass || "modal-body", "modal-builder-body");
+    body.dataset.dropZone = "row-container";
+    body.dataset.rowContainer = "true";
+    body.dataset.cardId = component.id;
+
+    const rows = getRowContainerRows(component) || [];
+    if (!rows.length) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "empty-canvas empty-custom-card-zone";
+      placeholder.textContent = "Arraste componentes para o corpo do modal";
+      body.appendChild(placeholder);
+    } else {
+      rows.forEach((row) => {
+        body.appendChild(renderRow(row, "row-container", component.id));
+      });
+    }
+    panel.appendChild(body);
+
+    if (toBooleanValue(props.showFooter) !== false) {
+      const buttons = Array.isArray(props.footerButtons) && props.footerButtons.length
+        ? props.footerButtons.filter(Boolean)
+        : [{ text: "Fechar", cssClass: "btn me-auto" }, { text: "Confirmar", cssClass: "btn btn-primary" }];
+      if (buttons.length) {
+        const footer = document.createElement("div");
+        footer.className = props.footerCssClass || "modal-footer";
+        buttons.forEach((btn) => {
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = btn.cssClass || "btn";
+          el.textContent = btn.text || "Botao";
+          el.disabled = true;
+          footer.appendChild(el);
+        });
+        panel.appendChild(footer);
+      }
+    }
+
+    wrapper.appendChild(panel);
+    preview.appendChild(wrapper);
   }
 
   function renderFormContainerComponent(component, preview) {
@@ -2112,6 +2288,10 @@
       return componentHtmlRenderers.fieldList || null;
     }
 
+    if (isModalContainerComponent(component)) {
+      return renderModalContainerHtml;
+    }
+
     return componentHtmlRenderers[kind] || null;
   }
 
@@ -2188,6 +2368,101 @@
       "  </div>",
       "</article>"
     ].join("\n");
+  }
+
+  function renderModalContainerHtml(component) {
+    const props = component.props || {};
+    const modalId = sanitizeElementId(props.modalId, sanitizeElementId(component.id, "modal"));
+    const parts = [];
+
+    if (toBooleanValue(props.showTrigger) !== false) {
+      const btnCss = props.triggerCssClass || "btn btn-primary";
+      const text = escapeHtml(props.triggerText || "Abrir modal");
+      parts.push(`<button type="button"${classAttr(btnCss)} data-bs-toggle="modal" data-bs-target="#${escapeAttr(modalId)}">${text}</button>`);
+    }
+
+    const modalBlur = (props.backdropStyle || "blur") === "blur" ? " modal-blur" : "";
+    let dialogCls = "modal-dialog";
+    if (props.size) dialogCls += " " + escapeAttr(props.size);
+    if (toBooleanValue(props.centered)) dialogCls += " modal-dialog-centered";
+    if (toBooleanValue(props.scrollable)) dialogCls += " modal-dialog-scrollable";
+    const staticAttr = toBooleanValue(props.staticBackdrop) ? ' data-bs-backdrop="static"' : "";
+
+    const showHeader = toBooleanValue(props.showHeader) !== false;
+    const showClose = toBooleanValue(props.showClose) !== false;
+    const innerParts = [];
+
+    if (!showHeader && showClose) {
+      innerParts.push(`<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>`);
+    }
+
+    if (toBooleanValue(props.showStatus)) {
+      innerParts.push(`<div class="modal-status bg-${escapeAttr(props.statusColor || "danger")}"></div>`);
+    }
+
+    if (showHeader) {
+      const title = escapeHtml(props.title || "Titulo do modal");
+      const titleTag = ["h4", "h5", "h6"].includes(props.titleTag) ? props.titleTag : "h5";
+      const closeBtn = showClose
+        ? `\n  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>`
+        : "";
+      innerParts.push(`<div class="modal-header">\n  <${titleTag} class="modal-title">${title}</${titleTag}>${closeBtn}\n</div>`);
+    }
+
+    const rows = getRowContainerRows(component) || [];
+    let bodyContent;
+    if (rows.length) {
+      bodyContent = indent(rows.map((row) => exportRow(row)).join("\n"), 2);
+    } else {
+      const text = escapeHtml(props.bodyContent || "").replace(/\r?\n/g, "<br>");
+      bodyContent = `  ${text}`;
+    }
+    innerParts.push(`<div${classAttr(props.bodyCssClass || "modal-body")}>\n${bodyContent}\n</div>`);
+
+    if (toBooleanValue(props.showFooter) !== false) {
+      const buttons = Array.isArray(props.footerButtons) && props.footerButtons.length
+        ? props.footerButtons.filter(Boolean)
+        : [{ text: "Fechar", cssClass: "btn me-auto", dismiss: true }, { text: "Confirmar", cssClass: "btn btn-primary", dismiss: true }];
+      if (buttons.length) {
+        const footerLayout = props.footerLayout || "default";
+        const footerCssClass = props.footerCssClass || "modal-footer";
+        let btnHtml;
+        if (footerLayout === "grid") {
+          const cols = buttons.map((btn) => {
+            const dismiss = toBooleanValue(btn.dismiss) ? ' data-bs-dismiss="modal"' : "";
+            const href = btn.href || "";
+            const txt = escapeHtml(btn.text || "Botao");
+            const inner = href
+              ? `<a href="${escapeAttr(href)}"${classAttr(btn.cssClass || "btn")}${dismiss}>${txt}</a>`
+              : `<button type="button"${classAttr(btn.cssClass || "btn")}${dismiss}>${txt}</button>`;
+            return `<div class="col">\n  ${inner}\n</div>`;
+          }).join("\n");
+          btnHtml = `<div class="w-100">\n<div class="row">\n${indent(cols, 2)}\n</div>\n</div>`;
+        } else {
+          btnHtml = buttons.map((btn) => {
+            const dismiss = toBooleanValue(btn.dismiss) ? ' data-bs-dismiss="modal"' : "";
+            const href = btn.href || "";
+            const txt = escapeHtml(btn.text || "Botao");
+            return href
+              ? `<a href="${escapeAttr(href)}"${classAttr(btn.cssClass || "btn")}${dismiss}>${txt}</a>`
+              : `<button type="button"${classAttr(btn.cssClass || "btn")}${dismiss}>${txt}</button>`;
+          }).join("\n");
+        }
+        innerParts.push(`<div${classAttr(footerCssClass)}>\n${indent(btnHtml, 2)}\n</div>`);
+      }
+    }
+
+    parts.push([
+      `<div class="modal${modalBlur}"${attr("id", modalId)} tabindex="-1"${staticAttr}>`,
+      `  <div class="${dialogCls}" role="document">`,
+      `    <div class="modal-content">`,
+      indent(innerParts.join("\n"), 6),
+      `    </div>`,
+      `  </div>`,
+      `</div>`
+    ].join("\n"));
+
+    return parts.join("\n");
   }
 
   function renderFormContainerAttributes(component, cssClassAttr) {
@@ -2320,6 +2595,10 @@
 
   function isFieldListComponent(component) {
     return getRowContainerRenderer(component) === "fieldList";
+  }
+
+  function isModalContainerComponent(component) {
+    return getRowContainerRenderer(component) === "modal";
   }
 
   function getRowContainerConfig(definition) {
@@ -2807,37 +3086,56 @@
   }
 
   function renderPageProperties(page) {
+    const pageType = page.props.pageType || "normal";
+    const isLoginPage = pageType !== "normal";
+    const isLoginSplit = pageType === "login-split";
     const menuLayout = page.props.menuLayout || "none";
     const showPositionAndTheme = menuLayout !== "none";
     const showNavbarOptions = menuLayout === "horizontal" || menuLayout === "combo";
     const showSidebarOptions = menuLayout === "vertical" || menuLayout === "combo";
+
+    const menuSection = isLoginPage
+      ? '<section class="property-group"><h3>Menu de navegacao</h3><p class="properties-note">Indisponivel em paginas de login.</p></section>'
+      : [
+          '<section class="property-group"><h3>Menu de navegacao</h3>',
+          fieldSelect("Tipo de layout", "menuLayout", menuLayout, [
+            ["none", "Nenhum"],
+            ["horizontal", "Superior (navbar)"],
+            ["vertical", "Lateral (sidebar)"],
+            ["combo", "Lateral + Superior"],
+            ["combo-pill", "Pill + Icone lateral (moderno)"]
+          ]),
+          showPositionAndTheme ? fieldSelect("Tema", "menuTheme", page.props.menuTheme || "dark", [
+            ["dark", "Escuro"],
+            ["light", "Claro"]
+          ]) : "",
+          showSidebarOptions ? fieldSelect("Posicao do sidebar", "menuPosition", page.props.menuPosition || "left", [
+            ["left", "Esquerda"],
+            ["right", "Direita"]
+          ]) : "",
+          showSidebarOptions ? fieldSelect("Largura do sidebar", "menuSidebarWidth", page.props.menuSidebarWidth || "normal", [
+            ["compact", "Compacto (so icones)"],
+            ["normal", "Normal (220px)"],
+            ["wide", "Largo (280px)"]
+          ]) : "",
+          showNavbarOptions ? fieldCheckbox("Navbar fixa no scroll (sticky)", "menuSticky", page.props.menuSticky) : "",
+          "</section>"
+        ].join("");
+
     return [
       '<section class="property-group"><h3>Pagina</h3>',
       fieldInput("Titulo do documento", "title", page.props.title || "Pagina"),
       '</section>',
-      '<section class="property-group"><h3>Menu de navegacao</h3>',
-      fieldSelect("Tipo de layout", "menuLayout", menuLayout, [
-        ["none", "Nenhum"],
-        ["horizontal", "Superior (navbar)"],
-        ["vertical", "Lateral (sidebar)"],
-        ["combo", "Lateral + Superior"],
-        ["combo-pill", "Pill + Icone lateral (moderno)"]
+      '<section class="property-group"><h3>Tipo de pagina</h3>',
+      fieldSelect("Tipo", "pageType", pageType, [
+        ["normal", "Pagina normal"],
+        ["login-centered", "Login — formulario centralizado"],
+        ["login-split", "Login — foto a esquerda + formulario"]
       ]),
-      showPositionAndTheme ? fieldSelect("Tema", "menuTheme", page.props.menuTheme || "dark", [
-        ["dark", "Escuro"],
-        ["light", "Claro"]
-      ]) : "",
-      showSidebarOptions ? fieldSelect("Posicao do sidebar", "menuPosition", page.props.menuPosition || "left", [
-        ["left", "Esquerda"],
-        ["right", "Direita"]
-      ]) : "",
-      showSidebarOptions ? fieldSelect("Largura do sidebar", "menuSidebarWidth", page.props.menuSidebarWidth || "normal", [
-        ["compact", "Compacto (so icones)"],
-        ["normal", "Normal (220px)"],
-        ["wide", "Largo (280px)"]
-      ]) : "",
-      showNavbarOptions ? fieldCheckbox("Navbar fixa no scroll (sticky)", "menuSticky", page.props.menuSticky) : "",
-      '</section>'
+      isLoginSplit ? fieldInput("Cor do painel esquerdo", "loginSideColor", page.props.loginSideColor || "#206bc4", "color") : "",
+      isLoginSplit ? fieldInput("Imagem do painel esquerdo (URL)", "loginSideImage", page.props.loginSideImage || "") : "",
+      '</section>',
+      menuSection
     ].join("");
   }
 
@@ -4118,6 +4416,9 @@
     page.props.menuTheme = page.props.menuTheme || "dark";
     if (page.props.menuSticky === undefined) page.props.menuSticky = false;
     page.props.menuSidebarWidth = page.props.menuSidebarWidth || "normal";
+    page.props.pageType = page.props.pageType || "normal";
+    page.props.loginSideColor = page.props.loginSideColor || "#206bc4";
+    if (page.props.loginSideImage === undefined) page.props.loginSideImage = "";
     if (!Array.isArray(page.header)) {
       page.header = createLegacyHeaderRows(page.props);
     }
@@ -4570,6 +4871,7 @@
       getTomSelectId,
       indent,
       isFieldListComponent,
+      isModalContainerComponent,
       normalizeKeyValueEntries,
       renderComponentHtml,
       renderHiddenInputHtml,
