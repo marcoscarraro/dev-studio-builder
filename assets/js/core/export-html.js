@@ -57,6 +57,7 @@
       ...[renderFaviconAsset(context, assets.favicon)].filter(Boolean).map((line) => `  ${line}`),
       ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       ...(isPillLayout ? ['  <link rel="stylesheet" href="public/components/css/pill-layout.css">'] : []),
+      ...assets.headExtra.map((line) => `  ${line}`),
       "</head>",
       '<body class="layout-fluid">',
       ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
@@ -122,6 +123,17 @@
 
     if (isPillLayout) {
       lines.push('  <script src="public/components/js/pill-layout.js" defer></script>');
+    }
+
+    // Arquivos do PWA (manifest.webmanifest + sw.js): emitidos como blocos inertes
+    // (type="text/plain") para o dev copiar e salvar na raiz publica do projeto.
+    if (assets.pwaFiles && assets.pwaFiles.length) {
+      assets.pwaFiles.forEach((file) => {
+        lines.push(`  <!-- ===== PWA: salve o conteudo abaixo como "${file.name}" na raiz publica (ex.: public/${file.name}) ===== -->`);
+        lines.push(`  <script type="text/plain" data-pwa-file="${context.escapeAttr(file.name)}">`);
+        lines.push(sanitizeInlineScript(file.code));
+        lines.push("  </script>");
+      });
     }
 
     lines.push(
@@ -499,7 +511,11 @@
       scripts: [],
       // Codigos da pagina (componentes Script JS + envio AJAX de formularios),
       // emitidos num <script> unico apos as libs.
-      pageScripts: []
+      pageScripts: [],
+      // Linhas de HTML injetadas no <head> (ex.: tags PWA).
+      headExtra: [],
+      // Arquivos gerados para o dev salvar (ex.: manifest.webmanifest, sw.js do PWA).
+      pwaFiles: []
     };
     const seenStyles = new Set();
     const seenHeadScripts = new Set();
@@ -510,6 +526,8 @@
     let needsMask = false;
     // jQuery e exigido pelo script de envio AJAX do formulario (gerado por pagina).
     let needsJquery = false;
+    // PWA: head tags + manifest + service worker sao gerados uma unica vez por pagina.
+    let pwaDone = false;
 
     appendUniqueAssets(assets.styles, seenStyles, registryAssets.styles, "href");
     appendUniqueAssets(assets.headScripts, seenHeadScripts, registryAssets.headScripts, "src");
@@ -543,9 +561,25 @@
       if (definition.kind === "quantityStepper") {
         neededRuntimes.add("quantityStepper");
       }
+      // Codigo 2FA / OTP: runtime de auto-avanco / colar / autosubmit.
+      if (definition.kind === "otp") {
+        neededRuntimes.add("otp");
+      }
+      // PWA: injeta tags de <head>, o runtime, e gera manifest.webmanifest + sw.js.
+      if (definition.kind === "pwa" && !pwaDone) {
+        pwaDone = true;
+        neededRuntimes.add("pwa");
+        buildPwaHeadTags(context, props).forEach((line) => assets.headExtra.push(line));
+        assets.pwaFiles.push({ name: "manifest.webmanifest", code: buildPwaManifest(context, props) });
+        assets.pwaFiles.push({ name: "sw.js", code: buildServiceWorker(context, props) });
+      }
       // Formulario com "Enviar via AJAX" habilitado: usa o codigo do textarea
       // "Codigo JS (jQuery)" (props.ajaxCode — editavel e salvo no JSON da pagina).
       // Se estiver vazio, gera a partir das configuracoes. Inclui o jQuery.
+      // Formulario com "Aviso de alteracoes nao salvas" habilitado: puxa o runtime do guard.
+      if (definition.kind === "formContainer" && context.toBooleanValue(props.unsavedGuard)) {
+        neededRuntimes.add("unsavedGuard");
+      }
       if (definition.kind === "formContainer" && context.toBooleanValue(props.ajaxEnabled) && String(props.ajaxUrl || "").trim()) {
         const formId = context.sanitizeElementId(props.formId, "");
         if (formId) {
@@ -603,6 +637,104 @@
   // sanitizeInlineScript: impede que o conteudo do snippet feche a tag <script> da pagina.
   function sanitizeInlineScript(code) {
     return String(code || "").replace(/<\/script/gi, "<\\/script");
+  }
+
+  // === PWA: head tags, manifest e service worker ===
+  function pwaProp(props, key, fallback) {
+    const v = props[key];
+    return (v === undefined || v === null || String(v).trim() === "") ? fallback : v;
+  }
+
+  function buildPwaHeadTags(context, props) {
+    const esc = context.escapeAttr;
+    const themeColor = esc(pwaProp(props, "themeColor", "#206bc4"));
+    const tileColor = esc(pwaProp(props, "tileColor", pwaProp(props, "themeColor", "#206bc4")));
+    const shortName = esc(pwaProp(props, "shortName", pwaProp(props, "appName", "App")));
+    const manifestUrl = esc(pwaProp(props, "manifestUrl", "/manifest.webmanifest"));
+    const appleIcon = esc(pwaProp(props, "appleTouchIcon", "/apple-touch-icon.png"));
+    const tileImage = esc(pwaProp(props, "icon192", "/icon-192.png"));
+    const appleStatus = esc(pwaProp(props, "appleStatusBar", "default"));
+    return [
+      `<meta name="theme-color" content="${themeColor}">`,
+      `<link rel="manifest" href="${manifestUrl}">`,
+      `<link rel="apple-touch-icon" href="${appleIcon}">`,
+      `<meta name="apple-mobile-web-app-capable" content="yes">`,
+      `<meta name="mobile-web-app-capable" content="yes">`,
+      `<meta name="apple-mobile-web-app-status-bar-style" content="${appleStatus}">`,
+      `<meta name="apple-mobile-web-app-title" content="${shortName}">`,
+      `<meta name="application-name" content="${shortName}">`,
+      `<meta name="msapplication-TileColor" content="${tileColor}">`,
+      `<meta name="msapplication-TileImage" content="${tileImage}">`
+    ];
+  }
+
+  function buildPwaManifest(context, props) {
+    const manifest = {
+      name: pwaProp(props, "appName", "Meu App"),
+      short_name: pwaProp(props, "shortName", pwaProp(props, "appName", "App")),
+      description: pwaProp(props, "description", ""),
+      start_url: pwaProp(props, "startUrl", "/"),
+      scope: pwaProp(props, "scope", "/"),
+      display: pwaProp(props, "display", "standalone"),
+      orientation: pwaProp(props, "orientation", "any"),
+      theme_color: pwaProp(props, "themeColor", "#206bc4"),
+      background_color: pwaProp(props, "backgroundColor", "#ffffff"),
+      lang: pwaProp(props, "lang", "pt-BR"),
+      icons: [
+        { src: pwaProp(props, "icon192", "/icon-192.png"), sizes: "192x192", type: "image/png", purpose: "any maskable" },
+        { src: pwaProp(props, "icon512", "/icon-512.png"), sizes: "512x512", type: "image/png", purpose: "any maskable" }
+      ]
+    };
+    return JSON.stringify(manifest, null, 2);
+  }
+
+  function buildServiceWorker(context, props) {
+    const cacheName = String(pwaProp(props, "cacheName", "pwa-cache-v1")).trim();
+    const startUrl = String(pwaProp(props, "startUrl", "/")).trim();
+    const files = String(props.offlineFiles || "")
+      .split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    if (files.indexOf(startUrl) === -1) {
+      files.unshift(startUrl);
+    }
+    const offlineHtml = String(pwaProp(props, "offlineHtml", '<!doctype html><meta charset="utf-8"><title>Offline</title><h1>Voce esta offline</h1>'));
+    return [
+      "// Service Worker gerado pelo DEV STUDIO BUILDER",
+      "const CACHE = " + JSON.stringify(cacheName) + ";",
+      "const PRECACHE = " + JSON.stringify(files, null, 2) + ";",
+      "const OFFLINE_HTML = " + JSON.stringify(offlineHtml) + ";",
+      "",
+      "self.addEventListener('install', (event) => {",
+      "  event.waitUntil(",
+      "    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting())",
+      "  );",
+      "});",
+      "",
+      "self.addEventListener('activate', (event) => {",
+      "  event.waitUntil(",
+      "    caches.keys()",
+      "      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))",
+      "      .then(() => self.clients.claim())",
+      "  );",
+      "});",
+      "",
+      "self.addEventListener('fetch', (event) => {",
+      "  const req = event.request;",
+      "  if (req.method !== 'GET') return;",
+      "  // Navegacao: tenta a rede; offline, cai para o cache e por fim para o HTML offline.",
+      "  if (req.mode === 'navigate') {",
+      "    event.respondWith(",
+      "      fetch(req).catch(() =>",
+      "        caches.match(req).then((cached) =>",
+      "          cached || new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })",
+      "        )",
+      "      )",
+      "    );",
+      "    return;",
+      "  }",
+      "  // Demais requisicoes GET: cache primeiro, com fallback de rede.",
+      "  event.respondWith(caches.match(req).then((cached) => cached || fetch(req)));",
+      "});"
+    ].join("\n");
   }
 
   // === SCRIPT DE ENVIO AJAX DO FORMULARIO ===

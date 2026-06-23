@@ -26,7 +26,6 @@
 
     var body = fieldList.querySelector("[data-fieldlist-body]");
     var template = fieldList.querySelector("template[data-fieldlist-template]");
-    var addButton = fieldList.querySelector("[data-fieldlist-add]");
     var indexStart = parseInt(fieldList.getAttribute("data-fieldlist-index-start") || "1", 10);
 
     if (isNaN(indexStart)) {
@@ -43,6 +42,22 @@
       return Array.prototype.filter.call(body.children, function (child) {
         return child.matches && child.matches("tr");
       });
+    }
+
+    function previousRow(row) {
+      var prev = row.previousElementSibling;
+      while (prev && !(prev.matches && prev.matches("tr"))) {
+        prev = prev.previousElementSibling;
+      }
+      return prev;
+    }
+
+    function nextRow(row) {
+      var next = row.nextElementSibling;
+      while (next && !(next.matches && next.matches("tr"))) {
+        next = next.nextElementSibling;
+      }
+      return next;
     }
 
     function applyTemplate(element, templateAttribute, targetAttribute, index) {
@@ -156,20 +171,24 @@
       });
     }
 
-    if (addButton && template) {
-      addButton.addEventListener("click", function () {
-        var fragment = template.content.cloneNode(true);
-        var row = fragment.querySelector("tr");
+    // Adiciona uma nova linha a partir do template. Reutilizado por qualquer
+    // botao [data-fieldlist-add] (topo, rodape ou multiplos).
+    function addRow() {
+      if (!template) {
+        return;
+      }
 
-        if (!row) {
-          return;
-        }
+      var fragment = template.content.cloneNode(true);
+      var row = fragment.querySelector("tr");
 
-        body.appendChild(row);
-        resetRowValues(row);
-        reindexRows();
-        emitRowEvent("fieldlist:row-added", row);
-      });
+      if (!row) {
+        return;
+      }
+
+      body.appendChild(row);
+      resetRowValues(row);
+      reindexRows();
+      emitRowEvent("fieldlist:row-added", row);
     }
 
     fieldList.addEventListener("click", function (event) {
@@ -179,6 +198,21 @@
       } else {
         target = null;
       }
+
+      // Botao(oes) de adicionar — delegado, suporta N botoes em qualquer lugar.
+      var addTrigger;
+      if (target) {
+        addTrigger = target.closest("[data-fieldlist-add]");
+      } else {
+        addTrigger = null;
+      }
+
+      if (addTrigger && fieldList.contains(addTrigger)) {
+        event.preventDefault();
+        addRow();
+        return;
+      }
+
       var trigger;
       if (target) {
         trigger = target.closest("[data-fieldlist-action]");
@@ -192,7 +226,7 @@
 
       var action = trigger.getAttribute("data-fieldlist-action");
 
-      if (action !== "clone" && action !== "remove") {
+      if (action !== "clone" && action !== "remove" && action !== "move-up" && action !== "move-down") {
         return;
       }
 
@@ -203,6 +237,25 @@
       }
 
       event.preventDefault();
+
+      if (action === "move-up" || action === "move-down") {
+        if (action === "move-up") {
+          var prev = previousRow(row);
+          if (!prev) {
+            return;
+          }
+          body.insertBefore(row, prev);
+        } else {
+          var next = nextRow(row);
+          if (!next) {
+            return;
+          }
+          body.insertBefore(next, row);
+        }
+        reindexRows();
+        emitRowEvent("fieldlist:row-moved", row);
+        return;
+      }
 
       if (action === "remove") {
         row.remove();

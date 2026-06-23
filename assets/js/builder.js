@@ -117,17 +117,9 @@
     bindSearch();
     bindDevices();
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        state.page = normalizePage(JSON.parse(saved));
-      } catch (error) {
-        state.page = createStarterPage();
-        toast("Aviso: dado salvo estava corrompido, iniciando nova pagina");
-      }
-    } else {
-      state.page = createEmptyPage();
-    }
+    // Inicia sempre com a pagina vazia. O trabalho salvo NAO e carregado
+    // automaticamente no inicio — use o botao "Carregar" para restaurar.
+    state.page = createEmptyPage();
 
     commitHistory();
     render();
@@ -2055,6 +2047,11 @@
       card.id = sanitizeElementId(props.cardId, "");
     }
 
+    const position = props.addButtonPosition || "top";
+    const showTopButton = position === "top" || position === "both";
+    const showBottomButton = position === "bottom" || position === "both";
+    const addButtonHtml = `<button type="button"${classAttr(props.addButtonCssClass || "btn btn-primary")} data-action="fieldlist-add-row">${renderButtonContent(props.addButtonText || "Adicionar linha", props.addButtonIcon, props.addButtonIconPosition, props.addButtonIconColor)}</button>`;
+
     const header = document.createElement("div");
     header.className = props.headerCssClass || "card-header";
     const heading = document.createElement("div");
@@ -2062,11 +2059,13 @@
       props.cardTitle ? `<h3 class="card-title">${escapeHtml(props.cardTitle)}</h3>` : "",
       props.description ? `<div class="text-secondary">${escapeHtml(props.description)}</div>` : ""
     ].join("");
-    const actions = document.createElement("div");
-    actions.className = "card-actions";
-    actions.innerHTML = `<button type="button"${classAttr(props.addButtonCssClass || "btn btn-primary")} data-action="fieldlist-add-row">${renderButtonContent(props.addButtonText || "Adicionar linha", props.addButtonIcon, props.addButtonIconPosition, props.addButtonIconColor)}</button>`;
     header.appendChild(heading);
-    header.appendChild(actions);
+    if (showTopButton) {
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+      actions.innerHTML = addButtonHtml;
+      header.appendChild(actions);
+    }
     card.appendChild(header);
 
     const tableWrapper = document.createElement("div");
@@ -2118,6 +2117,14 @@
     table.appendChild(body);
     tableWrapper.appendChild(table);
     card.appendChild(tableWrapper);
+
+    if (showBottomButton) {
+      const footer = document.createElement("div");
+      footer.className = "card-footer";
+      footer.innerHTML = addButtonHtml;
+      card.appendChild(footer);
+    }
+
     preview.appendChild(card);
   }
 
@@ -2346,11 +2353,56 @@
   }
 
   function renderFormContainerHtml(component, cssClassAttr) {
+    const props = component.props || {};
     const rows = (getRowContainerRows(component) || []).map(exportRow).join("\n");
-    return [
+    const lines = [
       `<form${renderFormContainerAttributes(component, cssClassAttr)}>`,
       indent(rows, 2),
       "</form>"
+    ];
+    if (toBooleanValue(props.unsavedGuard)) {
+      lines.push(renderUnsavedGuardModal(component, getUnsavedModalId(component)));
+    }
+    return lines.join("\n");
+  }
+
+  function getUnsavedModalId(component) {
+    const props = component.props || {};
+    const base = props.formId ? props.formId + "-unsaved" : "unsaved-" + component.id;
+    return sanitizeElementId(base, "unsaved-guard");
+  }
+
+  // Modal Tabler de confirmacao para o guard de alteracoes nao salvas.
+  // Textos, cores e icones vem das props (100% editaveis).
+  function renderUnsavedGuardModal(component, modalId) {
+    const props = component.props || {};
+    const statusColor = escapeAttr(props.unsavedStatusColor || "warning");
+    const title = escapeHtml(props.unsavedTitle || "Alteracoes nao salvas");
+    const message = props.unsavedMessage || "Ha alteracoes que nao foram salvas. Deseja realmente sair sem salvar?";
+    const cancelContent = renderButtonContent(props.unsavedCancelText || "Continuar editando", props.unsavedCancelIcon, "left", props.unsavedCancelIconColor);
+    const confirmContent = renderButtonContent(props.unsavedConfirmText || "Sair sem salvar", props.unsavedConfirmIcon, "left", props.unsavedConfirmIconColor);
+    const cancelCls = mergeClassNames(props.unsavedCancelCssClass || "btn", "w-100");
+    const confirmCls = mergeClassNames(props.unsavedConfirmCssClass || "btn btn-danger", "w-100");
+    return [
+      `<div class="modal modal-blur fade" id="${escapeAttr(modalId)}" tabindex="-1" role="dialog" aria-hidden="true"${attr("data-unsaved-message", message)}>`,
+      `  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">`,
+      `    <div class="modal-content">`,
+      `      <div${classAttr("modal-status bg-" + statusColor)}></div>`,
+      `      <div class="modal-body text-center py-4">`,
+      `        <h3>${title}</h3>`,
+      `        <div class="text-secondary">${escapeHtml(message)}</div>`,
+      `      </div>`,
+      `      <div class="modal-footer">`,
+      `        <div class="w-100">`,
+      `          <div class="row">`,
+      `            <div class="col"><button type="button"${classAttr(cancelCls)} data-bs-dismiss="modal">${cancelContent}</button></div>`,
+      `            <div class="col"><button type="button"${classAttr(confirmCls)} data-unsaved-confirm>${confirmContent}</button></div>`,
+      `          </div>`,
+      `        </div>`,
+      `      </div>`,
+      `    </div>`,
+      `  </div>`,
+      `</div>`
     ].join("\n");
   }
 
@@ -2485,12 +2537,20 @@
       ].join("");
     }
 
+    let guardAttrs = "";
+    if (toBooleanValue(props.unsavedGuard)) {
+      guardAttrs = ' data-unsaved-guard="1"' +
+        attr("data-unsaved-modal", getUnsavedModalId(component)) +
+        ' data-unsaved-beforeunload="' + (toBooleanValue(props.unsavedBeforeUnload) ? "true" : "false") + '"';
+    }
+
     return [
       cssClassAttr,
       idAttr(props.formId),
       nativeSubmitAttrs,
       attr("autocomplete", getSafeAutocomplete(props.autocomplete)),
-      toBooleanValue(props.novalidate) ? " novalidate" : ""
+      toBooleanValue(props.novalidate) ? " novalidate" : "",
+      guardAttrs
     ].join("");
   }
 
@@ -2803,7 +2863,7 @@
   }
 
   function getSafeFieldListAction(value) {
-    if (["clone", "remove"].includes(value)) {
+    if (["clone", "remove", "move-up", "move-down"].includes(value)) {
       return value;
     } else {
       return "";

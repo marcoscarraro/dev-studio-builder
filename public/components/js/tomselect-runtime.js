@@ -56,6 +56,8 @@
     var sortField = (select.dataset.sortField || "text").trim();
     var sortDirection = (select.dataset.sortDirection || "asc").trim();
     var maxOptions = parseInt(select.dataset.maxOptions, 10) || 100;
+    var optionHtmlField = (select.dataset.optionHtmlField || "").trim();
+    var itemHtmlField = (select.dataset.itemHtmlField || "").trim();
     var plugins;
     if (select.multiple) {
       plugins = ["remove_button", "clear_button"];
@@ -81,6 +83,21 @@
         }
       }
     };
+
+    // Options/itens em HTML (formatado no backend). O HTML e inserido sem escapar
+    // (conteudo confiavel do servidor); fallback para o label escapado quando ausente.
+    if (optionHtmlField) {
+      settings.render.option = function (data, escape) {
+        var h = data[optionHtmlField];
+        return '<div class="ts-html-option">' + (h != null && h !== "" ? h : escape(data[labelField] || "")) + "</div>";
+      };
+    }
+    if (itemHtmlField) {
+      settings.render.item = function (data, escape) {
+        var h = data[itemHtmlField];
+        return '<div class="ts-html-item">' + (h != null && h !== "" ? h : escape(data[labelField] || "")) + "</div>";
+      };
+    }
 
     if (remoteSearch) {
       // Busca remota: o servidor filtra; o debounce evita uma requisicao por tecla.

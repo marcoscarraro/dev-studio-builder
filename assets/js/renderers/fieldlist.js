@@ -49,6 +49,14 @@
       tbodyId = "";
     }
 
+    const position = props.addButtonPosition || "top";
+    const showTop = position === "top" || position === "both";
+    const showBottom = position === "bottom" || position === "both";
+    const buttonContent = context.renderButtonContent(props.addButtonText || "Adicionar linha", props.addButtonIcon, props.addButtonIconPosition, props.addButtonIconColor);
+    // Botao do topo mantem o addButtonId; o do rodape nao (evita id duplicado).
+    const topButton = `<button type="button"${context.classAttr(props.addButtonCssClass || "btn btn-primary")}${addButtonId} data-fieldlist-add>${buttonContent}</button>`;
+    const bottomButton = `<button type="button"${context.classAttr(props.addButtonCssClass || "btn btn-primary")} data-fieldlist-add>${buttonContent}</button>`;
+
     return [
       `<article${cssClassAttr}${cardId} data-fieldlist="1"${context.attr("data-fieldlist-index-start", indexStart)}>`,
       `  <div${context.classAttr(props.headerCssClass || "card-header")}>`,
@@ -56,9 +64,9 @@
       title,
       description,
       "    </div>",
-      '    <div class="card-actions">',
-      `      <button type="button"${context.classAttr(props.addButtonCssClass || "btn btn-primary")}${addButtonId} data-fieldlist-add>${context.renderButtonContent(props.addButtonText || "Adicionar linha", props.addButtonIcon, props.addButtonIconPosition, props.addButtonIconColor)}</button>`,
-      "    </div>",
+      showTop ? '    <div class="card-actions">' : "",
+      showTop ? `      ${topButton}` : "",
+      showTop ? "    </div>" : "",
       "  </div>",
       `  <div${context.classAttr(props.tableWrapperCssClass || "card-table")}>`,
       `    <table${context.classAttr(props.tableCssClass || "table card-table table-vcenter text-nowrap")}${tableId}>`,
@@ -68,6 +76,9 @@
       "      </tbody>",
       "    </table>",
       "  </div>",
+      showBottom ? '  <div class="card-footer">' : "",
+      showBottom ? `    ${bottomButton}` : "",
+      showBottom ? "  </div>" : "",
       "  <template data-fieldlist-template>",
       context.indent(templateRow, 4),
       "  </template>",

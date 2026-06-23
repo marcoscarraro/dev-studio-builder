@@ -27,6 +27,8 @@
       context.attr("data-value-field", props.valueField || "id"),
       context.attr("data-label-field", props.labelField || "text"),
       context.attr("data-search-field", props.searchField || props.labelField || "text"),
+      context.attr("data-option-html-field", props.optionHtmlField),
+      context.attr("data-item-html-field", props.itemHtmlField),
       context.attr("data-tomselect-create", context.toBooleanValue(props.create) ? "true" : ""),
       context.attr("data-create-url", props.createUrl),
       context.attr("data-allow-empty-option", context.toBooleanValue(props.allowEmptyOption) ? "true" : "false"),

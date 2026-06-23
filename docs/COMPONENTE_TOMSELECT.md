@@ -177,3 +177,79 @@ Roteiro completo: `docs/CHECKLIST_TESTES.md` secao 11d. Resumo:
 2. Tags input: URL `mock/tags-search.php` (JSON path `tags`). Digitar "script"
    (JavaScript/TypeScript), criar uma tag nova junto.
 3. Desligar a busca remota: volta ao comportamento antigo (1 fetch no load).
+
+---
+
+## 7. Options em HTML (option rico)
+
+Por padrao cada opcao mostra o **texto escapado** do "Campo texto" (`labelField`).
+Para exibir uma opcao **rica** — ex.: nome do cliente + CPF + limite de credito — o
+backend devolve, alem dos campos planos, um campo **HTML** por opcao, e voce o aponta
+em **"Campo HTML do option"**.
+
+### Propriedades (grupo "HTML")
+
+| Propriedade | data-* | Efeito |
+|---|---|---|
+| Campo HTML do option | `data-option-html-field` | Nome do campo com o HTML mostrado em cada **opcao do dropdown**. Vazio = desligado |
+| Campo HTML do item selecionado | `data-item-html-field` | Nome do campo com o HTML do **chip selecionado**. Vazio = usa o "Campo texto" |
+
+### Contrato da resposta
+
+Cada item traz os campos planos (para valor, item e **busca**) **e** o campo HTML
+(so para exibicao):
+
+```json
+[
+  {
+    "id": 12,
+    "text": "Maria Silva",
+    "cpf": "123.456.789-00",
+    "html": "<div><strong>Maria Silva</strong><div class=\"text-secondary small\">CPF 123.456.789-00 · Limite R$ 5.000,00</div></div>"
+  }
+]
+```
+
+Configuracao no builder: **Campo HTML do option** = `html`, **Campo busca** =
+`text,cpf` (o "Campo busca" aceita varios campos separados por virgula).
+
+### Controller Laravel
+
+```php
+public function index()
+{
+    return response()->json(
+        Cliente::query()->limit(50)->get()->map(fn ($c) => [
+            'id'   => $c->id,
+            'text' => $c->nome,                                   // item/chip + busca
+            'cpf'  => $c->cpf,                                    // opcional, para busca
+            'html' => view('partials.cliente_option', ['c' => $c])->render(),
+        ])
+    );
+}
+```
+
+`resources/views/partials/cliente_option.blade.php`:
+
+```blade
+<div>
+  <strong>{{ $c->nome }}</strong>
+  <div class="text-secondary small">
+    CPF {{ $c->cpf }} · Limite {{ 'R$ '.number_format($c->limite, 2, ',', '.') }}
+  </div>
+</div>
+```
+
+### Particularidades
+
+- **A busca usa os campos planos** (`text,cpf`), **nunca** o HTML — voce nao quer
+  casar com nomes de tags. Liste no "Campo busca" todos os campos pesquisaveis.
+- **Item selecionado (chip)**: por padrao mostra o "Campo texto" (compacto). Defina
+  "Campo HTML do item selecionado" so se quiser o chip tambem rico.
+- **Seguranca**: o HTML e inserido **sem escapar** (e o objetivo). Como vem do seu
+  backend, e confiavel; mas **escape no servidor** qualquer dado de usuario embutido
+  (use `{{ }}` do Blade nas partials, como no exemplo) para evitar XSS.
+- **Fallback**: opcoes sem o campo HTML (ex.: criadas pelo "Permitir criar") caem no
+  texto escapado automaticamente — nao quebram.
+- Vale para **TomSelect**, **Tags input** e **TomSelect + Criar** (a sentinela
+  "Criar novo" continua intacta).

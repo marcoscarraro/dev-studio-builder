@@ -608,6 +608,46 @@ A prop "Videos relacionados ao final" controla o parametro `rel` do YouTube:
 
 ---
 
+## Aviso de alteracoes nao salvas (Form)
+
+Ligue **"Avisar alteracoes nao salvas"** no componente **Form**. Quando o usuario
+altera qualquer campo e tenta sair sem salvar, aparece um **modal de confirmacao
+totalmente editavel** (titulo, mensagem, cor da barra, e os dois botoes com texto,
+classe CSS e icone proprios).
+
+### Como funciona
+
+- **Sujo (dirty)**: qualquer `input`/`change` dentro do `<form>` marca o formulario
+  como alterado.
+- **Sair por link**: ao clicar num `<a href>` que troca a pagina (ou num elemento com
+  `data-unsaved-exit`), o runtime intercepta e mostra o modal customizado. "Sair sem
+  salvar" navega; "Continuar editando" mantem.
+- **Submeter (Salvar)** **nao** limpa o estado automaticamente (mais seguro para AJAX:
+  se o envio falhar, os dados continuam protegidos). Um submit **nativo** (que recarrega
+  a pagina) apenas libera a propria navegacao sem disparar o aviso. Para limpar o estado,
+  dispare o evento `unsaved-guard:clean` no sucesso (ver abaixo).
+- **Fechar aba / atualizar / voltar**: usa o `beforeunload` **nativo** do navegador
+  (dialogo generico). Por seguranca os navegadores **nao** permitem texto/botoes custom
+  nesse caso — por isso o modal editavel cobre a navegacao por links (o caso comum).
+
+### Marcadores no HTML
+
+- `data-unsaved-ignore` num `<a>` → aquele link sai **sem** avisar (ex.: "Cancelar").
+- `data-unsaved-exit` (+ `data-href="..."`) num botao que nao seja link → tambem dispara o aviso.
+
+### Formularios AJAX (sem navegar)
+
+Se voce salva via AJAX (a pagina nao recarrega), limpe o estado "sujo" no sucesso:
+
+```js
+document.getElementById('meu-form')
+  .dispatchEvent(new Event('unsaved-guard:clean'));
+```
+
+Assim o usuario pode sair normalmente apos um salvamento bem-sucedido.
+
+---
+
 ## Checklist de producao
 
 - [ ] Pagina servida via **HTTPS** (obrigatorio para acesso a camera e microfone)
