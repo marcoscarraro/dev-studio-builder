@@ -7,6 +7,12 @@
     const props = component.props || {};
     const options = "";
     const remoteSearch = context.toBooleanValue(props.remoteSearch);
+    const createModal = context.toBooleanValue(props.createModal);
+    // Acao do botao "+": "modal" (iframe) ou "newtab" (abre o link em nova aba).
+    const buttonMode = props.createButtonMode === "newtab" ? "newtab" : "modal";
+    const modalMode = createModal && buttonMode === "modal";
+    const modalId = context.sanitizeElementId(props.modalId, "create-modal-" + component.id);
+    const createUrl = props.createUrl || "";
     let required;
     if (context.toBooleanValue(props.required)) {
       required = ' <span class="required-mark">*</span>';
@@ -27,10 +33,17 @@
       context.attr("data-value-field", props.valueField || "id"),
       context.attr("data-label-field", props.labelField || "text"),
       context.attr("data-search-field", props.searchField || props.labelField || "text"),
-      context.attr("data-option-html-field", props.optionHtmlField),
-      context.attr("data-item-html-field", props.itemHtmlField),
-      context.attr("data-tomselect-create", context.toBooleanValue(props.create) ? "true" : ""),
-      context.attr("data-create-url", props.createUrl),
+      context.toBooleanValue(props.htmlMode) ? context.attr("data-option-html-field", props.optionHtmlField || "html_option") : "",
+      context.toBooleanValue(props.htmlMode) ? context.attr("data-item-html-field", props.itemHtmlField || "html_selected") : "",
+      // Criar inline (nova aba) — desligado quando o modo modal esta ativo.
+      !createModal ? context.attr("data-tomselect-create", context.toBooleanValue(props.create) ? "true" : "") : "",
+      context.attr("data-create-url", createUrl),
+      // Criar via botao + modal (iframe) — so no modo modal; o newtab e um link puro.
+      modalMode ? ' data-create-modal="true"' : "",
+      modalMode ? context.attr("data-modal-id", modalId) : "",
+      modalMode ? context.attr("data-create-label", props.createLabel || "Criar novo") : "",
+      modalMode ? context.attr("data-response-value-field", props.responseValueField || "id") : "",
+      modalMode ? context.attr("data-response-label-field", props.responseLabelField || "text") : "",
       context.attr("data-allow-empty-option", context.toBooleanValue(props.allowEmptyOption) ? "true" : "false"),
       context.attr("data-sort-field", props.sortField || "text"),
       context.attr("data-sort-direction", props.sortDirection || "asc"),
@@ -52,11 +65,47 @@
       help = "";
     }
 
+    const selectClass = context.classAttr(context.mergeClassNames(context.getComponentClass(component), context.getValidationClass(props)));
+    const selectEl = `<select${selectClass}${selectAttrs}>${options}</select>`;
+
+    let control = selectEl;
+    let modalHtml = "";
+    if (createModal) {
+      const createLabel = props.createLabel || "Criar novo";
+      const modalTitle = props.modalTitle || "Novo Registro";
+      const modalSize = props.modalSize || "modal-lg";
+      const plusIcon = context.renderTablerIcon("plus", "");
+      let createBtn;
+      if (modalMode) {
+        createBtn = `<button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#${context.escapeAttr(modalId)}" title="${context.escapeAttr(createLabel)}">${plusIcon}</button>`;
+      } else {
+        // Link em nova aba (sem modal).
+        createBtn = `<a href="${context.escapeAttr(createUrl || "#")}" target="_blank" rel="noopener" class="btn btn-outline-secondary" title="${context.escapeAttr(createLabel)}">${plusIcon}</a>`;
+      }
+      control = ['<div class="input-group">', "  " + selectEl, "  " + createBtn, "</div>"].join("\n");
+      modalHtml = !modalMode ? "" : [
+        `<div class="modal" id="${context.escapeAttr(modalId)}" tabindex="-1" data-bs-backdrop="static">`,
+        `  <div class="modal-dialog ${context.escapeAttr(modalSize)} modal-dialog-scrollable" role="document">`,
+        `    <div class="modal-content">`,
+        `      <div class="modal-header">`,
+        `        <h5 class="modal-title">${context.escapeHtml(modalTitle)}</h5>`,
+        `        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>`,
+        `      </div>`,
+        `      <div class="modal-body p-0">`,
+        `        <iframe data-create-iframe style="width:100%;border:0;min-height:520px;display:block;"></iframe>`,
+        `      </div>`,
+        `    </div>`,
+        `  </div>`,
+        `</div>`
+      ].join("\n");
+    }
+
     return [
       context.renderFormLabel(context.escapeHtml(props.label || ""), required),
-      `<select${context.classAttr(context.mergeClassNames(context.getComponentClass(component), context.getValidationClass(props)))}${selectAttrs}>${options}</select>`,
+      control,
       help,
-      feedback || context.renderValidationFeedback(props)
+      feedback || context.renderValidationFeedback(props),
+      modalHtml
     ].filter((line) => line !== "").join("\n");
   }
 }());

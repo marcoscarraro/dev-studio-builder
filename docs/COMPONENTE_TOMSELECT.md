@@ -92,7 +92,7 @@ Os placeholders `{{ajaxUrl}}`, `{{valueField}}`, `{{labelField}}`, `{{searchPara
 e `{{maxOptions}}` sao resolvidos em tempo real conforme as props mudam. Use o botao
 "Copiar" e cole direto no controller.
 
-O **TomSelect+Criar** tem os mesmos dois snippets, mais o guia de iframe em
+O modo **"Botao criar ao lado (modal)"** tem o mesmo guia de iframe em
 `docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md`.
 
 ---
@@ -183,20 +183,27 @@ Roteiro completo: `docs/CHECKLIST_TESTES.md` secao 11d. Resumo:
 ## 7. Options em HTML (option rico)
 
 Por padrao cada opcao mostra o **texto escapado** do "Campo texto" (`labelField`).
-Para exibir uma opcao **rica** — ex.: nome do cliente + CPF + limite de credito — o
-backend devolve, alem dos campos planos, um campo **HTML** por opcao, e voce o aponta
-em **"Campo HTML do option"**.
+Para exibir uma opcao **rica** — ex.: nome do cliente + CPF + limite de credito —
+marque **"Dados vem em HTML"** no grupo **HTML** das propriedades. Ao marcar, aparecem
+dois campos **ja preenchidos com os nomes fixos** que o backend deve devolver:
+
+- **`html_option`** — HTML mostrado em cada **opcao do dropdown**.
+- **`html_selected`** — HTML do **item selecionado (chip)**.
 
 ### Propriedades (grupo "HTML")
 
-| Propriedade | data-* | Efeito |
-|---|---|---|
-| Campo HTML do option | `data-option-html-field` | Nome do campo com o HTML mostrado em cada **opcao do dropdown**. Vazio = desligado |
-| Campo HTML do item selecionado | `data-item-html-field` | Nome do campo com o HTML do **chip selecionado**. Vazio = usa o "Campo texto" |
+| Propriedade | Efeito |
+|---|---|
+| **Dados vem em HTML (option rico)** | Liga o modo HTML e revela os 2 campos abaixo. Desligado = comportamento padrao (texto) |
+| Campo HTML do option (`html_option`) | Nome do campo com o HTML do **dropdown**. Default fixo `html_option` |
+| Campo HTML do item selecionado (`html_selected`) | Nome do campo com o HTML do **chip**. Default fixo `html_selected` |
+
+> Os nomes ja vem preenchidos com `html_option` / `html_selected` — basta o backend
+> devolver esses campos. (Voce pode trocar os nomes, mas o padrao e usa-los fixos.)
 
 ### Contrato da resposta
 
-Cada item traz os campos planos (para valor, item e **busca**) **e** o campo HTML
+Cada item traz os campos planos (para valor, item e **busca**) **e** os campos HTML
 (so para exibicao):
 
 ```json
@@ -205,13 +212,15 @@ Cada item traz os campos planos (para valor, item e **busca**) **e** o campo HTM
     "id": 12,
     "text": "Maria Silva",
     "cpf": "123.456.789-00",
-    "html": "<div><strong>Maria Silva</strong><div class=\"text-secondary small\">CPF 123.456.789-00 · Limite R$ 5.000,00</div></div>"
+    "html_option": "<div><strong>Maria Silva</strong><div class=\"text-secondary small\">CPF 123.456.789-00 · Limite R$ 5.000,00</div></div>",
+    "html_selected": "<strong>Maria Silva</strong> <span class=\"text-secondary small\">(123.456.789-00)</span>"
   }
 ]
 ```
 
-Configuracao no builder: **Campo HTML do option** = `html`, **Campo busca** =
-`text,cpf` (o "Campo busca" aceita varios campos separados por virgula).
+Configuracao no builder: **Dados vem em HTML** marcado e **Campo busca** = `text,cpf`
+(o "Campo busca" aceita varios campos separados por virgula). Ha um mock pronto em
+`mock/tom-select-html.json` (JSON path `clientes`).
 
 ### Controller Laravel
 
@@ -220,10 +229,11 @@ public function index()
 {
     return response()->json(
         Cliente::query()->limit(50)->get()->map(fn ($c) => [
-            'id'   => $c->id,
-            'text' => $c->nome,                                   // item/chip + busca
-            'cpf'  => $c->cpf,                                    // opcional, para busca
-            'html' => view('partials.cliente_option', ['c' => $c])->render(),
+            'id'            => $c->id,
+            'text'          => $c->nome,   // item/chip (fallback) + busca
+            'cpf'           => $c->cpf,    // opcional, para busca
+            'html_option'   => view('partials.cliente_option', ['c' => $c])->render(),
+            'html_selected' => '<strong>'.e($c->nome).'</strong>',
         ])
     );
 }
@@ -244,12 +254,14 @@ public function index()
 
 - **A busca usa os campos planos** (`text,cpf`), **nunca** o HTML — voce nao quer
   casar com nomes de tags. Liste no "Campo busca" todos os campos pesquisaveis.
-- **Item selecionado (chip)**: por padrao mostra o "Campo texto" (compacto). Defina
-  "Campo HTML do item selecionado" so se quiser o chip tambem rico.
+- **Item selecionado (chip)**: com "Dados vem em HTML" marcado, o chip usa o campo
+  `html_selected`. Devolva nele um HTML **compacto** (so o nome, por ex.); o `html_option`
+  costuma ser grande demais para a chip. Se o backend nao mandar `html_selected`, a chip
+  cai no "Campo texto" (fallback).
 - **Seguranca**: o HTML e inserido **sem escapar** (e o objetivo). Como vem do seu
   backend, e confiavel; mas **escape no servidor** qualquer dado de usuario embutido
   (use `{{ }}` do Blade nas partials, como no exemplo) para evitar XSS.
 - **Fallback**: opcoes sem o campo HTML (ex.: criadas pelo "Permitir criar") caem no
   texto escapado automaticamente — nao quebram.
-- Vale para **TomSelect**, **Tags input** e **TomSelect + Criar** (a sentinela
-  "Criar novo" continua intacta).
+- Vale para **TomSelect** e **Tags input**, inclusive com o modo **"Botao criar ao
+  lado (modal)"** ligado (a sentinela "Criar novo" continua intacta).

@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="public/tabler/css/tabler-themes.css">
   <link rel="stylesheet" href="public/tabler/css/custom.css">
   <link rel="stylesheet" href="public/tema/tema.css">
+  <link rel="stylesheet" href="public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
 </head>
 <body class="layout-fluid">
   <script src="public/tabler/js/tabler-theme.js"></script>
@@ -34,30 +35,15 @@
                   </div>
                   <div class="card-table table-responsive overflow-y-visible">
                     <table class="table card-table table-vcenter text-nowrap">
-                      <thead><tr><th style="width:220px">Nome</th><th style="width:220px">Departamento/Cargo</th><th style="width:180px">Telefone</th><th style="width:180px">Celular</th><th style="width:240px">E-mail</th><th style="width:220px">Site</th><th class="text-end" style="width:100px">Acoes</th></tr></thead>
+                      <thead><tr><th style="width:220px">Nome</th><th class="text-end" style="width:100px">Acoes</th></tr></thead>
                       <tbody id="contatosPessoa" data-fieldlist-body>
                         <tr class="contato-row" data-index="1">
                           <td style="width:220px">
-
-                          </td>
-                          <td style="width:220px">
-
-                          </td>
-                          <td style="width:180px">
-
-                          </td>
-                          <td style="width:180px">
-
-                          </td>
-                          <td style="width:240px">
-
-                          </td>
-                          <td style="width:220px">
-                            <label class="form-label">Campo texto</label><input class="form-control" type="text" data-fieldlist-id-template="campo_texto-lw4gmqqw8kxa-__INDEX__" id="campo_texto-lw4gmqqw8kxa-1" data-fieldlist-name-template="campo_texto-lw4gmqqw8kxa[__INDEX__]" name="campo_texto-lw4gmqqw8kxa[1]">
+                            <label class="form-label">Categoria <span class="required-mark">*</span></label>
+                            <select class="form-select" data-fieldlist-id-template="tom_select-ehfgmqr3i0l7-__INDEX__" id="tom_select-ehfgmqr3i0l7-1" data-fieldlist-name-template="tom_select-ehfgmqr3i0l7[__INDEX__]" name="tom_select-ehfgmqr3i0l7[1]" data-tomselect="" data-ajax-url="mock/tom-select-html.json" data-json-path="clientes" data-remote-search="false" data-placeholder="Selecione a categoria" data-value-field="id" data-label-field="text" data-search-field="text,cpf" data-option-html-field="html" data-item-html-field="html" data-allow-empty-option="true" data-sort-field="text" data-sort-direction="asc" data-max-options="100" required></select>
                           </td>
                           <td class="text-end" style="width:100px">
-                            <div style="text-align:left"><button type="button" class="button-preview btn btn-primary" data-fieldlist-action="move-up">UP</button></div>
-                            <div style="text-align:left"><button type="button" class="button-preview btn btn-primary" data-fieldlist-action="move-down">DOWN</button></div>
+
                           </td>
                         </tr>
                       </tbody>
@@ -66,26 +52,11 @@
                   <template data-fieldlist-template>
                     <tr class="contato-row" data-index="__INDEX__" data-fieldlist-template-row>
                       <td style="width:220px">
-
-                      </td>
-                      <td style="width:220px">
-
-                      </td>
-                      <td style="width:180px">
-
-                      </td>
-                      <td style="width:180px">
-
-                      </td>
-                      <td style="width:240px">
-
-                      </td>
-                      <td style="width:220px">
-                        <label class="form-label">Campo texto</label><input class="form-control" type="text" data-fieldlist-id-template="campo_texto-lw4gmqqw8kxa-__INDEX__" id="campo_texto-lw4gmqqw8kxa-__INDEX__" data-fieldlist-name-template="campo_texto-lw4gmqqw8kxa[__INDEX__]" name="campo_texto-lw4gmqqw8kxa[__INDEX__]">
+                        <label class="form-label">Categoria <span class="required-mark">*</span></label>
+                        <select class="form-select" data-fieldlist-id-template="tom_select-ehfgmqr3i0l7-__INDEX__" id="tom_select-ehfgmqr3i0l7-__INDEX__" data-fieldlist-name-template="tom_select-ehfgmqr3i0l7[__INDEX__]" name="tom_select-ehfgmqr3i0l7[__INDEX__]" data-tomselect="" data-ajax-url="mock/tom-select-html.json" data-json-path="clientes" data-remote-search="false" data-placeholder="Selecione a categoria" data-value-field="id" data-label-field="text" data-search-field="text,cpf" data-option-html-field="html" data-item-html-field="html" data-allow-empty-option="true" data-sort-field="text" data-sort-direction="asc" data-max-options="100" required></select>
                       </td>
                       <td class="text-end" style="width:100px">
-                        <div style="text-align:left"><button type="button" class="button-preview btn btn-primary" data-fieldlist-action="move-up">UP</button></div>
-                        <div style="text-align:left"><button type="button" class="button-preview btn btn-primary" data-fieldlist-action="move-down">DOWN</button></div>
+
                       </td>
                     </tr>
                   </template>
@@ -97,7 +68,9 @@
       </div>
     </div>
   </div>
+  <script src="public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="public/tabler/js/tabler.js" defer></script>
   <script src="public/components/js/fieldlist-runtime.js"></script>
+  <script src="public/components/js/tomselect-runtime.js"></script>
 </body>
 </html>

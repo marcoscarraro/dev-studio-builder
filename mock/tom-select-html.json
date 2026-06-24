@@ -1,0 +1,52 @@
+{
+  "clientes": [
+    {
+      "id": "1",
+      "text": "Maria Silva",
+      "cpf": "123.456.789-00",
+      "limite": "5.000,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-blue-lt me-2\">MS</span><span class=\"flex-fill\"><strong>Maria Silva</strong><span class=\"d-block text-secondary small\">CPF 123.456.789-00</span></span><span class=\"badge bg-green-lt ms-2\">Limite R$ 5.000,00</span></div>",
+      "html_selected": "<strong>Maria Silva</strong> <span class=\"text-secondary small\">(123.456.789-00)</span>"
+    },
+    {
+      "id": "2",
+      "text": "Joao Pereira",
+      "cpf": "987.654.321-00",
+      "limite": "12.500,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-blue-lt me-2\">JP</span><span class=\"flex-fill\"><strong>Joao Pereira</strong><span class=\"d-block text-secondary small\">CPF 987.654.321-00</span></span><span class=\"badge bg-green-lt ms-2\">Limite R$ 12.500,00</span></div>",
+      "html_selected": "<strong>Joao Pereira</strong> <span class=\"text-secondary small\">(987.654.321-00)</span>"
+    },
+    {
+      "id": "3",
+      "text": "Ana Souza",
+      "cpf": "456.789.123-00",
+      "limite": "800,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-blue-lt me-2\">AS</span><span class=\"flex-fill\"><strong>Ana Souza</strong><span class=\"d-block text-secondary small\">CPF 456.789.123-00</span></span><span class=\"badge bg-yellow-lt ms-2\">Limite R$ 800,00</span></div>",
+      "html_selected": "<strong>Ana Souza</strong> <span class=\"text-secondary small\">(456.789.123-00)</span>"
+    },
+    {
+      "id": "4",
+      "text": "Carlos Andrade",
+      "cpf": "321.654.987-00",
+      "limite": "0,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-red-lt me-2\">CA</span><span class=\"flex-fill\"><strong>Carlos Andrade</strong><span class=\"d-block text-secondary small\">CPF 321.654.987-00</span></span><span class=\"badge bg-red-lt ms-2\">Sem limite</span></div>",
+      "html_selected": "<strong>Carlos Andrade</strong> <span class=\"text-danger small\">(bloqueado)</span>"
+    },
+    {
+      "id": "5",
+      "text": "Fernanda Lima",
+      "cpf": "159.753.486-00",
+      "limite": "25.000,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-blue-lt me-2\">FL</span><span class=\"flex-fill\"><strong>Fernanda Lima</strong><span class=\"d-block text-secondary small\">CPF 159.753.486-00 &middot; Cliente VIP</span></span><span class=\"badge bg-green-lt ms-2\">Limite R$ 25.000,00</span></div>",
+      "html_selected": "<strong>Fernanda Lima</strong> <span class=\"text-secondary small\">(159.753.486-00)</span>"
+    },
+    {
+      "id": "6",
+      "text": "Roberto Nunes",
+      "cpf": "753.951.852-00",
+      "limite": "3.200,00",
+      "html_option": "<div class=\"d-flex align-items-center\"><span class=\"avatar avatar-sm bg-blue-lt me-2\">RN</span><span class=\"flex-fill\"><strong>Roberto Nunes</strong><span class=\"d-block text-secondary small\">CPF 753.951.852-00</span></span><span class=\"badge bg-green-lt ms-2\">Limite R$ 3.200,00</span></div>",
+      "html_selected": "<strong>Roberto Nunes</strong> <span class=\"text-secondary small\">(753.951.852-00)</span>"
+    }
+  ]
+}

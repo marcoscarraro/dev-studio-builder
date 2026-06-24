@@ -669,6 +669,7 @@
       getComponentClass,
       hasOwn,
       initializePreviewComponents,
+      propControlsVisibility,
       removeSelected,
       render,
       renderCanvas,
@@ -3708,15 +3709,42 @@
   // um campo pode ter "showWhen": { "prop": "outraProp", "equals": valor } — ele so
   // aparece quando a prop indicada tem o valor esperado (booleans usam toBooleanValue).
   function matchesShowWhen(field, props) {
-    if (!field.showWhen || !field.showWhen.prop) {
+    const showWhen = field.showWhen;
+    if (!showWhen) {
       return true;
     }
-    const actual = props[field.showWhen.prop];
-    const expected = field.showWhen.equals;
+    // Array de condicoes = todas precisam casar (AND).
+    if (Array.isArray(showWhen)) {
+      return showWhen.every((condition) => matchesShowWhenCondition(condition, props));
+    }
+    return matchesShowWhenCondition(showWhen, props);
+  }
+
+  function matchesShowWhenCondition(condition, props) {
+    if (!condition || !condition.prop) {
+      return true;
+    }
+    const actual = props[condition.prop];
+    const expected = condition.equals;
     if (typeof expected === "boolean") {
       return toBooleanValue(actual) === expected;
     }
     return String(actual == null ? "" : actual) === String(expected);
+  }
+
+  // True se algum campo do painel deste componente tem showWhen referenciando propName
+  // (ou seja, mudar propName deve re-renderizar o painel para atualizar a visibilidade).
+  function propControlsVisibility(node, propName) {
+    return getComponentPropertySchema(node).some((field) => {
+      const showWhen = field.showWhen;
+      if (!showWhen) {
+        return false;
+      }
+      if (Array.isArray(showWhen)) {
+        return showWhen.some((condition) => condition && condition.prop === propName);
+      }
+      return showWhen.prop === propName;
+    });
   }
 
   // interpolatePropertyTemplate: troca tokens {{prop}}, {{prop:literal}} ou {{prop||fallbackProp}}.

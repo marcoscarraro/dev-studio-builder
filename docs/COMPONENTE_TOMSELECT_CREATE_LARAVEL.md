@@ -1,8 +1,20 @@
-# TomSelect + Criar — Integracao com Laravel
+# TomSelect — Criar com botao (modal) — Integracao com Laravel
 
-Guia completo para usar o componente **TomSelect + Criar** em projetos Laravel.
-O componente exibe um select com um botao "+" que abre um modal com um formulario
-em iframe. Ao salvar, o novo registro e automaticamente selecionado no campo.
+> **Atualizacao:** isto agora e uma **opcao do componente TomSelect** (marque
+> **"Botao criar ao lado (modal iframe)"** no painel). O antigo componente separado
+> "TomSelect + Criar" foi removido para evitar duplicidade — toda a funcionalidade vive
+> no TomSelect.
+
+Guia completo para usar o **botao "+" criar** do TomSelect em projetos Laravel.
+Marcando **"Botao criar ao lado do campo"**, o select ganha um botao "+". A propriedade
+**"Ao clicar no botao criar"** escolhe a acao:
+
+- **Abrir modal (iframe)** — abre um modal com o formulario em iframe; ao salvar, o novo
+  registro e selecionado automaticamente (fluxo descrito abaixo, com `postMessage`).
+- **Abrir link em nova aba** — o botao e apenas um link `target="_blank"` para a URL de
+  criacao (sem modal, sem postMessage). Use quando o cadastro abre numa tela separada.
+
+O fluxo abaixo (iframe + postMessage) vale para a opcao **Abrir modal**.
 
 ---
 
@@ -26,13 +38,18 @@ chamar o `postMessage` com o ID e texto do registro criado.
 
 ## Configuracao no Builder
 
+No **TomSelect**, marque **"Botao criar ao lado (modal iframe)"** e preencha:
+
 | Propriedade | Valor de exemplo |
 |---|---|
 | URL AJAX | `/api/categorias` |
-| URL do formulario (iframe) | `/categorias/modal` |
+| URL do formulario de criacao | `/categorias/modal` |
 | Titulo do modal | `Nova Categoria` |
 | Campo ID na resposta | `id` |
 | Campo texto na resposta | `nome` |
+
+> A URL do iframe usa o campo **"URL do formulario de criacao"** (grupo Comportamento),
+> compartilhado com o modo de criacao inline.
 
 O campo **"Snippet para o iframe"** no painel de propriedades mostra o codigo exato
 que o formulario precisa chamar apos salvar, ja com os nomes dos campos configurados.

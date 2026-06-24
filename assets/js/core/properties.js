@@ -254,6 +254,14 @@
       return;
     }
 
+    // Select que controla a visibilidade de outros campos (showWhen): re-renderiza o
+    // painel para esconder/mostrar na hora. Selects sao discretos — sem perda de foco.
+    if (field.tagName === "SELECT" && context.propControlsVisibility(node, field.dataset.prop)) {
+      context.render();
+      context.debounceHistory();
+      return;
+    }
+
     if (!context.hasOwn(node.props, "cssClass")) {
       const cssField = context.els.propertiesForm.querySelector('[data-prop="cssClass"]');
       if (cssField) {

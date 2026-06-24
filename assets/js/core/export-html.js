@@ -346,6 +346,21 @@
       ].join("\n");
     }
 
+    if (component.type === "menu-fullscreen") {
+      const props = component.props || {};
+      const label = html(props.label || "Tela cheia");
+      const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
+      const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
+      return [
+        '<li class="nav-item">',
+        `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
+        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${iconEnter}"></i></span>`,
+        `    <span class="nav-link-title">${label}</span>`,
+        '  </a>',
+        '</li>'
+      ].join("\n");
+    }
+
     if (component.type === "menu-dropdown") {
       const props = component.props || {};
       const label = html(props.label || "Dropdown");
@@ -564,6 +579,10 @@
       // Codigo 2FA / OTP: runtime de auto-avanco / colar / autosubmit.
       if (definition.kind === "otp") {
         neededRuntimes.add("otp");
+      }
+      // Botao "Tela cheia" no menu: runtime que alterna a Fullscreen API.
+      if (component.type === "menu-fullscreen") {
+        neededRuntimes.add("fullscreen");
       }
       // PWA: injeta tags de <head>, o runtime, e gera manifest.webmanifest + sw.js.
       if (definition.kind === "pwa" && !pwaDone) {
@@ -1065,6 +1084,19 @@
               '  </div>',
               '</li>'
             );
+          } else if (component.type === "menu-fullscreen") {
+            const label = html(props.label || "Tela cheia");
+            const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconUrl = `public/tabler/icons/outline/${iconEnter}.svg`;
+            lines.push(
+              '<li class="nav-item">',
+              `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
+              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
+              `    <span class="nav-link-title">${label}</span>`,
+              '  </a>',
+              '</li>'
+            );
           } else if (component.type === "menu-divider") {
             lines.push('<li class="nav-item"><hr class="dropdown-divider my-1"></li>');
           } else if (component.type === "menu-label") {
@@ -1143,6 +1175,19 @@
               '  <ul class="side-sub">',
               subHtml,
               '  </ul>',
+              '</li>'
+            );
+          } else if (component.type === "menu-fullscreen") {
+            const label = html(props.label || "Tela cheia");
+            const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconHtml = makeSideIconHtml(iconEnter, esc);
+            lines.push(
+              '<li class="side-item">',
+              `  <a class="side-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `    ${iconHtml}`,
+              `    <span class="side-text">${label}</span>`,
+              '  </a>',
               '</li>'
             );
           } else if (component.type === "menu-divider") {

@@ -20,7 +20,7 @@ Alterar "URL AJAX", "Campo valor" etc. atualiza o snippet em tempo real.
 | Componente | Props dinamicas no snippet |
 |---|---|
 | TomSelect / Tags | `ajaxUrl`, `valueField`, `labelField`, `searchParam`, `maxOptions` |
-| TomSelect+Criar | idem + `responseValueField`, `responseLabelField` |
+| TomSelect (botao criar modal) | idem + `responseValueField`, `responseLabelField` |
 | DataTable (simples) | `ajaxUrl`, `ajaxDataSrc` |
 | DataTable (server-side) | `ajaxUrl` |
 | FullCalendar | `ajaxUrl` |
@@ -90,10 +90,11 @@ public function index(Request $request)
 
 ---
 
-## TomSelect + Criar Novo
+## TomSelect — Criar com botao (modal)
 
-Mesmo contrato do TomSelect normal para o endpoint de listagem, mais as rotas
-do formulario no iframe. Guia completo: `docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md`.
+Opcao do TomSelect (marque **"Botao criar ao lado (modal)"**). Mesmo contrato do
+TomSelect normal para o endpoint de listagem, mais as rotas do formulario no iframe.
+Guia completo: `docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md`.
 
 Resumo das rotas:
 
