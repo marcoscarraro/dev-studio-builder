@@ -65,19 +65,30 @@ Exemplo atual:
 
 ```json
 "assets": {
-  "favicon": { "href": "components/icons/outline/favicon.svg", "type": "image/svg+xml" },
+  "favicon": { "href": "public/components/icons/outline/favicon.svg", "type": "image/svg+xml" },
   "styles": [
-    "components/libs/inter/inter.css",
-    "tabler/css/tabler.css"
+    "public/components/libs/inter/inter.css",
+    "public/tabler/css/tabler.css",
+    "public/tabler/css/tabler-vendors.css",
+    "public/tabler/css/tabler-themes.css",
+    "public/components/css/base.css",
+    "public/components/css/theme.css"
   ],
   "headScripts": [
-    "tabler/js/tabler-theme.js"
+    "public/tabler/js/tabler-theme.js"
   ],
   "scripts": [
-    { "src": "tabler/js/tabler.js", "defer": true }
-  ]
+    { "src": "public/tabler/js/tabler.js", "defer": true }
+  ],
+  "runtimes": {
+    "datatable": "public/components/js/datatable-runtime.js"
+  }
 }
 ```
+
+> Os caminhos sao relativos a raiz publica e usam o prefixo `public/`. As bibliotecas de
+> terceiros ficam em `public/components/libs/`, o CSS proprio em `public/components/css/` e
+> os runtimes em `public/components/js/`.
 
 Campos suportados:
 
@@ -85,18 +96,19 @@ Campos suportados:
 - `styles`
 - `headScripts`
 - `scripts`
-- `init`
+- `runtimes` (mapa `nome -> caminho` dos runtimes incluidos sob demanda)
+- `init` (no bloco `assets` de cada componente — aponta para um runtime do mapa)
 
 Um asset pode ser string:
 
 ```json
-"tabler/css/tabler.css"
+"public/tabler/css/tabler.css"
 ```
 
 Ou objeto:
 
 ```json
-{ "src": "tabler/js/tabler.js", "defer": true }
+{ "src": "public/tabler/js/tabler.js", "defer": true }
 ```
 
 ## `layoutDefaults`

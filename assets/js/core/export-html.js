@@ -59,7 +59,7 @@
       ...[renderFaviconAsset(context, assets.favicon)].filter(Boolean).map((line) => `  ${line}`),
       ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       ...(usesIconRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/pill-layout.css">'] : []),
-      ...(isModuleRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/module-rail.css?v=2">'] : []),
+      ...(isModuleRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/module-rail.css?v=6">'] : []),
       ...((hasSidebar && !usesIconRail) ? ['  <link rel="stylesheet" href="public/components/css/layouts/sidebar-collapse.css">'] : []),
       ...assets.headExtra.map((line) => `  ${line}`),
       "</head>",
@@ -71,7 +71,9 @@
     if (sidebarHtml) {
       lines.push(context.indent(sidebarHtml, 4));
     }
-    if (navbarHtml) {
+    // No module-rail a topbar vai DENTRO do page-body (header do painel); nos demais layouts
+    // ela continua sendo irma do page-wrapper (fixa no topo).
+    if (navbarHtml && !isModuleRail) {
       lines.push(context.indent(navbarHtml, 4));
     }
 
@@ -87,8 +89,11 @@
       );
     }
 
+    lines.push('      <div class="page-body">');
+    if (navbarHtml && isModuleRail) {
+      lines.push(context.indent(navbarHtml, 8));
+    }
     lines.push(
-      '      <div class="page-body">',
       '        <div class="container-xl">',
       '          <div class="export-page">',
       context.indent(body, 10),
@@ -1056,10 +1061,10 @@
   // mobile) + hamburguer que abre um off-canvas SO com os modulos (o rail vira sanduiche).
   // Difere do pill (que esconde os itens no off-canvas).
   function exportModuleRailNavbar(context, themeAttr) {
-    // Lista achatada num UNICO <ul> (evita o modo multi-coluna do exportMenuNavSections, que
-    // gera varios <ul> empilhados). O CSS forca a linha horizontal rolavel.
-    const railItems = exportMenuItems(context, context.state.page.navbar);
-    const navContent = railItems ? ['<ul class="navbar-nav app-rail-topitems">', context.indent(railItems, 2), '</ul>'].join("\n") : "";
+    // Respeita colunas (igual ao pill/combo): 1 coluna => 1 <ul class="navbar-nav app-rail-topitems">;
+    // varias => varios <ul navbar-nav> (me-auto/mx-auto) que o CSS dispoe em linha dentro do
+    // .app-rail-topwrap (rolavel na horizontal se nao couber).
+    const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav app-rail-topitems");
     const mobileModules = exportMobileSidebarItems(context, context.state.page.sidebar);
     const togglerHtml = mobileModules
       ? '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#railModulesOffcanvas" aria-controls="railModulesOffcanvas" aria-label="Abrir modulos"><span class="navbar-toggler-icon"></span></button>'

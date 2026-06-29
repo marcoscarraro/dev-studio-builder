@@ -1,51 +1,140 @@
-/* Layout "Rail de modulos + topo" (estilo Metronic) — skin PLANA sobre o pill-layout.css.
-   Reaproveita .app-icon-sidebar (rail de modulos) + .app-pill-navbar (itens do modulo) e
-   o runtime pill-layout.js; aqui so achatamos e fixamos: rail full-height a esquerda +
-   barra superior plana, ambos parados, conteudo rola. Carregado DEPOIS do pill-layout.css. */
+/* Layout "module rail + topbar" inspired by Metronic. Loaded after pill-layout.css. */
 .layout-module-rail {
-  --rail-w: 66px;
-  --rail-top-h: 58px;
+  --rail-w: 58px;
+  --rail-top-h: 64px;
 }
 
-/* Barra superior: EMBUTIDA no conteudo — mesmo fundo da area de conteudo, plana, sem
-   sombra/cantos/margem; so uma linha embaixo a separa (parece o cabecalho do conteudo). */
+.layout-module-rail,
+.layout-module-rail .page {
+  background: #ffffff;
+}
+
+/* Topbar */
 .layout-module-rail .app-pill-navbar {
-  margin: 0;
-  border-radius: 0;
   min-height: var(--rail-top-h);
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--tblr-border-color);
   box-shadow: none;
-  border-bottom: 1px solid var(--tblr-border-color, rgba(0,0,0,.1));
-  background: var(--tblr-body-bg, #f6f7f9);
+  background: var(--tblr-bg-surface);
+  color: var(--tblr-body-color);
 }
-.layout-module-rail .app-pill-navbar .navbar-nav .nav-link { border-radius: 8px; white-space: nowrap; }
 
-/* Faixa dos itens do topo: rola na horizontal se nao couber (mobile sobretudo); o
-   hamburguer fica fixo ao lado. */
+.layout-module-rail .app-rail-navbar .container-fluid {
+  width: 100%;
+  max-width: none;
+  min-height: var(--rail-top-h);
+  padding: 0;
+  gap: 16px;
+}
+
+/* Faixa rolavel que abriga as colunas em LINHA (1 ou varios <ul navbar-nav>). */
 .layout-module-rail .app-rail-topwrap {
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: none;
 }
-.layout-module-rail .app-rail-topwrap::-webkit-scrollbar { height: 0; }
-/* Itens do topo SEMPRE em linha horizontal (max-content = largura do conteudo, p/ rolar
-   dentro do topwrap), em qualquer largura — sobrepoe o flex-column padrao do navbar-nav. */
-.layout-module-rail .app-rail-topitems {
+
+/* Cada coluna (incl. a unica .app-rail-topitems) = linha horizontal de itens. flex:0 0 auto
+   mantem a largura de conteudo (rola se nao couber); me-auto/mx-auto (do exportMenuNavSections)
+   espalham as colunas esquerda/centro/direita quando ha espaco. */
+.layout-module-rail .app-rail-topwrap .navbar-nav {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  align-items: center;
-  gap: .15rem;
-  width: max-content;
+  align-items: stretch;
+  flex: 0 0 auto;
+  gap: 22px;
   max-width: none;
-  margin: 0;
+  min-height: var(--rail-top-h);
   padding: 0;
 }
-.layout-module-rail .app-rail-topitems > .navbar-brand { margin: 0 .5rem 0 0; }
 
-/* Fallback visual antes/depois do JS portar o menu para o body: dropdown aberto
-   nao participa do overflow vertical da faixa rolavel do topo. */
+.layout-module-rail .app-rail-topwrap .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--rail-top-h);
+  margin: 0 4px 0 0;
+  padding: 0;
+}
+
+.layout-module-rail .navbar-brand a,
+.layout-module-rail .navbar-brand-text {
+  color: var(--tblr-body-color);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-item {
+  display: inline-flex;
+  align-items: stretch;
+  position: relative;
+}
+
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--rail-top-h);
+  padding: 0;
+  border-radius: 0;
+  color: var(--tblr-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  background: transparent;
+  transition: color .15s ease;
+}
+
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: transparent;
+}
+
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link:hover,
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link.show,
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-item.active .nav-link {
+  color: var(--tblr-body-color);
+}
+
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link.show::before,
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-item.active .nav-link::before {
+  background: var(--tblr-body-color);
+}
+
+.layout-module-rail .app-pill-navbar .input-icon {
+  display: flex;
+  align-items: center;
+  min-height: var(--rail-top-h);
+}
+
+.layout-module-rail .app-pill-navbar .form-control {
+  height: 36px;
+  min-width: 220px;
+  border-color: var(--tblr-border-color);
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 13px;
+}
+
+/* Fallback before/after JS ports the menu to body. */
 .layout-module-rail .app-rail-navbar .dropdown-menu.show {
   position: fixed !important;
   z-index: 1080 !important;
@@ -56,69 +145,205 @@
   overscroll-behavior: contain;
 }
 
-/* Rail: SEM fundo (transparente) e sem borda — os icones flutuam sobre a pagina. */
+/* Left rail — segue o tema (claro/escuro) via variaveis do Tabler; o <aside> carrega o
+   data-bs-theme escolhido, entao bg/borda/cores invertem sozinhas. Sem cor fixa. */
 .layout-module-rail .app-icon-sidebar {
+  width: var(--rail-w);
   margin: 0;
+  padding: 10px 8px;
   border: 0;
+  border-right: 1px solid var(--tblr-border-color);
   border-radius: 0;
   box-shadow: none;
+  background: var(--tblr-bg-surface);
+  color: var(--tblr-secondary);
+}
+
+.layout-module-rail .app-icon-sidebar.is-expanded {
+  width: 232px;
+  box-shadow: 0 16px 42px -24px rgba(15, 23, 42, .28);
+}
+
+.layout-module-rail .app-icon-sidebar .side-nav {
+  gap: 8px;
+}
+
+.layout-module-rail .app-icon-sidebar .side-link {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--tblr-secondary);
   background: transparent;
-  padding: .5rem .4rem;
+  font-weight: 500;
+  justify-content: center;
+}
+
+.layout-module-rail .app-icon-sidebar.is-expanded .side-link {
+  width: auto;
+  justify-content: flex-start;
+  padding: 0 12px;
+  border-radius: 10px;
+}
+
+.layout-module-rail .app-icon-sidebar .side-icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  color: currentColor;
+}
+
+.layout-module-rail .app-icon-sidebar .side-icon .button-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.layout-module-rail .app-icon-sidebar .side-link:hover,
+.layout-module-rail .app-icon-sidebar .side-item.active > .side-link {
+  color: var(--tblr-primary);
+  background: var(--tblr-tertiary-bg);
+}
+
+.layout-module-rail .app-icon-sidebar .side-sublink:hover,
+.layout-module-rail .app-icon-sidebar .side-sublink.active {
+  color: var(--tblr-primary);
+  background: var(--tblr-tertiary-bg);
+}
+
+/* Floating dropdown menus ported by pill-layout.js. */
+.dsb-rail-dropdown {
+  position: fixed !important;
+  z-index: 1080 !important;
+  min-width: 190px;
+  margin: 0 !important;
+  padding: 8px;
+  border: 1px solid var(--tblr-border-color);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .12);
+  background: var(--tblr-bg-surface);
+  color: var(--tblr-body-color);
+  max-height: calc(100vh - 16px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dsb-rail-dropdown .dropdown-item {
+  min-height: 34px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--tblr-body-color);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dsb-rail-dropdown .dropdown-item:hover,
+.dsb-rail-dropdown .dropdown-item:focus {
+  color: var(--tblr-body-color);
+  background: var(--tblr-tertiary-bg);
+}
+
+/* ===== Conteudo "aninhado" no menu (estilo Metronic) =====
+   O page-wrapper vira o "shell" (fundo do app) e o conteudo (page-body) vira um painel
+   arredondado e recuado, colado logo abaixo da topbar — assim o conteudo parece estar
+   DENTRO do menu. Cores via variaveis do Tabler (claro/escuro). */
+.layout-module-rail .page-wrapper {
+  background: var(--tblr-body-bg);
+}
+
+.layout-module-rail .page-body {
+  margin: 12px 14px 0;
+  padding: 0;
+  background: var(--tblr-bg-surface);
+  border: 1px solid var(--tblr-border-color);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  /* preenche ate o rodape (conteudo se estende p/ baixo, como no Metronic) */
+  min-height: calc(100vh - 12px);
+}
+
+/* A topbar agora e o HEADER do painel (esta DENTRO do page-body): grudada no topo (sticky),
+   com os cantos arredondados do painel e uma linha embaixo separando do conteudo. */
+.layout-module-rail .page-body > .app-pill-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border: 0;
+  border-bottom: 1px solid var(--tblr-border-color);
+  border-radius: 16px 16px 0 0;
+}
+
+/* dentro do painel o conteudo ocupa a largura toda (sem max-width) e ganha o respiro,
+   ja que o page-body agora tem padding 0. */
+.layout-module-rail .page-body > .container-xl {
+  max-width: none;
+  padding: 18px;
 }
 
 @media (min-width: 768px) {
-  /* Topbar a direita do rail, fixa no topo */
-  .layout-module-rail .app-pill-navbar {
-    position: fixed;
-    top: 0;
-    left: var(--rail-w);
-    right: 0;
-    z-index: 1040;
-  }
-  /* Rail full-height, fixo a esquerda (sobrepoe a topbar no canto = lugar da marca) */
+  /* Rail full-height a esquerda. padding-top alinha a 1a opcao abaixo da linha da topbar
+     (que agora vive dentro do painel, recuada ~12px do topo). */
   .layout-module-rail .app-icon-sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     transform: none;
-    width: var(--rail-w);
     height: 100vh;
     max-height: none;
     overflow-y: auto;
     z-index: 1035;
-    /* primeira opcao do menu comeca ABAIXO da linha da barra superior */
-    padding-top: calc(var(--rail-top-h) + .5rem);
+    padding-top: calc(var(--rail-top-h) + 12px);
   }
-  /* Conteudo: deslocado pelo rail (esquerda) e pela topbar (topo); so ele rola */
+
+  /* Coluna do conteudo: so deslocada pelo rail. A topbar nao e mais fixa (esta no painel),
+     entao nao reservamos margin-top aqui. */
   .layout-module-rail .page-wrapper {
-    margin-top: var(--rail-top-h);
+    min-height: 100vh;
+    margin-top: 0;
     margin-left: var(--rail-w);
   }
 }
 
-/* Mobile: rail vira sanduiche (off-canvas de modulos pelo hamburguer); a barra superior
-   fica fixa no topo (sticky, via pill-layout.css) com os ITENS visiveis e rolaveis na
-   horizontal. O hamburguer aparece (padrao navbar-expand-md) e o rail some. */
 @media (max-width: 767.98px) {
-  .layout-module-rail .app-pill-navbar { margin: 0; border-radius: 0; }
-  .layout-module-rail .page-wrapper { margin-left: 0; margin-top: 0; }
+  .layout-module-rail .app-pill-navbar {
+    margin: 0;
+    padding: 0 12px;
+    border-radius: 0;
+  }
+
   .layout-module-rail .app-rail-navbar .container-fluid {
     flex-wrap: nowrap;
-    gap: .25rem;
+    gap: 10px;
   }
-  .layout-module-rail .app-rail-navbar .navbar-toggler { flex: 0 0 auto; }
-}
 
-/* Menu de dropdown da barra superior PORTADO para o <body> (fora do overflow da faixa
-   rolavel) — posicao calculada via JS (pill-layout.js). NAO fica preso a .layout-module-rail
-   porque vive no body. !important = reforco autorizado, caso o Tabler tente reposicionar. */
-.dsb-rail-dropdown {
-  position: fixed !important;
-  z-index: 1080 !important;
-  margin: 0 !important;
-  max-height: calc(100vh - 16px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  .layout-module-rail .app-rail-navbar .navbar-toggler {
+    flex: 0 0 auto;
+  }
+
+  .layout-module-rail .app-rail-topwrap .navbar-nav {
+    gap: 18px;
+  }
+
+  .layout-module-rail .page-wrapper {
+    margin-top: 0;
+    margin-left: 0;
+  }
+
+  /* Mobile: o painel de conteudo ocupa 100% da tela — sem recuo, borda, cantos nem padding
+     lateral (cada pixel conta). */
+  .layout-module-rail .page-body {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .layout-module-rail .page-body > .app-pill-navbar {
+    border-radius: 0;
+  }
+
+  .layout-module-rail .page-body > .container-xl {
+    padding: 0;
+  }
 }

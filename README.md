@@ -146,6 +146,21 @@ Mais de 60 componentes prontos para uso:
 * Documento Office (Word/Excel/PPT via visualizador online — Microsoft/Google)
 * PDF (PDF.js inline, mobile-first, renderiza no `<canvas>`)
 
+### Tipos de Menu (Layouts de Navegação)
+
+O menu é montado visualmente (componentes **Navbar** e **Sidebar**) e exportado conforme o **layout** escolhido nas propriedades da página. Todos respeitam o **tema claro/escuro** e as **colunas** definidas no menu (alinhamento esquerda / centro / direita). Indisponível em páginas de login.
+
+| Layout | Descrição |
+|---|---|
+| **Nenhum** | Sem menu (página limpa). |
+| **Superior (navbar)** | Menu horizontal no topo. |
+| **Lateral (sidebar)** | Menu vertical à esquerda ou à direita (posição configurável). |
+| **Lateral + Superior** | Sidebar + navbar combinados. |
+| **Pill + Ícone lateral (moderno)** | Rail de ícones à esquerda (expande ao passar o mouse) + navbar estilo *pill* no topo. |
+| **Rail de módulos + topo (Metronic)** | Rail de ícones *full-height* à esquerda (os módulos) + barra superior embutida no conteúdo (os itens do módulo ativo). No desktop o conteúdo fica em um painel arredondado "dentro" do menu; no mobile ocupa 100% da tela e o rail vira off-canvas (hambúrguer). Os dropdowns flutuam acima do conteúdo. |
+
+Recursos comuns aos layouts: tema **claro/escuro**, **posição do sidebar** (esquerda/direita), menu **fixo** (sticky), **rolagem horizontal** dos itens quando não cabem e o componente **Tela Cheia**.
+
 ---
 
 ## Database Designer
@@ -208,6 +223,16 @@ docs/screenshots/tela-principal.png
 
 ---
 
+## Componentes
+
+```text
+docs/screenshots/componentes.png
+```
+
+![Componentes](docs/screenshots/componentes.png)
+
+---
+
 ## Painel de Propriedades
 
 ```text
@@ -215,6 +240,16 @@ docs/screenshots/fieldlist.png
 ```
 
 ![Painel de Propriedades](docs/screenshots/fieldlist.png)
+
+---
+
+## Gráficos
+
+```text
+docs/screenshots/graficos.png
+```
+
+![Gráficos](docs/screenshots/graficos.png)
 
 ---
 
@@ -465,6 +500,7 @@ docs/
 
 Documentação para desenvolvedores:
 
+* [Guia do Desenvolvedor (arquitetura)](docs/GUIA_DESENVOLVEDOR.md)
 * Como Criar Componentes
 * Exemplos de Componentes
 * Contrato do components.json
