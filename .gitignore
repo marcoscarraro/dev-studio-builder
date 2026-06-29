@@ -2,6 +2,8 @@
 public/tabler/exemplos_tabler
 public/tabler/mock
 public/tabler/pages
-dev-studio-builder.code-workspace
-template_builder.code-workspace
+*.code-workspace
+*.code-workspace.local
 testes.html
+test-*.html
+temp.html
