@@ -9,7 +9,7 @@
     const href = context.escapeAttr(props.href || "#");
     const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
     const iconHtml = props.icon
-      ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${context.escapeAttr(props.icon)}"></i></span>`
+      ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${context.renderTablerIcon(props.icon)}</span>`
       : "";
 
     return `<a class="nav-link" href="${href}"${target}>${iconHtml}<span class="nav-link-title">${label}</span></a>`;

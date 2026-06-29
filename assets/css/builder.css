@@ -516,6 +516,20 @@ button {
   box-shadow: inset 0 -4px 0 rgba(32, 107, 196, 0.28);
 }
 
+/* Icone da paleta a partir de um SVG do Tabler (usado como mascara). Ex.: PDF. */
+.block-icon.pdf-viewer {
+  width: 18px;
+  height: 18px;
+  background: #7e8da4;
+  -webkit-mask: url("../../public/components/icons/outline/file-type-pdf.svg") center / contain no-repeat;
+  mask: url("../../public/components/icons/outline/file-type-pdf.svg") center / contain no-repeat;
+}
+
+.block-icon.pdf-viewer::before,
+.block-icon.pdf-viewer::after {
+  display: none;
+}
+
 .block-icon.card-custom::before {
   height: 18px;
   background: transparent;
@@ -988,6 +1002,21 @@ button {
 .app-shell[data-preview="true"] .editor-page-navbar.navbar-pill {
   border-radius: 16px;
   margin: 10px 10px 4px;
+}
+
+/* Canvas: skin plana do layout "Rail de modulos + topo" (module-rail) */
+.editor-page-navbar.navbar-rail-flat,
+.app-shell[data-preview="true"] .editor-page-navbar.navbar-rail-flat {
+  border-radius: 0;
+  margin: 0 0 4px;
+  box-shadow: none;
+  border-bottom: 1px solid var(--tblr-border-color, rgba(0,0,0,.1));
+}
+.editor-page-sidebar.sidebar-rail-flat {
+  border-radius: 0;
+  margin: 0;
+  box-shadow: none;
+  border-right: 1px solid var(--tblr-border-color, rgba(0,0,0,.1));
 }
 
 /* === ICON SIDEBAR (compact, expandable — layout combo-pill) === */

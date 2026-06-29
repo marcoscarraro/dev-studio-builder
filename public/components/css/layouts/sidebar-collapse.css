@@ -1,0 +1,66 @@
+/* Sidebar colapsavel */
+
+/* Botao so faz sentido no desktop; escondido por padrao (o @media abaixo o mostra). */
+.navbar-vertical .navbar-toggler[data-sidebar-collapse-toggle] {
+	display: none;
+}
+
+.navbar-vertical .navbar-toggler[data-sidebar-collapse-toggle] .button-icon {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+@media (min-width: 992px) {
+	.navbar-vertical .navbar-toggler[data-sidebar-collapse-toggle] {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		position: fixed;
+		top: 0.75rem;
+		left: 1rem;
+		z-index: 1040;
+		margin: 0;
+		color: var(--tblr-secondary);
+		background: var(--tblr-bg-surface);
+		border: 0;
+		border-radius: var(--tblr-border-radius);
+		box-shadow: none;
+		transition: left 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+	}
+
+	.navbar-vertical .navbar-toggler[data-sidebar-collapse-toggle]:hover {
+		color: var(--tblr-body-color);
+		background: var(--tblr-active-bg);
+		box-shadow: none;
+	}
+
+	.sidebar-collapsed .navbar-vertical.navbar-expand-lg {
+		--tblr-navbar-border-color: transparent;
+		width: 3.75rem;
+		overflow: hidden;
+		background: transparent !important;
+		box-shadow: none;
+	}
+
+	.sidebar-collapsed .navbar-vertical .navbar-toggler[data-sidebar-collapse-toggle] {
+		left: 1rem;
+	}
+
+	.sidebar-collapsed .navbar-vertical.navbar-expand-lg .navbar-brand,
+	.sidebar-collapsed .navbar-vertical.navbar-expand-lg .navbar-nav.flex-row.d-lg-none,
+	.sidebar-collapsed .navbar-vertical.navbar-expand-lg .navbar-collapse {
+		display: none !important;
+	}
+
+	.sidebar-collapsed .navbar-vertical.navbar-expand-lg > [class^="container"] {
+		align-items: center;
+		min-height: auto;
+	}
+
+	.sidebar-collapsed .navbar-expand-lg.navbar-vertical ~ .navbar,
+	.sidebar-collapsed .navbar-expand-lg.navbar-vertical ~ .page-wrapper {
+		margin-left: 0;
+	}
+}

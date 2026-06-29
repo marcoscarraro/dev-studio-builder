@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source": "public/tabler/icons/outline",
+  "source": "public/components/icons/outline",
   "count": 5075,
   "icons": [
     "a-b",

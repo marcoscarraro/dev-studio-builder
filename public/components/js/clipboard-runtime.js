@@ -18,14 +18,22 @@
         var target = group ? group.querySelector("input, textarea") : null;
         if (!target) { return; }
 
-        var icon = btn.querySelector("i");
-        var origClass = icon ? icon.className : null;
+        // O icone do botao e um <span class="button-icon"> com mask-image (SVG self-hosted).
+        var icon = btn.querySelector(".button-icon");
+        var origMask = icon ? (icon.style.webkitMaskImage || icon.style.maskImage) : null;
 
         function showFeedback() {
-          if (icon) { icon.className = "ti ti-check"; }
+          if (icon) {
+            var checkMask = 'url("public/components/icons/outline/check.svg")';
+            icon.style.webkitMaskImage = checkMask;
+            icon.style.maskImage = checkMask;
+          }
           btn.classList.add("text-success");
           setTimeout(function () {
-            if (icon && origClass) { icon.className = origClass; }
+            if (icon && origMask) {
+              icon.style.webkitMaskImage = origMask;
+              icon.style.maskImage = origMask;
+            }
             btn.classList.remove("text-success");
           }, 1500);
         }

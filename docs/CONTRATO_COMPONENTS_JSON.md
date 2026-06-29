@@ -65,9 +65,9 @@ Exemplo atual:
 
 ```json
 "assets": {
-  "favicon": { "href": "tabler/icons/outline/favicon.svg", "type": "image/svg+xml" },
+  "favicon": { "href": "components/icons/outline/favicon.svg", "type": "image/svg+xml" },
   "styles": [
-    "tabler/libs/inter/inter.css",
+    "components/libs/inter/inter.css",
     "tabler/css/tabler.css"
   ],
   "headScripts": [
@@ -577,8 +577,8 @@ No objeto `assets` da **raiz** do `components.json` (nao no de um componente) ex
   "runtimes": {
     "ajaxFill": "public/components/js/ajax-fill-runtime.js",
     "fieldList": "public/components/js/fieldlist-runtime.js",
-    "jquery": "public/tabler/libs/jquery/jquery-4.0.0.min.js",
-    "mask": "public/tabler/libs/imask/dist/imask.min.js",
+    "jquery": "public/components/libs/jquery/jquery-4.0.0.min.js",
+    "mask": "public/components/libs/imask/dist/imask.min.js",
     "maskInit": "public/components/js/mask-runtime.js",
     "datatable": "public/components/js/datatable-runtime.js",
     "tomselect": "public/components/js/tomselect-runtime.js",

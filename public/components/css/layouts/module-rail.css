@@ -1,0 +1,124 @@
+/* Layout "Rail de modulos + topo" (estilo Metronic) — skin PLANA sobre o pill-layout.css.
+   Reaproveita .app-icon-sidebar (rail de modulos) + .app-pill-navbar (itens do modulo) e
+   o runtime pill-layout.js; aqui so achatamos e fixamos: rail full-height a esquerda +
+   barra superior plana, ambos parados, conteudo rola. Carregado DEPOIS do pill-layout.css. */
+.layout-module-rail {
+  --rail-w: 66px;
+  --rail-top-h: 58px;
+}
+
+/* Barra superior: EMBUTIDA no conteudo — mesmo fundo da area de conteudo, plana, sem
+   sombra/cantos/margem; so uma linha embaixo a separa (parece o cabecalho do conteudo). */
+.layout-module-rail .app-pill-navbar {
+  margin: 0;
+  border-radius: 0;
+  min-height: var(--rail-top-h);
+  box-shadow: none;
+  border-bottom: 1px solid var(--tblr-border-color, rgba(0,0,0,.1));
+  background: var(--tblr-body-bg, #f6f7f9);
+}
+.layout-module-rail .app-pill-navbar .navbar-nav .nav-link { border-radius: 8px; white-space: nowrap; }
+
+/* Faixa dos itens do topo: rola na horizontal se nao couber (mobile sobretudo); o
+   hamburguer fica fixo ao lado. */
+.layout-module-rail .app-rail-topwrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.layout-module-rail .app-rail-topwrap::-webkit-scrollbar { height: 0; }
+/* Itens do topo SEMPRE em linha horizontal (max-content = largura do conteudo, p/ rolar
+   dentro do topwrap), em qualquer largura — sobrepoe o flex-column padrao do navbar-nav. */
+.layout-module-rail .app-rail-topitems {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: .15rem;
+  width: max-content;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.layout-module-rail .app-rail-topitems > .navbar-brand { margin: 0 .5rem 0 0; }
+
+/* Fallback visual antes/depois do JS portar o menu para o body: dropdown aberto
+   nao participa do overflow vertical da faixa rolavel do topo. */
+.layout-module-rail .app-rail-navbar .dropdown-menu.show {
+  position: fixed !important;
+  z-index: 1080 !important;
+  margin: 0 !important;
+  max-height: calc(100vh - 16px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Rail: SEM fundo (transparente) e sem borda — os icones flutuam sobre a pagina. */
+.layout-module-rail .app-icon-sidebar {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: .5rem .4rem;
+}
+
+@media (min-width: 768px) {
+  /* Topbar a direita do rail, fixa no topo */
+  .layout-module-rail .app-pill-navbar {
+    position: fixed;
+    top: 0;
+    left: var(--rail-w);
+    right: 0;
+    z-index: 1040;
+  }
+  /* Rail full-height, fixo a esquerda (sobrepoe a topbar no canto = lugar da marca) */
+  .layout-module-rail .app-icon-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: var(--rail-w);
+    height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    z-index: 1035;
+    /* primeira opcao do menu comeca ABAIXO da linha da barra superior */
+    padding-top: calc(var(--rail-top-h) + .5rem);
+  }
+  /* Conteudo: deslocado pelo rail (esquerda) e pela topbar (topo); so ele rola */
+  .layout-module-rail .page-wrapper {
+    margin-top: var(--rail-top-h);
+    margin-left: var(--rail-w);
+  }
+}
+
+/* Mobile: rail vira sanduiche (off-canvas de modulos pelo hamburguer); a barra superior
+   fica fixa no topo (sticky, via pill-layout.css) com os ITENS visiveis e rolaveis na
+   horizontal. O hamburguer aparece (padrao navbar-expand-md) e o rail some. */
+@media (max-width: 767.98px) {
+  .layout-module-rail .app-pill-navbar { margin: 0; border-radius: 0; }
+  .layout-module-rail .page-wrapper { margin-left: 0; margin-top: 0; }
+  .layout-module-rail .app-rail-navbar .container-fluid {
+    flex-wrap: nowrap;
+    gap: .25rem;
+  }
+  .layout-module-rail .app-rail-navbar .navbar-toggler { flex: 0 0 auto; }
+}
+
+/* Menu de dropdown da barra superior PORTADO para o <body> (fora do overflow da faixa
+   rolavel) — posicao calculada via JS (pill-layout.js). NAO fica preso a .layout-module-rail
+   porque vive no body. !important = reforco autorizado, caso o Tabler tente reposicionar. */
+.dsb-rail-dropdown {
+  position: fixed !important;
+  z-index: 1080 !important;
+  margin: 0 !important;
+  max-height: calc(100vh - 16px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

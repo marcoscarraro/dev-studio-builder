@@ -11,7 +11,7 @@
     const badgeText = context.escapeHtml(props.badgeText || "");
     const badgeColor = context.escapeAttr(props.badgeColor || "red");
     const iconHtml = props.icon
-      ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${context.escapeAttr(props.icon)}"></i></span>`
+      ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${context.renderTablerIcon(props.icon)}</span>`
       : "";
     const badgeHtml = badgeText
       ? `<span class="badge bg-${badgeColor} ms-auto badge-sm">${badgeText}</span>`

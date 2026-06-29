@@ -68,10 +68,10 @@ Editor visual baseado no ecossistema do Template Tabler.
 
 ### Componentes Disponíveis
 
-Mais de 55 componentes prontos para uso:
+Mais de 60 componentes prontos para uso:
 
 **Layout**
-* Form Container
+* Form Container (com aviso de alterações não salvas ao sair)
 * Card / Card Personalizado
 * Divisor de Seção
 * Page Header
@@ -107,6 +107,7 @@ Mais de 55 componentes prontos para uso:
 * Input com Ícone
 * Quantity Stepper
 * Payment Method
+* Código 2FA / OTP (quantidade de dígitos configurável, auto-avanço e colar)
 
 **Interação**
 * Botão (variante, outline, tamanho, disabled, link)
@@ -122,22 +123,28 @@ Mais de 55 componentes prontos para uso:
 
 **Navegação**
 * Navbar / Sidebar (sistema de menus visuais)
-* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer
+* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer, Tela Cheia
 
 **Avançados**
 * DataTable (client-side, AJAX, server-side, seleção por checkbox)
-* Tom Select / Tags Input (busca remota server-side)
+* Tom Select / Tags Input (busca remota server-side, botão "criar" via modal/iframe ou nova aba)
 * Litepicker
 * ApexCharts (linha, barra, pizza, donut, área...)
 * FullCalendar
+* Gantt / Timeline (reservas, agendamentos — modos Timeline e Agenda, mobile-first, dados via AJAX)
 * Dropzone Upload
 * Rich Text Editor (HugeRTE)
 * Signature Pad
 * Máscaras de Entrada
 * Toggle de Senha
-* Listas Dinâmicas (FieldList com runtime)
+* Listas Dinâmicas (FieldList: clonar, excluir e mover linha ↑/↓)
 * Script JS (jQuery com templates)
 * HTML Raw
+
+**Mídia / Documentos**
+* PWA (app instalável — manifest, service worker, offline e notificações)
+* Documento Office (Word/Excel/PPT via visualizador online — Microsoft/Google)
+* PDF (PDF.js inline, mobile-first, renderiza no `<canvas>`)
 
 ---
 
@@ -466,6 +473,10 @@ Documentação para desenvolvedores:
 * Como Criar Novas Funcionalidades
 * [Report Builder (templates de relatório para DOMPDF)](docs/REPORT_BUILDER.md)
 * [Integração com Laravel](docs/INTEGRACAO_LARAVEL.md)
+* [PWA (app instalável)](docs/PWA.md)
+* [Documento Office (Word/Excel/PPT)](docs/COMPONENTE_OFFICE_VIEWER.md)
+* [PDF (PDF.js)](docs/COMPONENTE_PDF.md)
+* [Tom Select — botão criar (modal/iframe)](docs/COMPONENTE_TOMSELECT_CREATE_LARAVEL.md)
 
 ---
 

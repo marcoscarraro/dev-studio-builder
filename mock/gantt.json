@@ -1,0 +1,21 @@
+{
+  "resources": [
+    { "id": "q101", "label": "Quarto 101", "group": "Andar 1" },
+    { "id": "q102", "label": "Quarto 102", "group": "Andar 1" },
+    { "id": "q201", "label": "Quarto 201", "group": "Andar 2" },
+    { "id": "q202", "label": "Quarto 202", "group": "Andar 2" },
+    { "id": "proj", "label": "Projetor", "group": "Equipamentos" },
+    { "id": "van", "label": "Van", "group": "Equipamentos" }
+  ],
+  "tasks": [
+    { "id": "r1", "resourceId": "q101", "start": "2026-06-25T14:00", "end": "2026-06-28T12:00", "label": "Joao Silva", "color": "blue", "url": "/reservas/1", "status": "confirmada" },
+    { "id": "r2", "resourceId": "q101", "start": "2026-06-29T14:00", "end": "2026-07-02T12:00", "label": "Maria Souza", "color": "green", "url": "/reservas/2", "status": "confirmada" },
+    { "id": "r3", "resourceId": "q102", "start": "2026-06-26T14:00", "end": "2026-06-30T12:00", "label": "Carlos Lima", "color": "orange", "url": "/reservas/3", "status": "pendente" },
+    { "id": "r4", "resourceId": "q201", "start": "2026-06-24T14:00", "end": "2026-06-27T12:00", "label": "Ana Costa", "color": "purple", "url": "/reservas/4", "status": "confirmada" },
+    { "id": "r5", "resourceId": "q201", "start": "2026-06-28T14:00", "end": "2026-07-01T12:00", "label": "Pedro Alves", "color": "blue", "url": "/reservas/5", "status": "confirmada" },
+    { "id": "r6", "resourceId": "q202", "start": "2026-06-27T14:00", "end": "2026-06-29T12:00", "label": "Lucia Dias", "color": "red", "url": "/reservas/6", "status": "confirmada" },
+    { "id": "e1", "resourceId": "proj", "start": "2026-06-26T09:00", "end": "2026-06-26T11:30", "label": "Reuniao Sala A", "color": "teal", "url": "/agenda/proj/1", "status": "confirmada" },
+    { "id": "e2", "resourceId": "proj", "start": "2026-06-26T14:00", "end": "2026-06-26T16:00", "label": "Treinamento", "color": "cyan", "url": "/agenda/proj/2", "status": "confirmada" },
+    { "id": "e3", "resourceId": "van", "start": "2026-06-27T07:00", "end": "2026-06-27T18:00", "label": "Excursao", "color": "yellow", "url": "/agenda/van/1", "status": "confirmada" }
+  ]
+}

@@ -1227,7 +1227,17 @@
       initializePreviewApexCharts();
       initializePreviewDropzones();
       initializePreviewFullCalendars();
+      initializePreviewGantts();
     }).catch(() => {});
+  }
+
+  // Gantt: o runtime e vanilla (sem lib) e fica carregado no builder (index.html).
+  // Apos cada render do canvas, re-escaneia os [data-gantt] (o guard _ganttReady evita
+  // dupla inicializacao). O runtime busca a URL de dados (default mock/gantt.json).
+  function initializePreviewGantts() {
+    if (window.TemplateBuilderGanttRuntime && window.TemplateBuilderGanttRuntime.init) {
+      window.TemplateBuilderGanttRuntime.init();
+    }
   }
 
   function getAssetUrl(asset) {
@@ -1555,7 +1565,8 @@
       return;
     }
     const menuLayout = state.page.props.menuLayout || "none";
-    const showNavbar = menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const isRail = menuLayout === "combo-pill" || menuLayout === "module-rail";
+    const showNavbar = menuLayout === "horizontal" || menuLayout === "combo" || isRail;
     const theme = state.page.props.menuTheme || "dark";
     const sticky = toBooleanValue(state.page.props.menuSticky);
 
@@ -1570,10 +1581,11 @@
     const selected = (state.selectedId === state.page.id && state.selectedSection === "navbar") ? " selected" : "";
     const empty = state.page.navbar.length ? "" : " is-empty";
     const themeClass = theme === "dark" ? " navbar-theme-dark" : "";
-    const stickyClass = sticky && menuLayout !== "combo-pill" ? " navbar-sticky" : "";
-    const pillClass = menuLayout === "combo-pill" ? " navbar-pill" : "";
+    const stickyClass = sticky && !isRail ? " navbar-sticky" : "";
+    const pillClass = isRail ? " navbar-pill" : "";
+    const railFlatClass = menuLayout === "module-rail" ? " navbar-rail-flat" : "";
 
-    els.pageNavbar.className = `editor-page-navbar${selected}${empty}${themeClass}${stickyClass}${pillClass}`;
+    els.pageNavbar.className = `editor-page-navbar${selected}${empty}${themeClass}${stickyClass}${pillClass}${railFlatClass}`;
     els.pageNavbar.dataset.dropZone = "navbar";
     els.pageNavbar.dataset.section = "navbar";
     els.pageNavbar.innerHTML = "";
@@ -1605,10 +1617,14 @@
       return;
     }
     const menuLayout = state.page.props.menuLayout || "none";
-    const showSidebar = menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill";
+    const isRail = menuLayout === "combo-pill" || menuLayout === "module-rail";
+    const showSidebar = menuLayout === "vertical" || menuLayout === "combo" || isRail;
     const position = state.page.props.menuPosition || "left";
     const theme = state.page.props.menuTheme || "dark";
     const sidebarWidth = state.page.props.menuSidebarWidth || "normal";
+    if (els.pageBodyWrapper) {
+      els.pageBodyWrapper.classList.toggle("layout-module-rail", menuLayout === "module-rail");
+    }
 
     if (!showSidebar) {
       els.pageSidebar.classList.add("hidden");
@@ -1621,7 +1637,7 @@
       return;
     }
 
-    if (menuLayout !== "combo-pill" && els.pageBodyWrapper) {
+    if (!isRail && els.pageBodyWrapper) {
       if (position === "right") {
         els.pageBodyWrapper.classList.add("sidebar-right");
       } else {
@@ -1633,13 +1649,14 @@
 
     const selected = (state.selectedId === state.page.id && state.selectedSection === "sidebar") ? " selected" : "";
     const empty = state.page.sidebar.length ? "" : " is-empty";
-    const posClass = menuLayout !== "combo-pill" && position === "right" ? " sidebar-right" : "";
+    const posClass = !isRail && position === "right" ? " sidebar-right" : "";
     const themeClass = theme === "dark" ? " sidebar-theme-dark" : "";
-    const widthClass = menuLayout === "combo-pill"
+    const widthClass = isRail
       ? " sidebar-icon-mode"
       : sidebarWidth === "compact" ? " sidebar-compact" : sidebarWidth === "wide" ? " sidebar-wide" : "";
+    const railFlatClass = menuLayout === "module-rail" ? " sidebar-rail-flat" : "";
 
-    els.pageSidebar.className = `editor-page-sidebar${selected}${empty}${posClass}${themeClass}${widthClass}`;
+    els.pageSidebar.className = `editor-page-sidebar${selected}${empty}${posClass}${themeClass}${widthClass}${railFlatClass}`;
     els.pageSidebar.dataset.dropZone = "sidebar";
     els.pageSidebar.dataset.section = "sidebar";
     els.pageSidebar.innerHTML = "";
@@ -2891,7 +2908,7 @@
       if (cleanIcon.includes("/")) {
         src = `${cleanIcon}.svg`;
       } else {
-        src = `public/tabler/icons/outline/${cleanIcon}.svg`;
+        src = `public/components/icons/outline/${cleanIcon}.svg`;
       }
     } else {
       src = "";
@@ -3164,7 +3181,8 @@
             ["horizontal", "Superior (navbar)"],
             ["vertical", "Lateral (sidebar)"],
             ["combo", "Lateral + Superior"],
-            ["combo-pill", "Pill + Icone lateral (moderno)"]
+            ["combo-pill", "Pill + Icone lateral (moderno)"],
+            ["module-rail", "Rail de modulos + topo (Metronic)"]
           ]),
           showPositionAndTheme ? fieldSelect("Tema", "menuTheme", page.props.menuTheme || "dark", [
             ["dark", "Escuro"],
@@ -3995,7 +4013,7 @@
     if (!icon) {
       return `<div>${escape(data.text || "Sem icone")}</div>`;
     }
-    const src = `public/tabler/icons/outline/${icon}.svg`;
+    const src = `public/components/icons/outline/${icon}.svg`;
     const maskStyle = `-webkit-mask-image:url(&quot;${src}&quot;);mask-image:url(&quot;${src}&quot;)`;
     return `<div class="icon-select-option"><span class="icon-select-preview" style="${maskStyle}"></span><span>${escape(data.text)}</span></div>`;
   }

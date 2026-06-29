@@ -1,0 +1,46 @@
+/* TomSelect */
+.ts-wrapper {
+	width: 100%;
+}
+
+.ts-wrapper .ts-dropdown {
+	left: 0;
+	right: 0;
+	top: calc(100% + 0.125rem);
+	margin: 0;
+	width: 100%;
+}
+
+.ts-wrapper.dropdown-active {
+	z-index: 1020;
+}
+
+.ts-wrapper.form-select {
+	height: auto !important;
+	min-height: var(--tblr-input-height, calc(1.4285714286em + .875rem + 2px)) !important;
+}
+
+.ts-dropdown {
+	z-index: 1060;
+	background-color: var(--tblr-bg-surface) !important;
+	color: var(--tblr-body-color);
+}
+
+.ts-dropdown .optgroup-header {
+	background-color: var(--tblr-bg-surface-secondary) !important;
+}
+
+.ts-dropdown .active {
+	background-color: rgba(var(--tblr-primary-rgb), .06) !important;
+	color: var(--tblr-body-color) !important;
+}
+
+.ts-dropdown .create {
+	color: var(--tblr-primary);
+}
+
+.plugin-dropdown_input.dropdown-active .ts-control {
+	box-shadow: none !important;
+}
+
+

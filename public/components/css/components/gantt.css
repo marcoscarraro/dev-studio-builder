@@ -1,0 +1,242 @@
+/* Componente Gantt (timeline horizontal) — mobile-first.
+   Coluna de recursos fixa (sticky left) + cabecalho fixo (sticky top) num unico
+   container com scroll. Usa variaveis --tblr-* (acompanha tema claro/escuro). */
+
+.dsb-gantt {
+  --gantt-border: var(--tblr-border-color, #e6e7e9);
+  --gantt-surface: var(--tblr-bg-surface, #fff);
+  font-size: .8125rem;
+  color: var(--tblr-body-color, #1a2234);
+}
+
+.dsb-gantt-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-bottom: 1px solid var(--gantt-border);
+  flex-wrap: wrap;
+}
+
+.dsb-gantt-scroll {
+  position: relative;
+  overflow: auto;
+  max-height: 70vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dsb-gantt-grid { position: relative; }
+
+/* ---- Cabecalho ---- */
+.dsb-gantt-head {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--gantt-surface);
+}
+.dsb-gantt-corner {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 .6rem;
+  font-weight: 600;
+  background: var(--gantt-surface);
+  border-right: 1px solid var(--gantt-border);
+  border-bottom: 1px solid var(--gantt-border);
+}
+.dsb-gantt-head-time { flex: 0 0 auto; }
+.dsb-gantt-coarse-row, .dsb-gantt-fine-row { display: flex; }
+.dsb-gantt-coarse {
+  flex: 0 0 auto;
+  text-align: center;
+  font-weight: 600;
+  font-size: .72rem;
+  padding: .25rem 0;
+  border-right: 1px solid var(--gantt-border);
+  border-bottom: 1px solid var(--gantt-border);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.dsb-gantt-fine {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: .68rem;
+  color: var(--tblr-secondary, #667083);
+  padding: .15rem 0;
+  border-right: 1px solid var(--gantt-border);
+  border-bottom: 1px solid var(--gantt-border);
+}
+.dsb-gantt-fine.dsb-gantt-dayedge { border-left: 2px solid var(--gantt-border); }
+
+/* ---- Linhas ---- */
+.dsb-gantt-body { position: relative; }
+.dsb-gantt-row {
+  display: flex;
+  border-bottom: 1px solid var(--gantt-border);
+}
+.dsb-gantt-res {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 .6rem;
+  background: var(--gantt-surface);
+  border-right: 1px solid var(--gantt-border);
+  overflow: hidden;
+}
+.dsb-gantt-res-label {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dsb-gantt-res-group {
+  font-size: .68rem;
+  color: var(--tblr-secondary, #667083);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dsb-gantt-track { position: relative; flex: 0 0 auto; }
+
+.dsb-gantt-bar {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 .5rem;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  font-size: .72rem;
+  line-height: 1;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
+  text-align: left;
+}
+.dsb-gantt-bar:hover { filter: brightness(1.06); }
+.dsb-gantt-bar:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+.dsb-gantt-bar-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.dsb-gantt-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--tblr-red, #d63939);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dsb-gantt-status {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--tblr-secondary, #667083);
+  font-size: .85rem;
+}
+.dsb-gantt-error { color: var(--tblr-danger, #d63939); }
+
+/* ---- Modo Agenda (lista vertical) ---- */
+.dsb-gantt-agenda {
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.dsb-gantt-agenda-date {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .8rem;
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--tblr-secondary, #667083);
+  background: var(--tblr-bg-surface-secondary, #f6f7f9);
+  border-bottom: 1px solid var(--gantt-border);
+}
+.dsb-gantt-agenda-day.is-today .dsb-gantt-agenda-date { color: var(--tblr-primary, #206bc4); }
+.dsb-gantt-agenda-todaytag {
+  font-size: .62rem;
+  background: var(--tblr-primary, #206bc4);
+  color: #fff;
+  border-radius: 999px;
+  padding: .05rem .45rem;
+  letter-spacing: 0;
+}
+.dsb-gantt-agenda-item {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  width: 100%;
+  min-height: 52px;
+  padding: .55rem .8rem;
+  border: 0;
+  border-bottom: 1px solid var(--gantt-border);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.dsb-gantt-agenda-item:hover { background: var(--tblr-active-bg, rgba(0,0,0,.035)); }
+.dsb-gantt-agenda-bar {
+  flex: 0 0 auto;
+  width: 4px;
+  align-self: stretch;
+  min-height: 34px;
+  border-radius: 4px;
+}
+.dsb-gantt-agenda-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: .15rem; }
+.dsb-gantt-agenda-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dsb-gantt-agenda-meta { font-size: .78rem; color: var(--tblr-secondary, #667083); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dsb-gantt-agenda-status { flex: 0 0 auto; }
+
+/* ---- Bottom sheet de detalhes ---- */
+.dsb-gantt-sheet { position: fixed; inset: 0; z-index: 1060; }
+.dsb-gantt-sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+.dsb-gantt-sheet-panel {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: var(--gantt-surface);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  padding: 1rem 1.1rem 1.4rem;
+  box-shadow: 0 -8px 30px rgba(0,0,0,.25);
+  max-height: 80vh;
+  overflow: auto;
+}
+.dsb-gantt-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-bottom: .6rem;
+}
+.dsb-gantt-sheet-body { display: flex; flex-direction: column; gap: .35rem; font-size: .9rem; }
+
+@media (min-width: 768px) {
+  .dsb-gantt-sheet-panel {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    max-width: calc(100vw - 2rem);
+    border-radius: 14px;
+  }
+}

@@ -237,7 +237,7 @@ O fluxo e:
 ```json
 "assets": {
   "init": "apexchart",
-  "scripts": ["tabler/libs/apexcharts/dist/apexcharts.min.js"]
+  "scripts": ["components/libs/apexcharts/dist/apexcharts.min.js"]
 }
 ```
 

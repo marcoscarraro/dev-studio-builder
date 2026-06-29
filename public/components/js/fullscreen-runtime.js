@@ -55,7 +55,7 @@
 
     var masked = toggle.querySelectorAll(".button-icon");
     if (masked.length) {
-      var url = 'url("public/tabler/icons/outline/' + name + '.svg")';
+      var url = 'url("public/components/icons/outline/' + name + '.svg")';
       Array.prototype.forEach.call(masked, function (el) {
         el.style.webkitMaskImage = url;
         el.style.maskImage = url;

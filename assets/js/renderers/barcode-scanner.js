@@ -31,7 +31,7 @@
         " data-bs-qrbox=\"" + qrboxSize + "\"" +
         " data-bs-show-result=\"" + showResult + "\">",
       "  <div data-barcode-placeholder class=\"text-center py-4 border rounded bg-light\">",
-      "    <i class=\"ti ti-qrcode\" style=\"font-size:3rem;color:#adb5bd;display:block;margin-bottom:.75rem\"></i>",
+      "    <span class=\"button-icon\" style=\"width:3rem;height:3rem;background-color:#adb5bd;display:block;margin:0 auto .75rem;-webkit-mask-image:url('public/components/icons/outline/qrcode.svg');mask-image:url('public/components/icons/outline/qrcode.svg')\"></span>",
       "    <button type=\"button\" class=\"btn btn-primary\" data-barcode-btn-start>" + btnStartLabel + "</button>",
       "  </div>",
       "  <div data-barcode-reader-wrap style=\"display:none\">",

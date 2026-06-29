@@ -1,0 +1,123 @@
+/* Template Builder — estilos da pagina exportada */
+.export-component {
+	margin-bottom: 1rem;
+}
+
+.export-component:last-child {
+	margin-bottom: 0;
+}
+
+.required-mark {
+	color: var(--tblr-danger);
+}
+
+.help-text {
+	margin-top: .25rem;
+	color: var(--tblr-secondary);
+	font-size: .8125rem;
+}
+
+.option-list {
+	display: grid;
+	gap: .5rem;
+}
+
+.option-list-inline {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem 1.125rem;
+}
+
+.option-list .form-check {
+	margin: 0;
+}
+
+.export-page .form-check-input {
+	width: 1rem;
+	height: 1rem;
+	padding: 0;
+}
+
+.export-page .form-switch .form-check-input {
+	width: 2rem;
+}
+
+.export-page .btn-check,
+.export-page .form-selectgroup-input {
+	width: auto;
+	height: auto;
+	padding: 0;
+}
+
+.export-page .form-control-color {
+	width: 3rem;
+	padding: .25rem;
+}
+
+.button-icon {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	margin: 0 .4rem;
+	background-color: var(--button-icon-color, currentColor);
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	vertical-align: -.2rem;
+}
+
+.button-icon:first-child {
+	margin-left: 0;
+}
+
+.button-icon:last-child {
+	margin-right: 0;
+}
+
+.input-icon-addon .button-icon,
+.form-selectgroup-label .button-icon,
+.accordion-button-icon .button-icon {
+	margin: 0;
+}
+
+.custom-card-header-content > .row {
+	width: 100%;
+}
+
+.content-heading {
+	margin: 0;
+	line-height: 1.2;
+}
+
+.content-paragraph {
+	margin: 0;
+	color: var(--tblr-secondary);
+	line-height: 1.55;
+}
+
+.image-placeholder-preview {
+	display: grid;
+	place-items: center;
+	min-height: 120px;
+	border: 1px dashed var(--tblr-border-color);
+	border-radius: var(--tblr-border-radius);
+	color: var(--tblr-secondary);
+	background: var(--tblr-bg-surface-secondary);
+}
+
+img {
+	display: block;
+	max-width: 100%;
+	border-radius: var(--tblr-border-radius);
+}
+
+@media (min-width: 576px) {
+	[data-fieldlist] .table-responsive,
+	[data-fieldlist] .card-table {
+		overflow: visible;
+	}
+}
+

@@ -173,7 +173,7 @@ HTML exportado.
 1. Em `components.json`, declare `assets.init` e `assets.scripts`/`styles`:
 
 ```json
-"assets": { "init": "litepicker", "scripts": ["public/tabler/libs/litepicker/litepicker.js"] }
+"assets": { "init": "litepicker", "scripts": ["public/components/libs/litepicker/litepicker.js"] }
 ```
 
 2. Em `builder.js`, `initializePreviewComponents()` so carrega scripts cujo `init`

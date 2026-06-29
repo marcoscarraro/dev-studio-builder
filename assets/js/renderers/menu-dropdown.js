@@ -7,7 +7,7 @@
     const props = component.props || {};
     const label = context.escapeHtml(props.label || "Dropdown");
     const iconHtml = props.icon
-      ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${context.escapeAttr(props.icon)}"></i></span>`
+      ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${context.renderTablerIcon(props.icon)}</span>`
       : "";
 
     const items = Array.isArray(props.items) ? props.items : [];

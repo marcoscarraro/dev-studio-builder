@@ -34,11 +34,13 @@
     const menuTheme = context.state.page.props.menuTheme || "dark";
     const menuPosition = context.state.page.props.menuPosition || "left";
     const themeAttr = menuTheme === "dark" ? ' data-bs-theme="dark"' : "";
-    const hasSidebar = !isLoginPage && (menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill");
-    const hasNavbar = !isLoginPage && (menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill");
     const isPillLayout = !isLoginPage && menuLayout === "combo-pill";
-    const sidebarHtml = hasSidebar ? (isPillLayout ? exportIconSidebar(context) : exportSidebar(context, menuPosition, themeAttr)) : "";
-    const navbarHtml = hasNavbar ? (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr)) : "";
+    const isModuleRail = !isLoginPage && menuLayout === "module-rail";
+    const usesIconRail = isPillLayout || isModuleRail; // ambos: rail de icones + navbar superior
+    const hasSidebar = !isLoginPage && (menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
+    const hasNavbar = !isLoginPage && (menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
+    const sidebarHtml = hasSidebar ? (usesIconRail ? exportIconSidebar(context, themeAttr) : exportSidebar(context, menuPosition, themeAttr)) : "";
+    const navbarHtml = hasNavbar ? (isModuleRail ? exportModuleRailNavbar(context, themeAttr) : (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr))) : "";
 
     const title = context.escapeHtml(context.state.page.props.title || "Pagina");
 
@@ -56,10 +58,12 @@
       `  <title>${title}</title>`,
       ...[renderFaviconAsset(context, assets.favicon)].filter(Boolean).map((line) => `  ${line}`),
       ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
-      ...(isPillLayout ? ['  <link rel="stylesheet" href="public/components/css/pill-layout.css">'] : []),
+      ...(usesIconRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/pill-layout.css">'] : []),
+      ...(isModuleRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/module-rail.css?v=2">'] : []),
+      ...((hasSidebar && !usesIconRail) ? ['  <link rel="stylesheet" href="public/components/css/layouts/sidebar-collapse.css">'] : []),
       ...assets.headExtra.map((line) => `  ${line}`),
       "</head>",
-      '<body class="layout-fluid">',
+      `<body class="layout-fluid${isModuleRail ? " layout-module-rail" : ""}">`,
       ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       '  <div class="page">'
     ];
@@ -121,8 +125,12 @@
       lines.push("  </script>");
     }
 
-    if (isPillLayout) {
-      lines.push('  <script src="public/components/js/pill-layout.js" defer></script>');
+    if (usesIconRail) {
+      lines.push('  <script src="public/components/js/pill-layout.js?v=8" defer></script>');
+    }
+
+    if (hasSidebar && !usesIconRail) {
+      lines.push('  <script src="public/components/js/sidebar-collapse-runtime.js" defer></script>');
     }
 
     // Arquivos do PWA (manifest.webmanifest + sw.js): emitidos como blocos inertes
@@ -217,6 +225,9 @@
       '  <div class="container-xl">',
       '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">',
       '      <span class="navbar-toggler-icon"></span>',
+      '    </button>',
+      '    <button class="navbar-toggler" type="button" data-sidebar-collapse-toggle aria-label="Recolher menu" title="Recolher menu">',
+      '      <span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/layout-sidebar-left-collapse.svg&quot;);mask-image:url(&quot;public/components/icons/outline/layout-sidebar-left-collapse.svg&quot;)" aria-hidden="true"></span>',
       '    </button>',
       '    <div class="collapse navbar-collapse" id="sidebar-menu">',
       '      <ul class="navbar-nav pt-lg-3">',
@@ -336,8 +347,9 @@
       const label = html(props.label || "Item");
       const href = esc(props.href || "#");
       const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-      const iconHtml = props.icon
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+      const iconHtml = iconUrl
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
         : "";
       return [
         '<li class="nav-item">',
@@ -354,7 +366,7 @@
       return [
         '<li class="nav-item">',
         `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
-        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${iconEnter}"></i></span>`,
+        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/${iconEnter}.svg&quot;);mask-image:url(&quot;public/components/icons/outline/${iconEnter}.svg&quot;)" aria-hidden="true"></span></span>`,
         `    <span class="nav-link-title">${label}</span>`,
         '  </a>',
         '</li>'
@@ -364,13 +376,14 @@
     if (component.type === "menu-dropdown") {
       const props = component.props || {};
       const label = html(props.label || "Dropdown");
-      const iconHtml = props.icon
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+      const iconHtml = iconUrl
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
         : "";
       const items = Array.isArray(props.items) ? props.items : [];
       const subItemsHtml = items.map((item) => {
         const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-        const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+        const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
         const itemIconHtml = itemIconUrl
           ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
           : "";
@@ -418,8 +431,9 @@
       const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
       const badgeText = html(props.badgeText || "");
       const badgeColor = esc(props.badgeColor || "red");
-      const iconHtml = props.icon
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-${esc(props.icon)}"></i></span>`
+      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+      const iconHtml = iconUrl
+        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
         : "";
       const badgeHtml = badgeText ? `<span class="badge bg-${badgeColor} ms-auto badge-sm">${badgeText}</span>` : "";
       return [
@@ -566,6 +580,8 @@
       if (componentAssets.init === "dropzone") { neededRuntimes.add("dropzone"); }
       if (componentAssets.init === "barcodeScanner") { neededRuntimes.add("barcodeScanner"); }
       if (componentAssets.init === "audioRecorder") { neededRuntimes.add("audioRecorder"); }
+      if (componentAssets.init === "pdfViewer") { neededRuntimes.add("pdfViewer"); }
+      if (componentAssets.init === "gantt") { neededRuntimes.add("gantt"); }
       if (context.toBooleanValue(props.showCopy)) { neededRuntimes.add("clipboard"); }
       if (componentAssets.init === "passwordToggle") {
         const inputType = props.inputType || definition.inputType || component.type || "text";
@@ -1036,6 +1052,46 @@
     ].filter((line) => line !== '').join("\n");
   }
 
+  // Navbar do layout "module-rail": itens do topo SEMPRE visiveis (rolagem horizontal no
+  // mobile) + hamburguer que abre um off-canvas SO com os modulos (o rail vira sanduiche).
+  // Difere do pill (que esconde os itens no off-canvas).
+  function exportModuleRailNavbar(context, themeAttr) {
+    // Lista achatada num UNICO <ul> (evita o modo multi-coluna do exportMenuNavSections, que
+    // gera varios <ul> empilhados). O CSS forca a linha horizontal rolavel.
+    const railItems = exportMenuItems(context, context.state.page.navbar);
+    const navContent = railItems ? ['<ul class="navbar-nav app-rail-topitems">', context.indent(railItems, 2), '</ul>'].join("\n") : "";
+    const mobileModules = exportMobileSidebarItems(context, context.state.page.sidebar);
+    const togglerHtml = mobileModules
+      ? '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#railModulesOffcanvas" aria-controls="railModulesOffcanvas" aria-label="Abrir modulos"><span class="navbar-toggler-icon"></span></button>'
+      : '';
+    const modulesOffcanvas = mobileModules
+      ? [
+          '<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="railModulesOffcanvas" aria-labelledby="railModulesLabel">',
+          '  <div class="offcanvas-header">',
+          '    <span class="offcanvas-title fw-bold" id="railModulesLabel">Modulos</span>',
+          '    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>',
+          '  </div>',
+          '  <div class="offcanvas-body">',
+          '    <ul class="navbar-nav">',
+          context.indent(mobileModules, 6),
+          '    </ul>',
+          '  </div>',
+          '</div>'
+        ].join("\n")
+      : '';
+    return [
+      `<header class="navbar navbar-expand-md app-pill-navbar app-rail-navbar d-print-none"${themeAttr}>`,
+      '  <div class="container-fluid">',
+      togglerHtml,
+      '    <div class="app-rail-topwrap">',
+      navContent ? context.indent(navContent, 6) : '',
+      '    </div>',
+      '  </div>',
+      '</header>',
+      modulesOffcanvas
+    ].filter((line) => line !== '').join("\n");
+  }
+
   function exportMobileSidebarItems(context, rows) {
     if (!Array.isArray(rows) || !rows.length) return "";
     const esc = context.escapeAttr;
@@ -1051,7 +1107,7 @@
             const label = html(props.label || "Item");
             const href = esc(props.href || "#");
             const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-            const iconUrl = `public/tabler/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+            const iconUrl = `public/components/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
             lines.push(
               '<li class="nav-item">',
               `  <a class="nav-link" href="${href}"${target}>`,
@@ -1062,12 +1118,12 @@
             );
           } else if (component.type === "menu-dropdown") {
             const label = html(props.label || "Dropdown");
-            const iconUrl = `public/tabler/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+            const iconUrl = `public/components/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
             const subItems = Array.isArray(props.items) ? props.items : [];
             const dropId = `mob-drop-${Math.random().toString(36).slice(2, 8)}`;
             const subHtml = subItems.map((item) => {
               const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-              const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+              const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
               const itemIconHtml = itemIconUrl
                 ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
                 : "";
@@ -1088,7 +1144,7 @@
             const label = html(props.label || "Tela cheia");
             const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
             const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconUrl = `public/tabler/icons/outline/${iconEnter}.svg`;
+            const iconUrl = `public/components/icons/outline/${iconEnter}.svg`;
             lines.push(
               '<li class="nav-item">',
               `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
@@ -1108,11 +1164,11 @@
     return lines.join("\n");
   }
 
-  function exportIconSidebar(context) {
+  function exportIconSidebar(context, themeAttr) {
     const rows = context.state.page.sidebar;
     const items = exportIconSidebarItems(context, rows);
     return [
-      '<aside class="app-icon-sidebar" id="appIconSidebar">',
+      `<aside class="app-icon-sidebar" id="appIconSidebar"${themeAttr || ""}>`,
       '  <ul class="side-nav">',
       items ? context.indent(items, 4) : '',
       '  </ul>',
@@ -1122,7 +1178,7 @@
 
   function makeSideIconHtml(iconName, esc) {
     const name = esc((iconName || "circle").replace(/[^A-Za-z0-9_-]/g, ""));
-    const url = `public/tabler/icons/outline/${name}.svg`;
+    const url = `public/components/icons/outline/${name}.svg`;
     return `<span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span></span>`;
   }
 
@@ -1159,7 +1215,7 @@
             const subItems = Array.isArray(props.items) ? props.items : [];
             const subHtml = subItems.map((item) => {
               const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-              const itemIconUrl = item.icon ? `public/tabler/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
+              const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
               const itemIconHtml = itemIconUrl
                 ? `<span class="button-icon me-1" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
                 : "";

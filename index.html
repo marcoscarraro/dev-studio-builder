@@ -5,17 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>DEV STUDIO BUILDER</title>
-  <link rel="icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
-  <link rel="shortcut icon" href="public/tabler/icons/outline/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="public/tabler/libs/inter/inter.css">
+  <link rel="icon" href="public/components/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="public/components/icons/outline/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="public/components/libs/inter/inter.css">
   <link rel="stylesheet" href="public/tabler/css/tabler.css?1778257825">
   <link rel="stylesheet" href="public/tabler/css/tabler-vendors.css?1778257825">
   <link rel="stylesheet" href="public/tabler/css/tabler-themes.css?1778257825">
   <link rel="stylesheet" href="public/tabler/css/demo.css?1778257825">
-  <link rel="stylesheet" href="public/tabler/css/custom.css">
-  <link rel="stylesheet" href="public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
-  <link rel="stylesheet" href="assets/css/builder.css?v=14">
-  <link rel="stylesheet" href="public/tema/tema.css">
+  <link rel="stylesheet" href="public/components/css/base.css">
+  <link rel="stylesheet" href="public/components/css/components/tom-select.css">
+  <link rel="stylesheet" href="public/components/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
+  <link rel="stylesheet" href="assets/css/builder.css?v=17">
+  <link rel="stylesheet" href="public/components/css/theme.css">
 </head>
 <body class="layout-fluid" data-page="template-builder">
   <script src="public/tabler/js/tabler-theme.js"></script>
@@ -70,7 +71,7 @@
             <span id="document-summary">0 componentes</span>
           </div>
           <button type="button" id="btn-page-settings" class="btn-page-settings" data-action="page-settings" title="Propriedades da pagina" aria-label="Propriedades da pagina">
-            <img src="public/tabler/icons/outline/settings.svg" width="18" height="18" alt="" aria-hidden="true">
+            <img src="public/components/icons/outline/settings.svg" width="18" height="18" alt="" aria-hidden="true">
           </button>
         </div>
 
@@ -113,11 +114,10 @@
   <input type="file" id="import-json-file" accept=".json" style="display:none">
 
   <script src="public/tabler/js/tabler.js" defer></script>
-  <script src="public/tabler/js/demo.js" defer></script>
-  <script src="public/tabler/libs/imask/dist/imask.min.js" defer></script>
-  <script src="public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="public/components/libs/imask/dist/imask.min.js" defer></script>
+  <script src="public/components/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="assets/js/core/helpers.js?v=2"></script>
-  <script src="assets/js/core/export-html.js?v=33"></script>
+  <script src="assets/js/core/export-html.js?v=46"></script>
   <script src="assets/js/core/drag-drop.js?v=2"></script>
   <script src="assets/js/core/properties.js?v=6"></script>
   <script src="assets/js/renderers/registry.js?v=1"></script>
@@ -152,12 +152,15 @@
   <script src="assets/js/renderers/wysiwyg.js?v=3"></script>
   <script src="assets/js/renderers/dropzone.js?v=7"></script>
   <script src="assets/js/renderers/fullcalendar.js?v=6"></script>
-  <script src="assets/js/renderers/barcode-scanner.js?v=1"></script>
+  <script src="assets/js/renderers/gantt.js?v=1"></script>
+  <script src="assets/js/renderers/barcode-scanner.js?v=2"></script>
   <script src="assets/js/renderers/audio-player.js?v=1"></script>
-  <script src="assets/js/renderers/audio-recorder.js?v=1"></script>
+  <script src="assets/js/renderers/audio-recorder.js?v=2"></script>
   <script src="assets/js/renderers/video-player.js?v=1"></script>
   <script src="assets/js/renderers/youtube-embed.js?v=2"></script>
   <script src="assets/js/renderers/iframe-embed.js?v=1"></script>
+  <script src="assets/js/renderers/office-viewer.js?v=1"></script>
+  <script src="assets/js/renderers/pdf-viewer.js?v=2"></script>
   <script src="assets/js/renderers/heading.js?v=3"></script>
   <script src="assets/js/renderers/paragraph.js?v=2"></script>
   <script src="assets/js/renderers/element.js?v=1"></script>
@@ -186,16 +189,17 @@
   <script src="assets/js/renderers/payment-method.js?v=1"></script>
   <script src="assets/js/renderers/js-snippet.js?v=1"></script>
   <script src="assets/js/renderers/pwa.js?v=1"></script>
-  <script src="assets/js/renderers/menu-item.js?v=1"></script>
-  <script src="assets/js/renderers/menu-dropdown.js?v=2"></script>
+  <script src="assets/js/renderers/menu-item.js?v=2"></script>
+  <script src="assets/js/renderers/menu-dropdown.js?v=3"></script>
   <script src="assets/js/renderers/menu-divider.js?v=1"></script>
   <script src="assets/js/renderers/menu-label.js?v=1"></script>
   <script src="assets/js/renderers/menu-brand.js?v=1"></script>
-  <script src="assets/js/renderers/menu-badge-item.js?v=1"></script>
+  <script src="assets/js/renderers/menu-badge-item.js?v=2"></script>
   <script src="assets/js/renderers/menu-user.js?v=1"></script>
-  <script src="assets/js/renderers/menu-search.js?v=1"></script>
+  <script src="assets/js/renderers/menu-search.js?v=2"></script>
   <script src="assets/js/renderers/menu-spacer.js?v=1"></script>
-  <script src="assets/js/renderers/menu-fullscreen.js?v=1"></script>
-  <script src="assets/js/builder.js?v=73"></script>
+  <script src="assets/js/renderers/menu-fullscreen.js?v=2"></script>
+  <script src="public/components/js/gantt-runtime.js?v=2"></script>
+  <script src="assets/js/builder.js?v=76"></script>
 </body>
 </html>

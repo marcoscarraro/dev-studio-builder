@@ -4,14 +4,14 @@
   "schemaVersion": 5,
   "framework": "tabler",
   "assets": {
-    "favicon": { "href": "public/tabler/icons/outline/favicon.svg", "type": "image/svg+xml" },
+    "favicon": { "href": "public/components/icons/outline/favicon.svg", "type": "image/svg+xml" },
     "styles": [
-      "public/tabler/libs/inter/inter.css",
+      "public/components/libs/inter/inter.css",
       "public/tabler/css/tabler.css",
       "public/tabler/css/tabler-vendors.css",
       "public/tabler/css/tabler-themes.css",
-      "public/tabler/css/custom.css",
-      "public/tema/tema.css"
+      "public/components/css/base.css",
+      "public/components/css/theme.css"
     ],
     "headScripts": [
       "public/tabler/js/tabler-theme.js"
@@ -22,8 +22,8 @@
     "runtimes": {
       "ajaxFill": "public/components/js/ajax-fill-runtime.js",
       "fieldList": "public/components/js/fieldlist-runtime.js",
-      "jquery": "public/tabler/libs/jquery/jquery-4.0.0.min.js",
-      "mask": "public/tabler/libs/imask/dist/imask.min.js",
+      "jquery": "public/components/libs/jquery/jquery-4.0.0.min.js",
+      "mask": "public/components/libs/imask/dist/imask.min.js",
       "maskInit": "public/components/js/mask-runtime.js",
       "datatable": "public/components/js/datatable-runtime.js",
       "tomselect": "public/components/js/tomselect-runtime.js",
@@ -41,7 +41,9 @@
       "unsavedGuard": "public/components/js/unsaved-guard-runtime.js",
       "pwa": "public/components/js/pwa-runtime.js",
       "otp": "public/components/js/otp-runtime.js",
-      "fullscreen": "public/components/js/fullscreen-runtime.js"
+      "fullscreen": "public/components/js/fullscreen-runtime.js",
+      "pdfViewer": "public/components/js/pdf-runtime.js",
+      "gantt": "public/components/js/gantt-runtime.js"
     }
   },
   "layoutDefaults": {
@@ -496,7 +498,7 @@
           "defaultCssClass": "",
           "controlName": "wysiwyg",
           "assets": {
-            "scripts": ["public/tabler/libs/hugerte/hugerte.min.js"],
+            "scripts": ["public/components/libs/hugerte/hugerte.min.js"],
             "init": "hugerte"
           },
           "defaults": { "label": "Descricao", "inputId": "", "name": "", "height": 300, "initialContent": "", "help": "" },
@@ -1340,7 +1342,7 @@
           "defaultCssClass": "signature position-relative",
           "propertySets": ["signatureOptions"],
           "assets": {
-            "scripts": [{ "src": "public/tabler/libs/signature_pad/dist/signature_pad.umd.min.js", "defer": true }],
+            "scripts": [{ "src": "public/components/libs/signature_pad/dist/signature_pad.umd.min.js", "defer": true }],
             "init": "signature"
           },
           "defaults": {
@@ -1629,6 +1631,60 @@
             { "label": "Titulo (acessibilidade)", "prop": "title", "field": "text" },
             { "label": "Scroll", "prop": "scrolling", "field": "checkbox" },
             { "label": "Tela cheia", "prop": "allowFullscreen", "field": "checkbox" }
+          ]
+        },
+        {
+          "id": "office-viewer",
+          "label": "Documento Office (Word/Excel/PPT)",
+          "kind": "officeViewer",
+          "icon": "block-icon office-viewer",
+          "defaultCssClass": "",
+          "defaults": {
+            "provider": "office",
+            "url": "",
+            "ratio": "none",
+            "height": 700,
+            "title": "Documento",
+            "showDownload": false,
+            "downloadLabel": "Baixar documento"
+          },
+          "properties": [
+            { "label": "Provedor", "prop": "provider", "field": "select", "options": [["office", "Microsoft Office Online"], ["google", "Google Docs Viewer"]] },
+            { "label": "URL publica do arquivo", "prop": "url", "field": "text" },
+            { "label": "Proporcao", "prop": "ratio", "field": "select", "options": [["none", "Altura fixa"], ["16x9", "16:9"], ["4x3", "4:3"], ["1x1", "Quadrado"]] },
+            { "label": "Altura (px)", "prop": "height", "field": "number", "min": 100 },
+            { "label": "Titulo (acessibilidade)", "prop": "title", "field": "text" },
+            { "label": "Mostrar link de download", "prop": "showDownload", "field": "checkbox" },
+            { "label": "Texto do link de download", "prop": "downloadLabel", "field": "text", "showWhen": { "prop": "showDownload", "equals": true } },
+            { "label": "Como gerar a URL no Laravel", "prop": "_laravel", "field": "code-info", "rows": 4, "valueTemplate": "// Laravel: monte a URL no controller/model (arquivo publico, < 10MB).\n$src = 'https://view.officeapps.live.com/op/embed.aspx?src=' . urlencode($linkParaDownload);\n// Cole $src no campo URL acima, ou troque o src do <iframe> exportado por $src.\n// Em Blade dinamico, prefira rawurlencode() no servidor." }
+          ]
+        },
+        {
+          "id": "pdf-viewer",
+          "label": "PDF (PDF.js)",
+          "kind": "pdfViewer",
+          "icon": "block-icon pdf-viewer",
+          "defaultCssClass": "",
+          "assets": {
+            "scripts": [{ "src": "public/components/libs/pdfjs/pdf.min.js", "defer": true }],
+            "init": "pdfViewer"
+          },
+          "defaults": {
+            "url": "",
+            "maxWidth": 900,
+            "pageGap": 12,
+            "firstPageOnly": false,
+            "showDownload": false,
+            "downloadLabel": "Baixar PDF"
+          },
+          "properties": [
+            { "label": "URL do PDF (mesma origem ou CORS)", "prop": "url", "field": "text" },
+            { "label": "Largura maxima (px)", "prop": "maxWidth", "field": "number", "min": 200 },
+            { "label": "Espaco entre paginas (px)", "prop": "pageGap", "field": "number", "min": 0 },
+            { "label": "Mostrar so a 1a pagina", "prop": "firstPageOnly", "field": "checkbox" },
+            { "label": "Mostrar link de download", "prop": "showDownload", "field": "checkbox" },
+            { "label": "Texto do link de download", "prop": "downloadLabel", "field": "text", "showWhen": { "prop": "showDownload", "equals": true } },
+            { "label": "Como servir o PDF no Laravel", "prop": "_laravel", "field": "code-info", "rows": 4, "valueTemplate": "// PDF.js busca o arquivo via fetch -> a URL precisa ser publica (mesma origem ou CORS).\n$url = route('arquivos.pdf', $arquivo->id); // ou Storage::url(...) / asset(...)\n// Cole $url no campo URL acima, ou troque o data-pdf-url do <div> exportado por $url.\n// Copie a pasta public/components/libs/pdfjs/ para o public/ do Laravel." }
           ]
         },
         {
@@ -2101,7 +2157,7 @@
           "kind": "jsSnippet",
           "icon": "block-icon html",
           "assets": {
-            "scripts": ["public/tabler/libs/jquery/jquery-4.0.0.min.js"]
+            "scripts": ["public/components/libs/jquery/jquery-4.0.0.min.js"]
           },
           "defaults": {
             "template": "calc",
@@ -2122,22 +2178,22 @@
           "defaultCssClass": "table card-table table-vcenter text-nowrap datatable w-100",
           "assets": {
             "styles": [
-              "public/tabler/libs/datatables/1.13.8/css/dataTables.bootstrap5.min.css",
-              "public/tabler/libs/datatables/responsive/2.5.0/css/responsive.bootstrap5.min.css",
-              "public/tabler/libs/datatables/buttons/2.4.2/css/buttons.bootstrap5.min.css",
-              "public/tabler/libs/datatables/colreorder/1.7.0/css/colReorder.bootstrap5.min.css"
+              "public/components/libs/datatables/1.13.8/css/dataTables.bootstrap5.min.css",
+              "public/components/libs/datatables/responsive/2.5.0/css/responsive.bootstrap5.min.css",
+              "public/components/libs/datatables/buttons/2.4.2/css/buttons.bootstrap5.min.css",
+              "public/components/libs/datatables/colreorder/1.7.0/css/colReorder.bootstrap5.min.css"
             ],
             "scripts": [
-              "public/tabler/libs/jquery/jquery-4.0.0.min.js",
-              "public/tabler/libs/datatables/1.13.8/js/jquery.dataTables.min.js",
-              "public/tabler/libs/datatables/1.13.8/js/dataTables.bootstrap5.min.js",
-              "public/tabler/libs/datatables/responsive/2.5.0/js/dataTables.responsive.min.js",
-              "public/tabler/libs/datatables/responsive/2.5.0/js/responsive.bootstrap5.min.js",
-              "public/tabler/libs/datatables/colreorder/1.7.0/js/dataTables.colReorder.min.js",
-              "public/tabler/libs/datatables/colreorder/1.7.0/js/colReorder.bootstrap5.min.js",
-              "public/tabler/libs/datatables/buttons/2.4.2/js/dataTables.buttons.min.js",
-              "public/tabler/libs/datatables/buttons/2.4.2/js/buttons.bootstrap5.min.js",
-              "public/tabler/libs/datatables/buttons/2.4.2/js/buttons.colVis.min.js"
+              "public/components/libs/jquery/jquery-4.0.0.min.js",
+              "public/components/libs/datatables/1.13.8/js/jquery.dataTables.min.js",
+              "public/components/libs/datatables/1.13.8/js/dataTables.bootstrap5.min.js",
+              "public/components/libs/datatables/responsive/2.5.0/js/dataTables.responsive.min.js",
+              "public/components/libs/datatables/responsive/2.5.0/js/responsive.bootstrap5.min.js",
+              "public/components/libs/datatables/colreorder/1.7.0/js/dataTables.colReorder.min.js",
+              "public/components/libs/datatables/colreorder/1.7.0/js/colReorder.bootstrap5.min.js",
+              "public/components/libs/datatables/buttons/2.4.2/js/dataTables.buttons.min.js",
+              "public/components/libs/datatables/buttons/2.4.2/js/buttons.bootstrap5.min.js",
+              "public/components/libs/datatables/buttons/2.4.2/js/buttons.colVis.min.js"
             ],
             "init": "datatable"
           },
@@ -2224,10 +2280,11 @@
           ],
           "assets": {
             "styles": [
-              "public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css"
+              "public/components/libs/tom-select/dist/css/tom-select.bootstrap5.min.css",
+              "public/components/css/components/tom-select.css"
             ],
             "scripts": [
-              "public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"
+              "public/components/libs/tom-select/dist/js/tom-select.complete.min.js"
             ],
             "init": "tomselect"
           },
@@ -2317,8 +2374,8 @@
           "defaultCssClass": "input-icon",
           "controlName": "datepicker",
           "assets": {
-            "styles": ["public/tabler/libs/litepicker/dist/css/litepicker.css"],
-            "scripts": ["public/tabler/libs/litepicker/dist/litepicker.js"],
+            "styles": ["public/components/libs/litepicker/dist/css/litepicker.css"],
+            "scripts": ["public/components/libs/litepicker/dist/litepicker.js"],
             "init": "litepicker"
           },
           "defaults": { "label": "Data", "inputId": "", "name": "", "inputCssClass": "form-control", "placeholder": "Selecione uma data", "value": "", "icon": "calendar", "iconColor": "", "iconPosition": "right", "format": "YYYY-MM-DD", "lang": "pt-BR", "mode": "date", "endName": "", "endPlaceholder": "Data final", "endValue": "", "timeStep": 5, "inline": false, "customAttributes": [], "required": false, "disabled": false, "readonly": false, "help": "" },
@@ -2354,8 +2411,8 @@
           "defaultCssClass": "datepicker-inline",
           "controlName": "datepicker_inline",
           "assets": {
-            "styles": ["public/tabler/libs/litepicker/dist/css/litepicker.css"],
-            "scripts": ["public/tabler/libs/litepicker/dist/litepicker.js"],
+            "styles": ["public/components/libs/litepicker/dist/css/litepicker.css"],
+            "scripts": ["public/components/libs/litepicker/dist/litepicker.js"],
             "init": "litepicker"
           },
           "defaults": { "label": "Calendario", "inputId": "", "name": "", "format": "YYYY-MM-DD", "lang": "pt-BR", "inline": true },
@@ -2375,8 +2432,8 @@
           "propertySets": ["fieldBase", "fieldState", "validationState"],
           "controlName": "tags",
           "assets": {
-            "styles": ["public/tabler/libs/tom-select/dist/css/tom-select.bootstrap5.min.css"],
-            "scripts": ["public/tabler/libs/tom-select/dist/js/tom-select.complete.min.js"],
+            "styles": ["public/components/libs/tom-select/dist/css/tom-select.bootstrap5.min.css", "public/components/css/components/tom-select.css"],
+            "scripts": ["public/components/libs/tom-select/dist/js/tom-select.complete.min.js"],
             "init": "tomselect"
           },
           "defaults": { "label": "Tags", "selectId": "", "name": "", "placeholder": "Selecione ou crie tags", "emptyOptionText": "", "options": [], "ajaxUrl": "mock/tags-input.json", "jsonPath": "tags", "remoteSearch": false, "searchParam": "q", "loadThrottle": 300, "preload": true, "required": false, "disabled": false, "multiple": true, "create": true, "createUrl": "", "valueField": "id", "labelField": "text", "searchField": "text", "maxOptions": 100, "invalidFeedback": "", "help": "" },
@@ -2406,8 +2463,8 @@
           "defaultCssClass": "dropzone",
           "controlName": "dropzone",
           "assets": {
-            "styles": ["public/tabler/libs/dropzone/dist/dropzone.css"],
-            "scripts": ["public/tabler/libs/dropzone/dist/dropzone-min.js"],
+            "styles": ["public/components/libs/dropzone/dist/dropzone.css"],
+            "scripts": ["public/components/libs/dropzone/dist/dropzone-min.js"],
             "init": "dropzone"
           },
           "defaults": {
@@ -2454,7 +2511,7 @@
           ],
           "assets": {
             "scripts": [
-              { "src": "public/tabler/libs/html5-qrcode/html5-qrcode.min.js" }
+              { "src": "public/components/libs/html5-qrcode/html5-qrcode.min.js" }
             ],
             "init": "barcodeScanner"
           },
@@ -2607,7 +2664,7 @@
           "icon": "block-icon chart-line",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2647,7 +2704,7 @@
           "icon": "block-icon chart-area",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2686,7 +2743,7 @@
           "icon": "block-icon chart-bar",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2726,7 +2783,7 @@
           "icon": "block-icon chart-bar",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2764,7 +2821,7 @@
           "icon": "block-icon chart-pie",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2799,7 +2856,7 @@
           "icon": "block-icon chart-pie",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": ["public/tabler/libs/apexcharts/dist/apexcharts.min.js"],
+            "scripts": ["public/components/libs/apexcharts/dist/apexcharts.min.js"],
             "init": "apexchart"
           },
           "defaults": {
@@ -2839,7 +2896,7 @@
           "icon": "block-icon calendar",
           "defaultCssClass": "card",
           "assets": {
-            "scripts": [{ "src": "public/tabler/libs/fullcalendar/index.global.min.js", "defer": true }],
+            "scripts": [{ "src": "public/components/libs/fullcalendar/index.global.min.js", "defer": true }],
             "init": "fullcalendar"
           },
           "defaults": {
@@ -2874,6 +2931,51 @@
             { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
             { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
             { "label": "Controller Laravel", "prop": "_laravelFcRef", "field": "code-info", "group": "Laravel", "rows": 13, "valueTemplate": "// Route: GET /{{ajaxUrl:api/eventos}}\npublic function index()\n{\n    return response()->json(\n        Evento::all()->map(fn($e) => [\n            'id'              => $e->id,\n            'title'           => $e->titulo,\n            'start'           => $e->inicio->toIso8601String(),\n            'end'             => $e->fim?->toIso8601String(),\n            'allDay'          => $e->dia_inteiro,\n            'backgroundColor' => $e->cor ?? '#206bc4',\n            'url'             => route('eventos.show', $e->id),\n        ])\n    );\n}" }
+          ]
+        },
+        {
+          "id": "gantt",
+          "label": "Gantt / Timeline",
+          "kind": "gantt",
+          "icon": "block-icon calendar",
+          "defaultCssClass": "card",
+          "assets": {
+            "init": "gantt",
+            "styles": ["public/components/css/components/gantt.css"]
+          },
+          "defaults": {
+            "title": "",
+            "ganttId": "",
+            "dataUrl": "mock/gantt.json",
+            "ajaxAuthType": "none",
+            "ajaxAuthToken": "",
+            "ajaxAuthHeader": "X-API-Key",
+            "granularity": "day",
+            "rangeMode": "auto",
+            "rangeStart": "",
+            "rangeEnd": "",
+            "rowHeight": 44,
+            "showToday": true,
+            "groupBy": false,
+            "barClickUrl": "",
+            "barClickTarget": "_self"
+          },
+          "properties": [
+            { "label": "Titulo do card", "prop": "title", "field": "text" },
+            { "label": "ID do gantt", "prop": "ganttId", "field": "text" },
+            { "label": "Escala (granularidade)", "prop": "granularity", "field": "select", "options": [["hour", "Hora"], ["day", "Dia"], ["week", "Semana"], ["month", "Mes"]] },
+            { "label": "Altura da linha (px)", "prop": "rowHeight", "field": "number", "min": 28, "group": "Comportamento" },
+            { "label": "Mostrar linha de hoje", "prop": "showToday", "field": "checkbox", "group": "Comportamento" },
+            { "label": "Janela de tempo", "prop": "rangeMode", "field": "select", "options": [["auto", "Automatica (min/max dos dados)"], ["fixed", "Fixa"]], "group": "Comportamento" },
+            { "label": "Inicio (janela fixa)", "prop": "rangeStart", "field": "text", "placeholder": "2026-06-01", "showWhen": { "prop": "rangeMode", "equals": "fixed" }, "group": "Comportamento" },
+            { "label": "Fim (janela fixa)", "prop": "rangeEnd", "field": "text", "placeholder": "2026-06-30", "showWhen": { "prop": "rangeMode", "equals": "fixed" }, "group": "Comportamento" },
+            { "label": "URL ao tocar na barra (use {{id}})", "prop": "barClickUrl", "field": "text", "group": "Comportamento" },
+            { "label": "Abrir clique em", "prop": "barClickTarget", "field": "select", "options": [["_self", "Mesma aba"], ["_blank", "Nova aba"]], "group": "Comportamento" },
+            { "label": "URL dos dados JSON", "prop": "dataUrl", "field": "text", "group": "Dados" },
+            { "label": "Autenticacao", "prop": "ajaxAuthType", "field": "select", "options": [["none", "Nenhuma"], ["bearer", "Bearer token"], ["header", "Chave em header"]], "group": "Dados" },
+            { "label": "Token / chave", "prop": "ajaxAuthToken", "field": "text", "group": "Dados" },
+            { "label": "Nome do header da chave", "prop": "ajaxAuthHeader", "field": "text", "group": "Dados" },
+            { "label": "Controller Laravel + contrato JSON", "prop": "_laravelGanttRef", "field": "code-info", "group": "Laravel", "rows": 16, "valueTemplate": "// Route: GET /{{dataUrl:api/gantt}}\n// JSON: { resources: [{id,label,group?}], tasks: [{id,resourceId,start,end,label,color?,url?,status?}] }\npublic function index()\n{\n    return response()->json([\n        'resources' => Recurso::all()->map(fn($r) => [\n            'id' => $r->id, 'label' => $r->nome, 'group' => $r->grupo,\n        ]),\n        'tasks' => Reserva::all()->map(fn($t) => [\n            'id' => $t->id, 'resourceId' => $t->recurso_id,\n            'start' => $t->inicio->toIso8601String(),\n            'end'   => $t->fim->toIso8601String(),\n            'label' => $t->titulo, 'color' => $t->cor ?? 'blue',\n            'url' => route('reservas.show', $t->id), 'status' => $t->status,\n        ]),\n    ]);\n}" }
           ]
         }
       ]
