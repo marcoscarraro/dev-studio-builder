@@ -329,10 +329,10 @@
   // =====================================================
   // PERSISTENCE
   // =====================================================
-  function saveToStorage() {
+  function saveToStorage(silent) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.report));
-      showToast("Salvo");
+      if (!silent) showToast("Salvo");
     } catch (e) {
       showToast("Erro ao salvar");
     }
@@ -455,7 +455,7 @@
       }
     });
 
-    document.getElementById("btn-save").addEventListener("click", saveToStorage);
+    document.getElementById("btn-save").addEventListener("click", function () { saveToStorage(); });
     document.getElementById("btn-load").addEventListener("click", function () {
       loadFromStorage();
       state.selectedId = null;
@@ -468,6 +468,8 @@
         state.report.sections = [];
         state.selectedId = null;
         commitHistory();
+        // Persiste o estado limpo para que os dados nao voltem ao recarregar.
+        saveToStorage(true);
         render();
       }
     });

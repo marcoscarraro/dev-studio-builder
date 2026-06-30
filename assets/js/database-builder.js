@@ -295,15 +295,59 @@
       this.columns = {}; this.comment = comment || "";
       this.engine = engine || "InnoDB"; this.charset = charset || "utf8mb4";
       this.collation = collation || "utf8mb4_unicode_ci"; this.width = 320;
+      // Ordem explicita das colunas. Necessaria porque as chaves do objeto
+      // columns sao ids numericos e Object.values() sempre itera em ordem
+      // numerica (criacao), impossibilitando reordenacao so com o objeto.
+      this.columnOrder = [];
     }
 
-    addColumn(column) { this.columns[column.id] = column; }
+    addColumn(column) {
+      this.columns[column.id] = column;
+      if (!this.columnOrder.includes(column.id)) this.columnOrder.push(column.id);
+    }
+
+    removeColumn(id) {
+      delete this.columns[id];
+      this.columnOrder = this.columnOrder.filter((cid) => cid !== id);
+    }
+
+    // Colunas na ordem definida pelo usuario. Anexa ao final eventuais colunas
+    // ausentes em columnOrder (robustez contra estados antigos/inconsistentes).
+    orderedColumns() {
+      const ordered = this.columnOrder.map((id) => this.columns[id]).filter(Boolean);
+      Object.values(this.columns).forEach((col) => {
+        if (!this.columnOrder.includes(col.id)) ordered.push(col);
+      });
+      return ordered;
+    }
+
+    // Move a coluna uma posicao para cima (-1) ou para baixo (+1).
+    // Retorna true se houve troca.
+    moveColumn(id, direction) {
+      const i = this.columnOrder.indexOf(id);
+      if (i === -1) return false;
+      const j = i + direction;
+      if (j < 0 || j >= this.columnOrder.length) return false;
+      [this.columnOrder[i], this.columnOrder[j]] = [this.columnOrder[j], this.columnOrder[i]];
+      return true;
+    }
+
+    // Reconstroi columnOrder a partir de uma ordem salva, mantendo apenas ids
+    // validos e anexando colunas que faltarem.
+    applyColumnOrder(savedOrder) {
+      if (!Array.isArray(savedOrder) || !savedOrder.length) return;
+      const valid = savedOrder.filter((id) => this.columns[id]);
+      Object.values(this.columns).forEach((col) => {
+        if (!valid.includes(col.id)) valid.push(col.id);
+      });
+      this.columnOrder = valid;
+    }
 
     toSQL() {
       const config = dbConfig[currentDatabase];
       const q = config.quotes;
       const parts = [];
-      const cols = Object.values(this.columns);
+      const cols = this.orderedColumns();
       // SQLite auto-increment já emite PRIMARY KEY inline na coluna; demais bancos precisam da constraint.
       const pkCols = cols.filter((c) => c.isPK && (currentDatabase !== "sqlite" || !c.isAI));
 
@@ -366,7 +410,7 @@
       div.id = `table-${this.id}`;
       div.style.left = `${this.x}px`;
       div.style.top = `${this.y}px`;
-      const columnsHtml = Object.values(this.columns).map((col) => {
+      const columnsHtml = this.orderedColumns().map((col) => {
         let flag = '<span class="column-flag flag-empty"></span>';
         if (col.isPK) flag = '<span class="column-flag flag-pk">PK</span>';
         else if (col.isFK) flag = '<span class="column-flag flag-fk">FK</span>';
@@ -697,7 +741,7 @@
     wireCodeEditors();
   }
 
-  function dbItem(kindKey, id, title, subtitle, bodyHtml) {
+  function dbItem(kindKey, id, title, subtitle, bodyHtml, headerExtra) {
     let openClass = "";
     if (expanded[kindKey].has(id)) openClass = " open";
     return `
@@ -705,6 +749,7 @@
         <div class="db-item-head" data-db-action="toggleItem" data-kind="${kindKey}" data-id="${id}">
           <strong>${escapeHtml(title)}</strong>
           <small>${escapeHtml(subtitle || "")}</small>
+          ${headerExtra || ""}
           <button type="button" class="db-item-remove" data-db-action="removeItem" data-kind="${kindKey}" data-id="${id}" title="Remover">&times;</button>
         </div>
         <div class="db-item-body">${bodyHtml}</div>
@@ -728,7 +773,8 @@
     groups.push(`<section class="property-group"><h3>Tabela</h3>${tableFields}</section>`);
 
     // --- Grupo: Colunas ---
-    const colItems = Object.values(table.columns).map((col) => {
+    const orderedCols = table.orderedColumns();
+    const colItems = orderedCols.map((col, colIndex) => {
       let body = fieldInput("Nome", "colName", col.name, ` data-col-id="${col.id}"`);
       body += fieldSelect("Tipo", "colType", col.type, typeOptions(), ` data-col-id="${col.id}"`);
       body += fieldInput("Tamanho/Precisao", "colSize", col.size, ` data-col-id="${col.id}" placeholder="Ex: 255 ou 10,2"`);
@@ -742,7 +788,12 @@
       body += "</div>";
       body += fieldInput("Valor padrao", "colDefault", col.defaultValue, ` data-col-id="${col.id}" placeholder="Ex: 0, 'ativo', CURRENT_TIMESTAMP"`);
       body += fieldInput("Comentario", "colComment", col.comment, ` data-col-id="${col.id}"`);
-      return dbItem("col", col.id, col.name, col.getSQLType(), body);
+      const upDisabled = colIndex === 0 ? " disabled" : "";
+      const downDisabled = colIndex === orderedCols.length - 1 ? " disabled" : "";
+      const moveBtns =
+        `<button type="button" class="db-item-move" data-db-action="moveColumnUp" data-col-id="${col.id}" title="Mover para cima" aria-label="Mover coluna para cima"${upDisabled}>&#9650;</button>` +
+        `<button type="button" class="db-item-move" data-db-action="moveColumnDown" data-col-id="${col.id}" title="Mover para baixo" aria-label="Mover coluna para baixo"${downDisabled}>&#9660;</button>`;
+      return dbItem("col", col.id, col.name, col.getSQLType(), body, moveBtns);
     }).join("");
     groups.push(`<section class="property-group"><h3>Colunas</h3>${colItems}<button type="button" class="btn btn-outline-secondary btn-sm db-add-button" data-db-action="addColumn">Adicionar coluna</button></section>`);
 
@@ -751,7 +802,7 @@
     const idxItems = tableIndexes.map((idx) => {
       let body = fieldInput("Nome (vazio = automatico)", "idxName", idx.name, ` data-idx-id="${idx.id}"`);
       body += fieldSelect("Tipo", "idxType", idx.type, config.indexTypes.map((t) => [t, t]), ` data-idx-id="${idx.id}"`);
-      const checks = Object.values(table.columns).map((col) => {
+      const checks = table.orderedColumns().map((col) => {
         return fieldCheckbox(`${col.name} (${col.getSQLType()})`, "idxCol", idx.columns.includes(col.id), ` data-idx-id="${idx.id}" value="${col.id}"`);
       }).join("");
       body += `<div class="field"><label class="form-label">Colunas do indice</label>${checks}<small class="form-hint">Marque 2 ou mais colunas para criar um indice composto — a ordem de marcacao define a ordem das colunas no indice.</small></div>`;
@@ -767,14 +818,14 @@
     if (config.supportsFK) {
       const tableFks = foreignKeys.filter((fk) => fk.sourceTableId === table.id);
       const fkItems = tableFks.map((fk) => {
-        const sourceOptions = Object.values(table.columns).map((col) => [col.id, `${col.name} (${col.getSQLType()})`]);
+        const sourceOptions = table.orderedColumns().map((col) => [col.id, `${col.name} (${col.getSQLType()})`]);
         let body = fieldSelect("Coluna de origem (FK)", "fkSourceCol", fk.sourceColumnId, sourceOptions, ` data-fk-id="${fk.id}"`);
         const tableOptions = [["", "Selecione..."]].concat(Object.values(tables).map((t) => [t.id, t.name]));
         body += fieldSelect("Tabela de destino", "fkTargetTable", fk.targetTableId || "", tableOptions, ` data-fk-id="${fk.id}"`);
         const target = tables[fk.targetTableId];
         let targetColOptions = [["", "Selecione..."]];
         if (target) {
-          targetColOptions = targetColOptions.concat(Object.values(target.columns).filter((c) => c.isPK).map((c) => [c.id, `${c.name} (PK)`]));
+          targetColOptions = targetColOptions.concat(target.orderedColumns().filter((c) => c.isPK).map((c) => [c.id, `${c.name} (PK)`]));
         }
         body += fieldSelect("Coluna de destino (PK)", "fkTargetCol", fk.targetColumnId || "", targetColOptions, ` data-fk-id="${fk.id}"`);
         body += fieldInput("Nome da FK (vazio = automatico)", "fkName", fk.name, ` data-fk-id="${fk.id}"`);
@@ -928,7 +979,7 @@
         const table = Object.values(tables).find((t) => t.name === tableName);
         if (!table) return;
         colRows.push(`<div><strong>${escapeHtml(tableName)}</strong></div>`);
-        Object.values(table.columns).forEach((col) => {
+        table.orderedColumns().forEach((col) => {
           const entry = view.selectedColumns.find((c) => c.table === tableName && c.column === col.name);
           let checkedAttr = "";
           if (entry) checkedAttr = " checked";
@@ -996,7 +1047,7 @@
       data.tables[table.id] = {
         id: table.id, name: table.name, x: table.x, y: table.y,
         comment: table.comment, engine: table.engine, charset: table.charset,
-        collation: table.collation, columns: {}
+        collation: table.collation, columns: {}, columnOrder: table.columnOrder.slice()
       };
       Object.values(table.columns).forEach((col) => {
         data.tables[table.id].columns[col.id] = {
@@ -1040,6 +1091,7 @@
         col.isFK = cData.isFK || false;
         table.addColumn(col);
       });
+      table.applyColumnOrder(tData.columnOrder);
       tables[table.id] = table;
     });
     Object.values(data.views).forEach((vData) => {
@@ -1280,6 +1332,16 @@
       return;
     }
 
+    if ((action === "moveColumnUp" || action === "moveColumnDown") && selected && selected.kind === "table") {
+      const colId = parseInt(actionEl.dataset.colId, 10);
+      const direction = action === "moveColumnUp" ? -1 : 1;
+      if (object.moveColumn(colId, direction)) {
+        afterModelChange({ rerenderPanel: true });
+        updateStatus("Coluna reordenada");
+      }
+      return;
+    }
+
     if (action === "addIndex" && selected && selected.kind === "table") {
       const id = nextIndexId++;
       indexes.push({ id, name: "", type: "INDEX", tableId: object.id, columns: [] });
@@ -1291,7 +1353,7 @@
 
     if (action === "addFk" && selected && selected.kind === "table") {
       const table = object;
-      const firstCol = Object.values(table.columns)[0];
+      const firstCol = table.orderedColumns()[0];
       if (!firstCol) {
         updateStatus("Adicione colunas antes de criar uma FK");
         return;
@@ -1376,7 +1438,7 @@
       const affectedIndexIds = new Set(indexes.filter((idx) => idx.columns.includes(id)).map((idx) => idx.id));
       indexes.forEach((idx) => { idx.columns = idx.columns.filter((cid) => cid !== id); });
       indexes = indexes.filter((idx) => !(affectedIndexIds.has(idx.id) && idx.columns.length === 0));
-      delete table.columns[id];
+      table.removeColumn(id);
       updateStatus("Coluna removida");
     }
 
@@ -1662,7 +1724,7 @@
   function saveToLocalStorage() {
     const data = { tables: {}, views: {}, foreignKeys, indexes, triggers, nextTableId, nextColumnId, nextFkId, nextIndexId, nextTriggerId, nextViewId, databaseType: currentDatabase };
     Object.values(tables).forEach((table) => {
-      data.tables[table.id] = { id: table.id, name: table.name, x: table.x, y: table.y, comment: table.comment, engine: table.engine, charset: table.charset, collation: table.collation, columns: {} };
+      data.tables[table.id] = { id: table.id, name: table.name, x: table.x, y: table.y, comment: table.comment, engine: table.engine, charset: table.charset, collation: table.collation, columns: {}, columnOrder: table.columnOrder.slice() };
       Object.values(table.columns).forEach((col) => {
         data.tables[table.id].columns[col.id] = { id: col.id, name: col.name, type: col.type, size: col.size, isPK: col.isPK, isNotNull: col.isNotNull, isAI: col.isAI, defaultValue: col.defaultValue, isFK: col.isFK, comment: col.comment, isUnique: col.isUnique };
       });
@@ -1699,6 +1761,7 @@
           col.isFK = cData.isFK || false;
           table.addColumn(col);
         });
+        table.applyColumnOrder(tData.columnOrder);
         tables[table.id] = table;
       });
       Object.values(data.views).forEach((vData) => {

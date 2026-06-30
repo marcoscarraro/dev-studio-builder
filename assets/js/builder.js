@@ -117,9 +117,10 @@
     bindSearch();
     bindDevices();
 
-    // Inicia sempre com a pagina vazia. O trabalho salvo NAO e carregado
-    // automaticamente no inicio — use o botao "Carregar" para restaurar.
-    state.page = createEmptyPage();
+    // Restaura automaticamente o trabalho salvo no navegador (mesmo
+    // comportamento do Database Designer e do Report Builder). Se nao houver
+    // nada salvo — ou estiver corrompido — comeca com a pagina vazia.
+    state.page = loadStoredPage() || createEmptyPage();
 
     commitHistory();
     render();
@@ -524,7 +525,7 @@
       const action = button.dataset.action;
 
       if (action === "save") {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.page));
+        saveToStorage();
         toast("Salvo no navegador");
       }
 
@@ -4853,23 +4854,46 @@
     ];
   }
 
-  function loadFromStorage() {
+  // Persiste o estado atual no navegador. Chamado automaticamente a cada
+  // alteracao confirmada (commitHistory) e nos undo/redo, para que o trabalho
+  // sobreviva a um refresh — mesmo comportamento das demais ferramentas.
+  function saveToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.page));
+    } catch (error) {
+      // localStorage cheio/indisponivel (ex.: navegacao privada) — ignora.
+    }
+  }
+
+  // Le e normaliza a pagina salva; retorna null se nao houver ou for invalida.
+  function loadStoredPage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) {
+      return null;
+    }
+    try {
+      return normalizePage(JSON.parse(saved));
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function loadFromStorage() {
+    if (!localStorage.getItem(STORAGE_KEY)) {
       toast("Nao ha versao salva");
       return;
     }
-
-    try {
-      state.page = normalizePage(JSON.parse(saved));
-      state.selectedId = null;
-      state.selectedSection = null;
-      commitHistory();
-      render();
-      toast("Carregado");
-    } catch (error) {
+    const page = loadStoredPage();
+    if (!page) {
       toast("JSON salvo invalido");
+      return;
     }
+    state.page = page;
+    state.selectedId = null;
+    state.selectedSection = null;
+    commitHistory();
+    render();
+    toast("Carregado");
   }
 
   function togglePreview() {
@@ -5012,6 +5036,7 @@
       state.history.shift();
     }
     state.future = [];
+    saveToStorage();
   }
 
   function undo() {
@@ -5023,6 +5048,7 @@
     state.page = normalizePage(JSON.parse(state.history[state.history.length - 1]));
     state.selectedId = null;
     state.selectedSection = null;
+    saveToStorage();
     render();
   }
 
@@ -5035,6 +5061,7 @@
     state.page = normalizePage(JSON.parse(next));
     state.selectedId = null;
     state.selectedSection = null;
+    saveToStorage();
     render();
   }
 

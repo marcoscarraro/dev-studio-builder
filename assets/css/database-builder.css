@@ -291,6 +291,25 @@ body[data-page="database-designer"] .canvas-panel {
   padding: 2px 4px;
 }
 
+.db-item-move {
+  background: none;
+  border: none;
+  color: var(--tblr-secondary, #667382);
+  cursor: pointer;
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 3px;
+}
+
+.db-item-move:hover:not(:disabled) {
+  color: var(--tblr-primary, #066fd1);
+}
+
+.db-item-move:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .db-item-body {
   display: none;
   padding: 8px 10px 10px;
