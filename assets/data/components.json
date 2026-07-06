@@ -1,6 +1,6 @@
 {
   "$schema": "./components.schema.json",
-  "version": 28,
+  "version": 30,
   "schemaVersion": 5,
   "framework": "tabler",
   "assets": {
@@ -35,6 +35,7 @@
       "dropzone": "public/components/js/dropzone-runtime.js",
       "barcodeScanner": "public/components/js/barcode-scanner-runtime.js",
       "audioRecorder": "public/components/js/audio-recorder-runtime.js",
+      "speechReader": "public/components/js/speech-reader-runtime.js",
       "clipboard": "public/components/js/clipboard-runtime.js",
       "passwordToggle": "public/components/js/password-toggle-runtime.js",
       "quantityStepper": "public/components/js/quantity-stepper-runtime.js",
@@ -1057,7 +1058,7 @@
         },
         {
           "id": "input-button-group",
-          "label": "Input Button Group",
+          "label": "Input Button Group Action",
           "kind": "inputButtonGroup",
           "icon": "block-icon input-buttons",
           "defaultCssClass": "input-group",
@@ -1080,7 +1081,7 @@
             "textAlign": "",
             "buttonsPosition": "right",
             "buttons": [
-              { "type": "button", "text": "Buscar", "href": "#", "id": "", "cssClass": "btn btn-outline-secondary", "icon": "search", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "https://viacep.com.br/ws/{{value}}/json", "ajaxMethod": "GET", "ajaxMappings": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }] }
+              { "type": "button", "text": "Buscar", "href": "#", "id": "", "cssClass": "btn btn-outline-secondary", "icon": "search", "iconColor": "", "iconPosition": "left", "fieldListAction": "", "ajaxEnabled": false, "ajaxUrlTemplate": "https://viacep.com.br/ws/{{value}}/json", "ajaxMethod": "GET", "ajaxMappings": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }], "geoEnabled": false, "geoLatField": "", "geoLngField": "" }
             ],
             "invalidFeedback": "Informe um valor valido."
           },
@@ -1117,9 +1118,13 @@
                 { "label": "Classe CSS", "prop": "cssClass", "field": "text", "default": "btn btn-outline-secondary" },
                 { "label": "Acao FieldList", "prop": "fieldListAction", "field": "select", "default": "", "options": [["", "Nenhuma"], ["clone", "Clonar linha"], ["remove", "Remover linha"], ["move-up", "Mover linha para cima"], ["move-down", "Mover linha para baixo"]] },
                 { "label": "Buscar JSON via AJAX", "prop": "ajaxEnabled", "field": "checkbox", "default": false },
+                { "label": "Template de API pronto", "prop": "_ajaxPreset", "field": "ajax-preset" },
                 { "label": "URL AJAX", "prop": "ajaxUrlTemplate", "field": "text", "default": "https://viacep.com.br/ws/{{value}}/json" },
                 { "label": "Metodo AJAX", "prop": "ajaxMethod", "field": "select", "default": "GET", "options": [["GET", "GET"], ["POST", "POST"]] },
-                { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" }
+                { "label": "Mapeamentos JSON", "prop": "ajaxMappings", "field": "keyvalue", "default": [{ "key": "logradouro", "value": "cliente_rua" }, { "key": "bairro", "value": "cliente_bairro" }, { "key": "localidade", "value": "cliente_cidade" }, { "key": "uf", "value": "cliente_uf" }], "keyLabel": "Caminho JSON", "valueLabel": "Campo destino", "addLabel": "Adicionar mapeamento", "keyPrefix": "atributo" },
+                { "label": "Preencher geolocalizacao (lat/lng)", "prop": "geoEnabled", "field": "checkbox", "default": false },
+                { "label": "Campo latitude (name/id)", "prop": "geoLatField", "field": "text", "default": "", "placeholder": "cliente_lat" },
+                { "label": "Campo longitude (name/id)", "prop": "geoLngField", "field": "text", "default": "", "placeholder": "cliente_lng" }
               ]
             },
             { "label": "Feedback invalido", "prop": "invalidFeedback", "field": "text" },
@@ -2609,6 +2614,45 @@
             { "label": "Botao gravar", "prop": "btnRecordLabel", "field": "text", "group": "Rotulos" },
             { "label": "Botao parar", "prop": "btnStopLabel", "field": "text", "group": "Rotulos" },
             { "label": "Botao descartar", "prop": "btnClearLabel", "field": "text", "group": "Rotulos" }
+          ]
+        },
+        {
+          "id": "speech-reader",
+          "label": "Leitor de Fala (Voz)",
+          "kind": "speechReader",
+          "icon": "block-icon audio-player",
+          "defaultCssClass": "",
+          "generatedFields": [
+            { "idProp": "readerId", "base": "leitor" }
+          ],
+          "assets": {
+            "init": "speechReader"
+          },
+          "defaults": {
+            "readerId": "",
+            "targetSelector": "#conteudo",
+            "lang": "pt-BR",
+            "voiceName": "",
+            "rate": 1,
+            "pitch": 1,
+            "volume": 1,
+            "showStatus": true,
+            "btnPlayLabel": "Ouvir",
+            "btnPauseLabel": "Pausar",
+            "btnStopLabel": "Parar"
+          },
+          "properties": [
+            { "label": "ID do leitor", "prop": "readerId", "field": "text", "group": "Elemento" },
+            { "label": "Seletor do alvo (CSS)", "prop": "targetSelector", "field": "text", "placeholder": "#conteudo", "group": "Elemento" },
+            { "label": "Idioma", "prop": "lang", "field": "text", "placeholder": "pt-BR", "group": "Fala" },
+            { "label": "Nome da voz (opcional)", "prop": "voiceName", "field": "text", "placeholder": "ex: Google portugues do Brasil", "group": "Fala" },
+            { "label": "Velocidade", "prop": "rate", "field": "number", "min": 0.5, "max": 2, "step": 0.1, "group": "Fala" },
+            { "label": "Tom (pitch)", "prop": "pitch", "field": "number", "min": 0, "max": 2, "step": 0.1, "group": "Fala" },
+            { "label": "Volume", "prop": "volume", "field": "number", "min": 0, "max": 1, "step": 0.1, "group": "Fala" },
+            { "label": "Mostrar status", "prop": "showStatus", "field": "checkbox", "group": "Fala" },
+            { "label": "Botao ouvir", "prop": "btnPlayLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Botao pausar", "prop": "btnPauseLabel", "field": "text", "group": "Rotulos" },
+            { "label": "Botao parar", "prop": "btnStopLabel", "field": "text", "group": "Rotulos" }
           ]
         },
         {

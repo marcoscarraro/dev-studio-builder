@@ -662,6 +662,7 @@
       if (componentAssets.init === "dropzone") { neededRuntimes.add("dropzone"); }
       if (componentAssets.init === "barcodeScanner") { neededRuntimes.add("barcodeScanner"); }
       if (componentAssets.init === "audioRecorder") { neededRuntimes.add("audioRecorder"); }
+      if (componentAssets.init === "speechReader") { neededRuntimes.add("speechReader"); }
       if (componentAssets.init === "pdfViewer") { neededRuntimes.add("pdfViewer"); }
       if (componentAssets.init === "gantt") { neededRuntimes.add("gantt"); }
       if (context.toBooleanValue(props.showCopy)) { neededRuntimes.add("clipboard"); }
@@ -728,7 +729,7 @@
       if (context.isFieldListComponent(component)) {
         neededRuntimes.add("fieldList");
       }
-      if (componentHasAjaxFillAction(context, component)) {
+      if (componentHasAjaxFillAction(context, component) || componentHasGeoFillAction(context, component)) {
         neededRuntimes.add("ajaxFill");
       }
     });
@@ -1020,6 +1021,21 @@
       .concat(Array.isArray(props.items) ? props.items : [])
       .concat(Array.isArray(props.extraActions) ? props.extraActions : [])
       .some((action) => context.toBooleanValue(action && action.ajaxEnabled) && action.ajaxUrlTemplate && context.normalizeKeyValueEntries(action.ajaxMappings).length);
+  }
+
+  function componentHasGeoFillAction(context, component) {
+    let props;
+    if (component && component.props) {
+      props = component.props;
+    } else {
+      props = {};
+    }
+    return [props]
+      .concat(Array.isArray(props.buttons) ? props.buttons : [])
+      .concat(Array.isArray(props.items) ? props.items : [])
+      .concat(Array.isArray(props.extraActions) ? props.extraActions : [])
+      .some((action) => context.toBooleanValue(action && action.geoEnabled) &&
+        String(action.geoLatField || "").trim() && String(action.geoLngField || "").trim());
   }
 
   function collectExportComponents(context) {

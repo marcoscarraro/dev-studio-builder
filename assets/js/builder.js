@@ -44,6 +44,85 @@
     { label: "Alfanumerico sem espacos", value: "^[A-Za-z0-9]+$" },
     { label: "Alfanumerico com espacos", value: "^[A-Za-z0-9 ]+$" },
   ];
+  // Templates prontos de "Buscar JSON via AJAX" (APIs publicas). Cada preset preenche
+  // URL + metodo + mapeamentos (Caminho JSON -> Campo destino) de um botao.
+  // readJsonPath do ajax-fill-runtime suporta caminhos aninhados (a.b.c).
+  const AJAX_PRESETS = [
+    {
+      id: "viacep", label: "ViaCEP — busca CEP",
+      url: "https://viacep.com.br/ws/{{value}}/json", method: "GET",
+      mappings: [
+        { key: "logradouro", value: "endereco_rua" },
+        { key: "bairro", value: "endereco_bairro" },
+        { key: "localidade", value: "endereco_cidade" },
+        { key: "uf", value: "endereco_uf" }
+      ]
+    },
+    {
+      id: "brasilapi-cep", label: "BrasilAPI — busca CEP",
+      url: "https://brasilapi.com.br/api/cep/v2/{{value}}", method: "GET",
+      mappings: [
+        { key: "street", value: "endereco_rua" },
+        { key: "neighborhood", value: "endereco_bairro" },
+        { key: "city", value: "endereco_cidade" },
+        { key: "state", value: "endereco_uf" }
+      ]
+    },
+    {
+      id: "brasilapi-cnpj", label: "BrasilAPI — busca CNPJ",
+      url: "https://brasilapi.com.br/api/cnpj/v1/{{value}}", method: "GET",
+      mappings: [
+        { key: "razao_social", value: "empresa_razao_social" },
+        { key: "nome_fantasia", value: "empresa_nome_fantasia" },
+        { key: "logradouro", value: "empresa_rua" },
+        { key: "bairro", value: "empresa_bairro" },
+        { key: "municipio", value: "empresa_cidade" },
+        { key: "uf", value: "empresa_uf" },
+        { key: "cep", value: "empresa_cep" }
+      ]
+    },
+    {
+      id: "brasilapi-banks", label: "BrasilAPI — banco por codigo",
+      url: "https://brasilapi.com.br/api/banks/v1/{{value}}", method: "GET",
+      mappings: [
+        { key: "name", value: "banco_nome" },
+        { key: "fullName", value: "banco_nome_completo" },
+        { key: "code", value: "banco_codigo" },
+        { key: "ispb", value: "banco_ispb" }
+      ]
+    },
+    {
+      id: "brasilapi-ddd", label: "BrasilAPI — estado por DDD",
+      url: "https://brasilapi.com.br/api/ddd/v1/{{value}}", method: "GET",
+      mappings: [
+        { key: "state", value: "ddd_estado" }
+      ]
+    },
+    {
+      id: "cnpjws", label: "CNPJ.ws publica — busca CNPJ",
+      url: "https://publica.cnpj.ws/cnpj/{{value}}", method: "GET",
+      mappings: [
+        { key: "razao_social", value: "empresa_razao_social" },
+        { key: "estabelecimento.nome_fantasia", value: "empresa_nome_fantasia" },
+        { key: "estabelecimento.logradouro", value: "empresa_rua" },
+        { key: "estabelecimento.bairro", value: "empresa_bairro" },
+        { key: "estabelecimento.cidade.nome", value: "empresa_cidade" },
+        { key: "estabelecimento.estado.sigla", value: "empresa_uf" },
+        { key: "estabelecimento.cep", value: "empresa_cep" }
+      ]
+    },
+    {
+      // A chave do JSON e sem hifen (ex: USD-BRL -> "USDBRL"). Para outros pares,
+      // ajuste a chave do mapeamento removendo o hifen.
+      id: "awesomeapi-cotacao", label: "AwesomeAPI — cotacao (ex: USD-BRL)",
+      url: "https://economia.awesomeapi.com.br/last/{{value}}", method: "GET",
+      mappings: [
+        { key: "USDBRL.bid", value: "cotacao_valor" },
+        { key: "USDBRL.name", value: "cotacao_nome" },
+        { key: "USDBRL.pctChange", value: "cotacao_variacao" }
+      ]
+    }
+  ];
   const previewAssetPromises = new Map();
   const helpers = window.TemplateBuilderHelpers || {};
   const attr = helpers.attr;
@@ -641,6 +720,13 @@
           target.value = event.target.value;
           target.dispatchEvent(new Event("input", { bubbles: true }));
         }
+        event.target.value = "";
+        return;
+      }
+      // Ajax-preset: aplica um template de API pronto ao botao (URL + metodo + mapeamentos)
+      // diretamente no modelo do repeater "buttons", e re-renderiza.
+      if (event.target.classList.contains("ajax-preset-select") && event.target.value) {
+        applyAjaxPreset(Number(event.target.dataset.presetIndex), event.target.value);
         event.target.value = "";
         return;
       }
@@ -2371,9 +2457,9 @@
     }
     const actionText = action.text || (action.icon ? "" : "Acao");
     if (action.type === "link") {
-      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(action.cssClass || "btn btn-primary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</a>`;
+      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(action.cssClass || "btn btn-primary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</a>`;
     }
-    return `<button type="button"${classAttr(action.cssClass || "btn btn-outline-secondary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</button>`;
+    return `<button type="button"${classAttr(action.cssClass || "btn btn-outline-secondary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</button>`;
   }
 
   function renderSelectOption(option) {
@@ -2896,6 +2982,24 @@
       attr("data-ajax-url-template", action.ajaxUrlTemplate),
       attr("data-ajax-method", getSafeAjaxMethod(action.ajaxMethod)),
       attr("data-ajax-mappings", JSON.stringify(mappings))
+    ].join("");
+  }
+
+  // Geolocalizacao: quando o botao tem geoEnabled + campos de destino, emite os
+  // data-attrs que o ajax-fill-runtime usa para chamar navigator.geolocation.
+  function geoFillAttrs(action) {
+    if (!toBooleanValue(action && action.geoEnabled)) {
+      return "";
+    }
+    const latField = String(action.geoLatField || "").trim();
+    const lngField = String(action.geoLngField || "").trim();
+    if (!latField || !lngField) {
+      return "";
+    }
+    return [
+      ' data-geo-fill="1"',
+      attr("data-geo-lat", latField),
+      attr("data-geo-lng", lngField)
     ].join("");
   }
 
@@ -4212,6 +4316,22 @@
   function renderRepeaterItemField(prop, index, field, value) {
     const inputId = `repeater-${prop}-${index}-${field.prop}`;
     const dataAttrs = `data-repeater-prop="${escapeAttr(prop)}" data-repeater-index="${index}" data-repeater-key="${escapeAttr(field.prop)}"`;
+    // Seletor de template de API pronto: nao usa data-repeater-* (o handler generico
+    // de input o ignora); o change e tratado em bindProperties, que aplica no modelo.
+    if (field.field === "ajax-preset") {
+      const opts = AJAX_PRESETS.map((preset) =>
+        `<option value="${escapeAttr(preset.id)}">${escapeHtml(preset.label)}</option>`
+      ).join("");
+      return [
+        '<div class="field">',
+        `  <label class="form-label" for="${inputId}">${escapeHtml(field.label || "Template de API pronto")}</label>`,
+        `  <select id="${inputId}" class="form-select form-select-sm ajax-preset-select" data-preset-index="${index}">`,
+        `    <option value="">— aplicar template —</option>`,
+        opts,
+        `  </select>`,
+        '</div>'
+      ].join("");
+    }
     if (field.field === "repeater") {
       return fieldSubRepeater(prop, index, field, value);
     }
@@ -4395,6 +4515,30 @@
       items[index][key] = input.value;
     }
     node.props[prop] = items;
+  }
+
+  // Aplica um preset de AJAX (AJAX_PRESETS) ao botao de indice informado do
+  // componente selecionado: liga ajaxEnabled e preenche URL, metodo e mapeamentos.
+  function applyAjaxPreset(index, presetId) {
+    if (!state.selectedId || Number.isNaN(index)) {
+      return;
+    }
+    const node = findNode(state.selectedId);
+    const preset = AJAX_PRESETS.find((p) => p.id === presetId);
+    if (!node || !preset) {
+      return;
+    }
+    const items = normalizeRepeaterItems(node.props.buttons, []);
+    if (!items[index]) {
+      return;
+    }
+    items[index].ajaxEnabled = true;
+    items[index].ajaxUrlTemplate = preset.url;
+    items[index].ajaxMethod = preset.method || "GET";
+    items[index].ajaxMappings = preset.mappings.map((m) => ({ key: m.key, value: m.value }));
+    node.props.buttons = items;
+    render();
+    commitHistory();
   }
 
   function updateRepeaterKeyValueProperty(node, input) {

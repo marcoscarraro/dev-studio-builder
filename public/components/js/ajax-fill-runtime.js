@@ -19,19 +19,78 @@
       } else {
         target = null;
       }
-      var trigger;
-      if (target) {
-        trigger = target.closest("[data-ajax-fill]");
-      } else {
-        trigger = null;
+      if (!target) {
+        return;
       }
 
+      var geoTrigger = target.closest("[data-geo-fill]");
+      if (geoTrigger) {
+        event.preventDefault();
+        runGeoFill(geoTrigger);
+        return;
+      }
+
+      var trigger = target.closest("[data-ajax-fill]");
       if (!trigger) {
         return;
       }
 
       event.preventDefault();
       runAjaxFill(trigger);
+    });
+  }
+
+  // Geolocalizacao: usa a API nativa navigator.geolocation e preenche os campos
+  // apontados por data-geo-lat / data-geo-lng (reusa findTarget + setFieldValue).
+  function runGeoFill(trigger) {
+    var latName = trigger.getAttribute("data-geo-lat") || "";
+    var lngName = trigger.getAttribute("data-geo-lng") || "";
+
+    if (!latName || !lngName) {
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      trigger.dispatchEvent(new CustomEvent("geo-fill:error", {
+        bubbles: true,
+        detail: { error: "unsupported", trigger: trigger }
+      }));
+      if (window.console) {
+        console.error("[geo-fill] geolocation nao suportada neste navegador.");
+      }
+      return;
+    }
+
+    setLoading(trigger, true);
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+      var latTarget = findTarget(trigger, latName);
+      var lngTarget = findTarget(trigger, lngName);
+
+      if (latTarget) {
+        setFieldValue(latTarget, position.coords.latitude);
+      }
+      if (lngTarget) {
+        setFieldValue(lngTarget, position.coords.longitude);
+      }
+
+      trigger.dispatchEvent(new CustomEvent("geo-fill:success", {
+        bubbles: true,
+        detail: { position: position, trigger: trigger }
+      }));
+
+      setLoading(trigger, false);
+    }, function (error) {
+      trigger.dispatchEvent(new CustomEvent("geo-fill:error", {
+        bubbles: true,
+        detail: { error: error, trigger: trigger }
+      }));
+
+      if (window.console) {
+        console.error("[geo-fill] " + (error && error.message ? error.message : "erro ao obter localizacao"));
+      }
+
+      setLoading(trigger, false);
     });
   }
 
