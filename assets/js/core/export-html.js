@@ -36,11 +36,15 @@
     const themeAttr = menuTheme === "dark" ? ' data-bs-theme="dark"' : "";
     const isPillLayout = !isLoginPage && menuLayout === "combo-pill";
     const isModuleRail = !isLoginPage && menuLayout === "module-rail";
+    const isCombo = !isLoginPage && menuLayout === "combo";
     const usesIconRail = isPillLayout || isModuleRail; // ambos: rail de icones + navbar superior
     const hasSidebar = !isLoginPage && (menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
     const hasNavbar = !isLoginPage && (menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
-    const sidebarHtml = hasSidebar ? (usesIconRail ? exportIconSidebar(context, themeAttr) : exportSidebar(context, menuPosition, themeAttr)) : "";
-    const navbarHtml = hasNavbar ? (isModuleRail ? exportModuleRailNavbar(context, themeAttr) : (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr))) : "";
+    // Collapse (recolher a sidebar Tabler) so existe nos layouts vertical/combo e quando o dev nao desativou. Default: ativado.
+    const menuCollapsibleProp = context.state.page.props.menuCollapsible;
+    const sidebarCollapsible = hasSidebar && !usesIconRail && !(menuCollapsibleProp === false || menuCollapsibleProp === "false");
+    const sidebarHtml = hasSidebar ? (usesIconRail ? exportIconSidebar(context, themeAttr) : exportSidebar(context, menuPosition, themeAttr, sidebarCollapsible, isCombo)) : "";
+    const navbarHtml = hasNavbar ? (isModuleRail ? exportModuleRailNavbar(context, themeAttr) : (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr, isCombo))) : "";
 
     const title = context.escapeHtml(context.state.page.props.title || "Pagina");
 
@@ -60,10 +64,11 @@
       ...assets.styles.map((asset) => renderStyleAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       ...(usesIconRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/pill-layout.css">'] : []),
       ...(isModuleRail ? ['  <link rel="stylesheet" href="public/components/css/layouts/module-rail.css?v=6">'] : []),
-      ...((hasSidebar && !usesIconRail) ? ['  <link rel="stylesheet" href="public/components/css/layouts/sidebar-collapse.css">'] : []),
+      ...(sidebarCollapsible ? ['  <link rel="stylesheet" href="public/components/css/layouts/sidebar-collapse.css">'] : []),
+      ...(isCombo ? ['  <link rel="stylesheet" href="public/components/css/layouts/combo-topbar.css">'] : []),
       ...assets.headExtra.map((line) => `  ${line}`),
       "</head>",
-      `<body class="layout-fluid${isModuleRail ? " layout-module-rail" : ""}">`,
+      `<body class="layout-fluid${isModuleRail ? " layout-module-rail" : ""}${isCombo ? " layout-combo-topbar" : ""}">`,
       ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       '  <div class="page">'
     ];
@@ -131,10 +136,10 @@
     }
 
     if (usesIconRail) {
-      lines.push('  <script src="public/components/js/pill-layout.js?v=8" defer></script>');
+      lines.push('  <script src="public/components/js/pill-layout.js?v=9" defer></script>');
     }
 
-    if (hasSidebar && !usesIconRail) {
+    if (sidebarCollapsible) {
       lines.push('  <script src="public/components/js/sidebar-collapse-runtime.js" defer></script>');
     }
 
@@ -220,41 +225,77 @@
     return lines.join("\n");
   }
 
-  function exportSidebar(context, position, themeAttr) {
+  // Componentes de menu que, no sidebar, sao fixados no rodape (ex.: perfil do usuario, tela cheia).
+  const SIDEBAR_BOTTOM_TYPES = { "menu-user": true, "menu-fullscreen": true };
+
+  // Percorre as linhas do sidebar e separa os itens "normais" (topo) dos que devem ficar
+  // no rodape do menu (SIDEBAR_BOTTOM_TYPES), preservando a ordem de cada grupo.
+  function exportSidebarItems(context, rows) {
+    const top = [];
+    const bottom = [];
+    if (Array.isArray(rows)) {
+      rows.forEach((row) => {
+        if (!Array.isArray(row.columns)) return;
+        row.columns.forEach((column) => {
+          if (!Array.isArray(column.children)) return;
+          column.children.forEach((component) => {
+            const itemHtml = exportMenuComponent(context, component);
+            if (!itemHtml) return;
+            (SIDEBAR_BOTTOM_TYPES[component.type] ? bottom : top).push(itemHtml);
+          });
+        });
+      });
+    }
+    return { top: top.join("\n"), bottom: bottom.join("\n") };
+  }
+
+  function exportSidebar(context, position, themeAttr, collapsible, isCombo) {
     const posClass = position === "right" ? " navbar-end" : "";
     const sidebarWidth = context.state.page.props.menuSidebarWidth || "normal";
     const widthClass = sidebarWidth === "compact" ? " navbar-vertical-sm" : "";
-    const items = exportMenuItems(context, context.state.page.sidebar);
+    const parts = exportSidebarItems(context, context.state.page.sidebar);
+    // No combo, um unico hamburguer (este) controla os dois menus no mobile: mira a classe
+    // compartilhada .combo-menu-collapse (multi-target do Bootstrap) em vez de so #sidebar-menu.
+    const menuTarget = isCombo ? ".combo-menu-collapse" : "#sidebar-menu";
+    const menuControls = isCombo ? "sidebar-menu navbar-menu" : "sidebar-menu";
+    const comboCollapse = isCombo ? " combo-menu-collapse" : "";
     return [
       `<aside class="navbar navbar-vertical navbar-expand-lg${posClass}${widthClass}"${themeAttr}>`,
       '  <div class="container-xl">',
-      '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">',
+      `    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="${menuTarget}" aria-controls="${menuControls}" aria-expanded="false" aria-label="Toggle navigation">`,
       '      <span class="navbar-toggler-icon"></span>',
       '    </button>',
-      '    <button class="navbar-toggler" type="button" data-sidebar-collapse-toggle aria-label="Recolher menu" title="Recolher menu">',
-      '      <span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/layout-sidebar-left-collapse.svg&quot;);mask-image:url(&quot;public/components/icons/outline/layout-sidebar-left-collapse.svg&quot;)" aria-hidden="true"></span>',
-      '    </button>',
-      '    <div class="collapse navbar-collapse" id="sidebar-menu">',
+      collapsible ? '    <button class="sidebar-collapse-edge" type="button" data-sidebar-collapse-toggle aria-label="Recolher menu" title="Recolher menu">' : '',
+      collapsible ? '      <span class="sidebar-collapse-edge-icon button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/chevron-left.svg&quot;);mask-image:url(&quot;public/components/icons/outline/chevron-left.svg&quot;)" aria-hidden="true"></span>' : '',
+      collapsible ? '    </button>' : '',
+      `    <div class="collapse navbar-collapse${comboCollapse}" id="sidebar-menu">`,
       '      <ul class="navbar-nav pt-lg-3">',
-      items ? context.indent(items, 8) : '',
+      parts.top ? context.indent(parts.top, 8) : '',
       '      </ul>',
+      // Itens de rodape: <ul> sem flex-grow, empurrado para baixo pelo <ul> de cima (flex-grow:1).
+      parts.bottom ? '      <ul class="navbar-nav flex-grow-0">' : '',
+      parts.bottom ? context.indent(parts.bottom, 8) : '',
+      parts.bottom ? '      </ul>' : '',
       '    </div>',
       '  </div>',
       '</aside>'
     ].filter((line) => line !== '').join("\n");
   }
 
-  function exportNavbar(context, themeAttr) {
+  function exportNavbar(context, themeAttr, isCombo) {
     const sticky = context.toBooleanValue(context.state.page.props.menuSticky);
     const stickyClass = sticky ? " navbar-sticky" : "";
     const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav flex-row order-md-no-order");
+    // No combo o hamburguer deste navbar e ocultado no mobile (combo-topbar.css); o menu ganha a
+    // classe compartilhada para ser aberto pelo unico hamburguer do sidebar.
+    const comboCollapse = isCombo ? " combo-menu-collapse" : "";
     return [
       `<header class="navbar navbar-expand-md d-print-none${stickyClass}"${themeAttr}>`,
       '  <div class="container-xl">',
       '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">',
       '      <span class="navbar-toggler-icon"></span>',
       '    </button>',
-      '    <div class="collapse navbar-collapse" id="navbar-menu">',
+      `    <div class="collapse navbar-collapse${comboCollapse}" id="navbar-menu">`,
       navContent ? context.indent(navContent, 6) : '',
       '    </div>',
       '  </div>',
@@ -343,6 +384,44 @@
     return parts.join("\n");
   }
 
+  // Ha algum sub-item com submenu (2o nivel) preenchido?
+  function menuDropdownHasChildren(items) {
+    return Array.isArray(items) && items.some((it) => Array.isArray(it && it.children) && it.children.length);
+  }
+
+  function menuIconSpan(context, icon, extraClass) {
+    if (!icon) return "";
+    const url = `public/components/icons/outline/${context.escapeAttr(String(icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+    return `<span class="button-icon ${extraClass}" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span>`;
+  }
+
+  const MENU_SUBMENU_CARET = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>';
+
+  // Monta o corpo de um .dropdown-menu: links simples + cabecalhos de submenu (.dsb-submenu-toggle)
+  // com os itens do 2o nivel dentro de um .dsb-submenu (accordion inline). Usado no navbar/sidebar
+  // padrao e no menu mobile.
+  function renderDropdownSubItems(context, items) {
+    const esc = context.escapeAttr;
+    const html = context.escapeHtml;
+    const lines = [];
+    (Array.isArray(items) ? items : []).forEach((item) => {
+      const children = Array.isArray(item && item.children) ? item.children : [];
+      if (children.length) {
+        lines.push(`<button type="button" class="dropdown-item dsb-submenu-toggle" aria-expanded="false">${menuIconSpan(context, item.icon, "me-2")}<span>${html(item.label || "")}</span><span class="dsb-submenu-caret" aria-hidden="true">${MENU_SUBMENU_CARET}</span></button>`);
+        lines.push('<div class="dsb-submenu">');
+        children.forEach((child) => {
+          const t = child.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+          lines.push(`  <a class="dropdown-item dsb-submenu-link d-flex align-items-center" href="${esc(child.href || "#")}"${t}>${menuIconSpan(context, child.icon, "me-2")}${html(child.label || "")}</a>`);
+        });
+        lines.push('</div>');
+      } else {
+        const t = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+        lines.push(`<a class="dropdown-item d-flex align-items-center" href="${esc(item.href || "#")}"${t}>${menuIconSpan(context, item.icon, "me-2")}${html(item.label || "")}</a>`);
+      }
+    });
+    return lines.join("\n");
+  }
+
   function exportMenuComponent(context, component) {
     const esc = context.escapeAttr;
     const html = context.escapeHtml;
@@ -386,22 +465,17 @@
         ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
         : "";
       const items = Array.isArray(props.items) ? props.items : [];
-      const subItemsHtml = items.map((item) => {
-        const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-        const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-        const itemIconHtml = itemIconUrl
-          ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
-          : "";
-        return `  <a class="dropdown-item d-flex align-items-center" href="${esc(item.href || "#")}"${itemTarget}>${itemIconHtml}${html(item.label || "")}</a>`;
-      }).join("\n");
+      const subItemsHtml = renderDropdownSubItems(context, items);
+      // Com submenu: mantem o dropdown aberto ao clicar no cabecalho do 2o nivel.
+      const autoClose = menuDropdownHasChildren(items) ? ' data-bs-auto-close="outside"' : "";
       const dropdownId = `dd-${component.id}`;
       return [
         '<li class="nav-item dropdown">',
-        `  <a class="nav-link dropdown-toggle" href="#${dropdownId}" data-bs-toggle="dropdown" role="button" aria-expanded="false">`,
+        `  <a class="nav-link dropdown-toggle" href="#${dropdownId}" data-bs-toggle="dropdown"${autoClose} role="button" aria-expanded="false">`,
         `    ${iconHtml}<span class="nav-link-title">${label}</span>`,
         '  </a>',
         `  <div class="dropdown-menu" id="${dropdownId}">`,
-        subItemsHtml,
+        context.indent(subItemsHtml, 4),
         '  </div>',
         '</li>'
       ].join("\n");
@@ -463,13 +537,16 @@
         return `    <a class="dropdown-item" href="${esc(item.href || "#")}">${html(item.label || "")}</a>`;
       }).join("\n");
       const dropdownId = `user-dd-${component.id}`;
+      // Chevrons up/down (selector): sinaliza ao usuario final que ha um menu com opcoes.
+      const selectorHtml = '<span class="button-icon ms-auto" style="-webkit-mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;);mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;)" aria-hidden="true"></span>';
       return [
         '<li class="nav-item dropdown">',
         `  <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">`,
         `    ${avatarHtml}`,
         `    <div class="d-none d-xl-block"><div style="font-weight:600">${name}</div>${role ? `<div class="small text-secondary">${role}</div>` : ""}</div>`,
+        `    ${selectorHtml}`,
         `  </a>`,
-        `  <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" id="${dropdownId}">`,
+        `  <div class="dropdown-menu dropdown-menu-end" id="${dropdownId}">`,
         subItemsHtml,
         `  </div>`,
         '</li>'
@@ -604,6 +681,10 @@
       // Botao "Tela cheia" no menu: runtime que alterna a Fullscreen API.
       if (component.type === "menu-fullscreen") {
         neededRuntimes.add("fullscreen");
+      }
+      // Dropdown de menu com submenu (2o nivel): runtime que expande o accordion inline.
+      if (component.type === "menu-dropdown" && menuDropdownHasChildren(props.items)) {
+        neededRuntimes.add("menuSubmenu");
       }
       // PWA: injeta tags de <head>, o runtime, e gera manifest.webmanifest + sw.js.
       if (definition.kind === "pwa" && !pwaDone) {
@@ -1025,7 +1106,7 @@
 
   function exportPillNavbar(context, themeAttr) {
     const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav me-auto");
-    const mobileModules = exportMobileSidebarItems(context, context.state.page.sidebar);
+    const mobileModules = exportMenuItems(context, context.state.page.sidebar);
     const mobileSection = mobileModules
       ? [
           '      <div class="app-mobile-modules d-md-none">',
@@ -1042,10 +1123,11 @@
       '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#pillNavOffcanvas" aria-controls="pillNavOffcanvas" aria-expanded="false" aria-label="Abrir menu">',
       '      <span class="navbar-toggler-icon"></span>',
       '    </button>',
-      '    <div class="offcanvas offcanvas-start offcanvas-md" tabindex="-1" id="pillNavOffcanvas" aria-labelledby="pillNavOffcanvasLabel">',
-      '      <div class="offcanvas-header d-md-none">',
-      '        <span class="offcanvas-title fw-bold" id="pillNavOffcanvasLabel">Menu</span>',
-      '        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#pillNavOffcanvas" aria-label="Fechar"></button>',
+      '    <div class="offcanvas offcanvas-start offcanvas-md app-menu-offcanvas" tabindex="-1" id="pillNavOffcanvas" aria-label="Menu">',
+      '      <div class="offcanvas-header app-offcanvas-topbar d-md-none">',
+      '        <button class="navbar-toggler" type="button" data-bs-dismiss="offcanvas" data-bs-target="#pillNavOffcanvas" aria-expanded="true" aria-label="Fechar menu">',
+      '          <span class="navbar-toggler-icon"></span>',
+      '        </button>',
       '      </div>',
       '      <div class="offcanvas-body">',
       navContent ? context.indent(navContent, 8) : '',
@@ -1065,16 +1147,17 @@
     // varias => varios <ul navbar-nav> (me-auto/mx-auto) que o CSS dispoe em linha dentro do
     // .app-rail-topwrap (rolavel na horizontal se nao couber).
     const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav app-rail-topitems");
-    const mobileModules = exportMobileSidebarItems(context, context.state.page.sidebar);
+    const mobileModules = exportMenuItems(context, context.state.page.sidebar);
     const togglerHtml = mobileModules
       ? '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#railModulesOffcanvas" aria-controls="railModulesOffcanvas" aria-label="Abrir modulos"><span class="navbar-toggler-icon"></span></button>'
       : '';
     const modulesOffcanvas = mobileModules
       ? [
-          '<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="railModulesOffcanvas" aria-labelledby="railModulesLabel">',
-          '  <div class="offcanvas-header">',
-          '    <span class="offcanvas-title fw-bold" id="railModulesLabel">Modulos</span>',
-          '    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>',
+          '<div class="offcanvas offcanvas-start d-md-none app-menu-offcanvas" tabindex="-1" id="railModulesOffcanvas" aria-label="Modulos">',
+          '  <div class="offcanvas-header app-offcanvas-topbar">',
+          '    <button class="navbar-toggler" type="button" data-bs-dismiss="offcanvas" aria-expanded="true" aria-label="Fechar menu">',
+          '      <span class="navbar-toggler-icon"></span>',
+          '    </button>',
           '  </div>',
           '  <div class="offcanvas-body">',
           '    <ul class="navbar-nav">',
@@ -1097,83 +1180,14 @@
     ].filter((line) => line !== '').join("\n");
   }
 
-  function exportMobileSidebarItems(context, rows) {
-    if (!Array.isArray(rows) || !rows.length) return "";
-    const esc = context.escapeAttr;
-    const html = context.escapeHtml;
-    const lines = [];
-    rows.forEach((row) => {
-      if (!Array.isArray(row.columns)) return;
-      row.columns.forEach((column) => {
-        if (!Array.isArray(column.children)) return;
-        column.children.forEach((component) => {
-          const props = component.props || {};
-          if (component.type === "menu-item") {
-            const label = html(props.label || "Item");
-            const href = esc(props.href || "#");
-            const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-            const iconUrl = `public/components/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
-            lines.push(
-              '<li class="nav-item">',
-              `  <a class="nav-link" href="${href}"${target}>`,
-              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
-              `    <span class="nav-link-title">${label}</span>`,
-              '  </a>',
-              '</li>'
-            );
-          } else if (component.type === "menu-dropdown") {
-            const label = html(props.label || "Dropdown");
-            const iconUrl = `public/components/icons/outline/${esc((props.icon || "circle").replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
-            const subItems = Array.isArray(props.items) ? props.items : [];
-            const dropId = `mob-drop-${Math.random().toString(36).slice(2, 8)}`;
-            const subHtml = subItems.map((item) => {
-              const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-              const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-              const itemIconHtml = itemIconUrl
-                ? `<span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
-                : "";
-              return `    <a class="dropdown-item d-flex align-items-center" href="${esc(item.href || "#")}"${itemTarget}>${itemIconHtml}${html(item.label || "")}</a>`;
-            }).join("\n");
-            lines.push(
-              '<li class="nav-item dropdown">',
-              `  <a class="nav-link dropdown-toggle" href="#${dropId}" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">`,
-              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
-              `    <span class="nav-link-title">${label}</span>`,
-              '  </a>',
-              `  <div class="dropdown-menu" data-bs-theme="light">`,
-              subHtml,
-              '  </div>',
-              '</li>'
-            );
-          } else if (component.type === "menu-fullscreen") {
-            const label = html(props.label || "Tela cheia");
-            const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconUrl = `public/components/icons/outline/${iconEnter}.svg`;
-            lines.push(
-              '<li class="nav-item">',
-              `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
-              `    <span class="button-icon me-2" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span>`,
-              `    <span class="nav-link-title">${label}</span>`,
-              '  </a>',
-              '</li>'
-            );
-          } else if (component.type === "menu-divider") {
-            lines.push('<li class="nav-item"><hr class="dropdown-divider my-1"></li>');
-          } else if (component.type === "menu-label") {
-            lines.push(`<li class="nav-item"><span class="nav-link text-uppercase small fw-bold text-secondary" style="font-size:.65rem;letter-spacing:.06em">${html(props.label || "")}</span></li>`);
-          }
-        });
-      });
-    });
-    return lines.join("\n");
-  }
-
   function exportIconSidebar(context, themeAttr) {
     const rows = context.state.page.sidebar;
     const items = exportIconSidebarItems(context, rows);
+    // So no combo-pill: altura total da sidebar (module-rail tambem usa esta funcao, por isso o gate).
+    const props = context.state.page.props;
+    const fullClass = (props.menuLayout === "combo-pill" && props.menuPillSidebarHeight === "full") ? " app-icon-sidebar-full" : "";
     return [
-      `<aside class="app-icon-sidebar" id="appIconSidebar"${themeAttr || ""}>`,
+      `<aside class="app-icon-sidebar${fullClass}" id="appIconSidebar"${themeAttr || ""}>`,
       '  <ul class="side-nav">',
       items ? context.indent(items, 4) : '',
       '  </ul>',
@@ -1185,6 +1199,37 @@
     const name = esc((iconName || "circle").replace(/[^A-Za-z0-9_-]/g, ""));
     const url = `public/components/icons/outline/${name}.svg`;
     return `<span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span></span>`;
+  }
+
+  // Itens do 2o nivel dentro de um .side-sub do rail: link simples ou grupo aninhado
+  // (.side-item com data-sub + .side-sub) quando o sub-item tem submenu (children).
+  function renderRailSubItems(context, items, caretSvg) {
+    const esc = context.escapeAttr;
+    const html = context.escapeHtml;
+    const iconSpan = (icon) => {
+      if (!icon) return "";
+      const url = `public/components/icons/outline/${esc(String(icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
+      return `<span class="button-icon me-1" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span>`;
+    };
+    const out = [];
+    (Array.isArray(items) ? items : []).forEach((item) => {
+      const children = Array.isArray(item && item.children) ? item.children : [];
+      if (children.length) {
+        out.push('<li class="side-item">');
+        out.push(`  <a class="side-link side-link-sub" href="#" data-sub>${iconSpan(item.icon)}<span class="side-text">${html(item.label || "")}</span><span class="side-caret">${caretSvg}</span></a>`);
+        out.push('  <ul class="side-sub">');
+        children.forEach((child) => {
+          const t = child.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+          out.push(`    <li><a class="side-sublink" href="${esc(child.href || "#")}"${t} data-leaf>${iconSpan(child.icon)}${html(child.label || "")}</a></li>`);
+        });
+        out.push('  </ul>');
+        out.push('</li>');
+      } else {
+        const t = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
+        out.push(`<li><a class="side-sublink" href="${esc(item.href || "#")}"${t} data-leaf>${iconSpan(item.icon)}${html(item.label || "")}</a></li>`);
+      }
+    });
+    return out.join("\n");
   }
 
   function exportIconSidebarItems(context, rows) {
@@ -1218,14 +1263,7 @@
             const label = html(props.label || "Dropdown");
             const iconHtml = makeSideIconHtml(props.icon, esc);
             const subItems = Array.isArray(props.items) ? props.items : [];
-            const subHtml = subItems.map((item) => {
-              const itemTarget = item.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-              const itemIconUrl = item.icon ? `public/components/icons/outline/${esc(String(item.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-              const itemIconHtml = itemIconUrl
-                ? `<span class="button-icon me-1" style="-webkit-mask-image:url(&quot;${itemIconUrl}&quot;);mask-image:url(&quot;${itemIconUrl}&quot;)" aria-hidden="true"></span>`
-                : "";
-              return `  <li><a class="side-sublink" href="${esc(item.href || "#")}"${itemTarget} data-leaf>${itemIconHtml}${html(item.label || "")}</a></li>`;
-            }).join("\n");
+            const subHtml = renderRailSubItems(context, subItems, caretSvg);
             lines.push(
               '<li class="side-item">',
               `  <a class="side-link" href="#" data-sub data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,

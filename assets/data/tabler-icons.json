@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "public/components/icons/outline",
-  "count": 5075,
+  "count": 5076,
   "icons": [
     "a-b",
     "a-b-2",
@@ -3900,7 +3900,7 @@
     "plug-off",
     "plug-x",
     "plunger",
-    "plus",
+    "plus-icon",
     "plus-equal",
     "plus-minus",
     "png",
@@ -5077,6 +5077,7 @@
     "zoom-reset",
     "zoom-scan",
     "zzz",
-    "zzz-off"
+    "zzz-off",
+    "dollar-symbol_icon"
   ]
 }

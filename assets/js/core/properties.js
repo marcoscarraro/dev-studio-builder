@@ -24,15 +24,22 @@
     const field = event.target.closest("[data-prop]");
     const repeaterKeyValueField = event.target.closest("[data-repeater-keyvalue-prop]");
     const keyValueField = event.target.closest("[data-keyvalue-prop]");
+    const subRepeaterField = event.target.closest("[data-subrepeater-field]");
     const repeaterField = event.target.closest("[data-repeater-prop]");
     const matrixField = event.target.closest("[data-matrix-prop]");
 
-    if ((!field && !repeaterKeyValueField && !keyValueField && !repeaterField && !matrixField) || !context.state.selectedId) {
+    if ((!field && !repeaterKeyValueField && !keyValueField && !subRepeaterField && !repeaterField && !matrixField) || !context.state.selectedId) {
       return;
     }
 
     const node = context.findNode(context.state.selectedId);
     if (!node) {
+      return;
+    }
+
+    if (subRepeaterField) {
+      context.updateSubRepeaterProperty(node, subRepeaterField);
+      rerenderAfterPropertyInput(context);
       return;
     }
 
@@ -87,6 +94,17 @@
   }
 
   function handleClick(context, event) {
+    const subRepeaterAction = event.target.closest("[data-subrepeater-action]");
+    if (subRepeaterAction && context.state.selectedId) {
+      const node = context.findNode(context.state.selectedId);
+      if (node) {
+        context.applySubRepeaterAction(node, subRepeaterAction);
+        context.render();
+        context.commitHistory();
+      }
+      return;
+    }
+
     const repeaterKeyValueAction = event.target.closest("[data-repeater-keyvalue-action]");
     if (repeaterKeyValueAction && context.state.selectedId) {
       const node = context.findNode(context.state.selectedId);

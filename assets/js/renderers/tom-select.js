@@ -5,8 +5,12 @@
 
   function renderTomSelectComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};
-    const options = "";
-    const remoteSearch = context.toBooleanValue(props.remoteSearch);
+    // Origem dos dados: "static" = opcoes fixas informadas pelo dev (sem AJAX); "ajax" = comportamento atual.
+    const isStatic = props.dataSource === "static";
+    const options = isStatic
+      ? context.parseOptions(props.staticOptions).map(context.renderSelectOption).join("")
+      : "";
+    const remoteSearch = !isStatic && context.toBooleanValue(props.remoteSearch);
     const createModal = context.toBooleanValue(props.createModal);
     // Acao do botao "+": "modal" (iframe) ou "newtab" (abre o link em nova aba).
     const buttonMode = props.createButtonMode === "newtab" ? "newtab" : "modal";
@@ -23,9 +27,10 @@
       context.idAttr(context.getTomSelectId(component)),
       context.attr("name", props.name),
       ' data-tomselect=""',
-      context.attr("data-ajax-url", props.ajaxUrl),
-      context.attr("data-json-path", props.jsonPath),
-      context.attr("data-remote-search", remoteSearch ? "true" : "false"),
+      // Modo static: nao emite atributos de AJAX (o runtime/preview so buscam se houver data-ajax-url).
+      !isStatic ? context.attr("data-ajax-url", props.ajaxUrl) : "",
+      !isStatic ? context.attr("data-json-path", props.jsonPath) : "",
+      !isStatic ? context.attr("data-remote-search", remoteSearch ? "true" : "false") : "",
       remoteSearch ? context.attr("data-search-param", props.searchParam || "q") : "",
       remoteSearch ? context.attr("data-load-throttle", props.loadThrottle != null ? String(props.loadThrottle) : "300") : "",
       remoteSearch ? context.attr("data-preload", context.toBooleanValue(props.preload) ? "true" : "false") : "",
@@ -33,8 +38,8 @@
       context.attr("data-value-field", props.valueField || "id"),
       context.attr("data-label-field", props.labelField || "text"),
       context.attr("data-search-field", props.searchField || props.labelField || "text"),
-      context.toBooleanValue(props.htmlMode) ? context.attr("data-option-html-field", props.optionHtmlField || "html_option") : "",
-      context.toBooleanValue(props.htmlMode) ? context.attr("data-item-html-field", props.itemHtmlField || "html_selected") : "",
+      !isStatic && context.toBooleanValue(props.htmlMode) ? context.attr("data-option-html-field", props.optionHtmlField || "html_option") : "",
+      !isStatic && context.toBooleanValue(props.htmlMode) ? context.attr("data-item-html-field", props.itemHtmlField || "html_selected") : "",
       // Criar inline (nova aba) — desligado quando o modo modal esta ativo.
       !createModal ? context.attr("data-tomselect-create", context.toBooleanValue(props.create) ? "true" : "") : "",
       context.attr("data-create-url", createUrl),
@@ -48,6 +53,7 @@
       context.attr("data-sort-field", props.sortField || "text"),
       context.attr("data-sort-direction", props.sortDirection || "asc"),
       context.attr("data-max-options", props.maxOptions != null ? String(props.maxOptions) : "100"),
+      context.attr("data-checkbox-options", context.toBooleanValue(props.checkboxOptions) ? "true" : ""),
       context.toBooleanValue(props.required) ? " required" : "",
       context.toBooleanValue(props.multiple) ? " multiple" : "",
       context.toBooleanValue(props.disabled) ? " disabled" : ""

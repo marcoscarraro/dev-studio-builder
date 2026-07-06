@@ -185,6 +185,10 @@ O CSS proprio do projeto vive em `public/components/css/`:
   e usado**, via `assets.styles` no bloco do componente em `components.json`.
 - `layouts/` — CSS dos layouts de menu (`pill-layout.css`, `module-rail.css`,
   `sidebar-collapse.css`), incluidos conforme o `menuLayout` escolhido.
+  - `sidebar-collapse.css` + `sidebar-collapse-runtime.js` so sao incluidos nos layouts
+    `vertical`/`combo` **e** quando a propriedade da pagina `menuCollapsible` esta ativa
+    (padrao). Ao recolher, a sidebar vira uma faixa somente-icones (esconde `.nav-link-title`).
+    Se `menuCollapsible` for `false`, o botao de recolher, o CSS e o runtime nao sao emitidos.
 
 Sempre que possivel, prefira variaveis do Tabler que respeitam o tema (`--tblr-bg-surface`,
 `--tblr-body-color`, `--tblr-border-color`, `--tblr-secondary`, `--tblr-primary`,

@@ -1,0 +1,128 @@
+/* ===== Layout Lateral + Superior (combo): navbar 100% no topo, sidebar altura restante ===== */
+:root { --combo-navbar-h: 3.5rem; } /* altura fixa do navbar superior, usada como offset */
+
+@media (min-width: 992px) {
+  /* Navbar superior: largura total, fixo no topo, acima do sidebar */
+  .layout-combo-topbar .navbar-vertical ~ .navbar {
+    margin-inline: 0;                 /* remove o offset de 15rem do Tabler */
+    position: sticky;
+    top: 0;
+    z-index: 1035;                    /* acima do sidebar (1030) */
+    min-height: var(--combo-navbar-h);
+  }
+  /* Mantem o topo 100% mesmo com a sidebar recolhida (sidebar-collapse.css forca 3.75rem) */
+  .layout-combo-topbar.sidebar-collapsed .navbar-vertical ~ .navbar {
+    margin-inline: 0;
+  }
+  /* Sidebar comeca abaixo do navbar -> altura = 100vh - navbar (bottom:0 herdado do Tabler) */
+  .layout-combo-topbar .navbar-vertical {
+    top: var(--combo-navbar-h);
+  }
+  /* Alca de borda (sidebar-collapse.css) comeca abaixo do navbar superior */
+  .layout-combo-topbar .navbar-vertical .sidebar-collapse-edge {
+    top: var(--combo-navbar-h);
+  }
+
+  /* Sombra sutil para dar profundidade e sair do visual "flat" tradicional.
+     Navbar: sombra suave para baixo. Sidebar: preserva a borda inset do Tabler e
+     adiciona uma sombra lateral (espelhada quando o menu fica a direita). */
+  .layout-combo-topbar .navbar-vertical ~ .navbar {
+    box-shadow: 0 4px 16px -6px rgba(15, 23, 42, .14);
+  }
+  .layout-combo-topbar .navbar-vertical {
+    box-shadow:
+      inset calc(-1 * var(--tblr-navbar-border-width)) 0 0 0 var(--tblr-navbar-border-color),
+      6px 0 20px -8px rgba(15, 23, 42, .10);
+  }
+  .layout-combo-topbar .navbar-vertical.navbar-end {
+    box-shadow:
+      inset var(--tblr-navbar-border-width) 0 0 0 var(--tblr-navbar-border-color),
+      -6px 0 20px -8px rgba(15, 23, 42, .10);
+  }
+}
+
+@media (max-width: 991.98px) {
+  /* Um unico hamburguer: esconde o toggler do navbar superior (o do sidebar controla ambos). */
+  .layout-combo-topbar header.navbar .navbar-toggler {
+    display: none;
+  }
+
+  /* Reserva a faixa do topo para a barra fixa do hamburguer. */
+  .layout-combo-topbar .page {
+    padding-top: var(--combo-navbar-h);
+  }
+
+  /* Hamburguer no topo, lado esquerdo, fixo (estilo YouTube): o proprio botao vira a barra do
+     topo (largura total), com o icone alinhado a esquerda. Como fica dentro do aside, herda o
+     tema (claro/escuro) do menu, garantindo contraste do icone. */
+  .layout-combo-topbar .navbar-vertical .navbar-toggler[data-bs-target=".combo-menu-collapse"] {
+    position: fixed;
+    inset: 0 0 auto 0;                /* top/right/left = 0 -> ocupa a largura toda */
+    width: 100%;
+    box-sizing: border-box;
+    height: var(--combo-navbar-h);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 1.25rem;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--tblr-border-color, rgba(0, 0, 0, .1));
+    border-radius: 0;
+    background: var(--tblr-bg-surface, #fff);
+    box-shadow: 0 2px 8px -4px rgba(15, 23, 42, .12);
+    color: var(--tblr-body-color, #1a2234);   /* cor do icone (currentColor das barras do toggler) */
+    z-index: 1050;
+  }
+  /* Remove o anel de foco gigante padrao do .navbar-toggler (mantem so a sombra da barra). */
+  .layout-combo-topbar .navbar-vertical .navbar-toggler[data-bs-target=".combo-menu-collapse"]:focus {
+    outline: 0;
+    box-shadow: 0 2px 8px -4px rgba(15, 23, 42, .12);
+  }
+  /* Icone: usa o .navbar-toggler-icon nativo do Tabler (barras em currentColor que animam de
+     hamburguer -> X quando aberto, via [aria-expanded=true]). A cor vem do `color` do botao. */
+
+  /* aside e header nao renderizam barra propria; so exibem os menus quando abertos. */
+  .layout-combo-topbar .navbar-vertical,
+  .layout-combo-topbar header.navbar {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  /* Espacamento dos menus quando abertos. */
+  .layout-combo-topbar .navbar-vertical .navbar-collapse.show,
+  .layout-combo-topbar header.navbar .navbar-collapse.show {
+    padding: 0.5rem 1rem;
+  }
+
+  /* Ordem dentro do hamburguer: menu superior (navbar) antes do lateral (sidebar). No DOM o
+     aside vem primeiro (exigido pelo layout desktop), entao reordenamos via flexbox do .page. */
+  .layout-combo-topbar .page > header.navbar { order: 1; }
+  .layout-combo-topbar .page > .navbar-vertical { order: 2; }
+  .layout-combo-topbar .page > .page-wrapper { order: 3; }
+
+  /* Menu aberto = tela cheia (igual ao Pill): o conteudo some e o menu preenche 100% da tela.
+     Reage ao estado do collapse via :has() (sem JS). Inclui .collapsing p/ valer ja na animacao. */
+  .layout-combo-topbar .page:has(.combo-menu-collapse.show, .combo-menu-collapse.collapsing) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    /* Fundo de superficie cobre a tela toda, mesmo abaixo do ultimo item do menu. */
+    background: var(--tblr-bg-surface, #fff);
+  }
+  /* Esconde o conteudo enquanto o menu esta aberto. */
+  .layout-combo-topbar .page:has(.combo-menu-collapse.show, .combo-menu-collapse.collapsing) > .page-wrapper {
+    display: none;
+  }
+  /* Superficie continua no navbar e no sidebar para cobrir a tela toda. */
+  .layout-combo-topbar .page:has(.combo-menu-collapse.show, .combo-menu-collapse.collapsing) > header.navbar,
+  .layout-combo-topbar .page:has(.combo-menu-collapse.show, .combo-menu-collapse.collapsing) > .navbar-vertical {
+    background: var(--tblr-bg-surface, #fff);
+  }
+  /* Sem espaco extra entre os menus: o lateral vem logo apos o superior, com um separador. */
+  .layout-combo-topbar .page:has(.combo-menu-collapse.show, .combo-menu-collapse.collapsing) > .navbar-vertical {
+    flex: 0 0 auto;
+    border-top: 1px solid var(--tblr-border-color, rgba(0, 0, 0, .1));
+  }
+}

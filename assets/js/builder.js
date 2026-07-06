@@ -659,6 +659,7 @@
       applyMatrixAction,
       applyRepeaterAction,
       applyRepeaterKeyValueAction,
+      applySubRepeaterAction,
       commitHistory,
       debounceHistory,
       duplicateSelected,
@@ -684,7 +685,8 @@
       updateKeyValueProperty,
       updateMatrixProperty,
       updateRepeaterKeyValueProperty,
-      updateRepeaterProperty
+      updateRepeaterProperty,
+      updateSubRepeaterProperty
     };
   }
 
@@ -1383,8 +1385,12 @@
         if (!Array.isArray(items)) { return []; }
         return items;
       };
+      const tsPlugins = select.multiple ? ["remove_button", "clear_button"] : ["clear_button"];
+      if (select.dataset.checkboxOptions === "true") {
+        tsPlugins.push("checkbox_options");
+      }
       const settings = {
-        plugins: select.multiple ? ["remove_button", "clear_button"] : ["clear_button"],
+        plugins: tsPlugins,
         copyClassesToDropdown: false,
         dropdownParent: "body",
         valueField,
@@ -1890,7 +1896,9 @@
     const props = component.props || {};
     const card = document.createElement("article");
     card.className = mergeClassNames(getComponentClass(component), "custom-card-builder") || "custom-card-builder";
-    card.appendChild(renderCustomCardZone(component, "header", mergeClassNames(props.headerCssClass || "card-header", "custom-card-header"), "Arraste componentes para o titulo"));
+    if (rowContainerHasZone(component, "header")) {
+      card.appendChild(renderCustomCardZone(component, "header", mergeClassNames(props.headerCssClass || "card-header", "custom-card-header"), "Arraste componentes para o titulo"));
+    }
     card.appendChild(renderCustomCardZone(component, "body", mergeClassNames(props.bodyCssClass || "card-body", "custom-card-body"), "Arraste componentes para o conteudo"));
     preview.appendChild(card);
   }
@@ -2361,10 +2369,11 @@
     } else {
       idAttr = "";
     }
+    const actionText = action.text || (action.icon ? "" : "Acao");
     if (action.type === "link") {
-      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(action.cssClass || "btn btn-primary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(action.text || "Acao", action.icon, action.iconPosition, action.iconColor)}</a>`;
+      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(action.cssClass || "btn btn-primary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</a>`;
     }
-    return `<button type="button"${classAttr(action.cssClass || "btn btn-outline-secondary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(action.text || "Acao", action.icon, action.iconPosition, action.iconColor)}</button>`;
+    return `<button type="button"${classAttr(action.cssClass || "btn btn-outline-secondary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</button>`;
   }
 
   function renderSelectOption(option) {
@@ -2427,18 +2436,23 @@
 
   function renderCustomCardHtml(component, cssClassAttr) {
     const props = component.props || {};
-    const headerRows = (getRowContainerRows(component, "header") || []).map(exportRow).join("\n");
     const bodyRows = (getRowContainerRows(component, "body") || []).map(exportRow).join("\n");
-    return [
-      `<article${cssClassAttr}>`,
-      `  <header${classAttr(mergeClassNames(props.headerCssClass || "card-header", "custom-card-header-content"))}>`,
-      indent(headerRows, 4),
-      "  </header>",
+    const parts = [`<article${cssClassAttr}>`];
+    if (rowContainerHasZone(component, "header")) {
+      const headerRows = (getRowContainerRows(component, "header") || []).map(exportRow).join("\n");
+      parts.push(
+        `  <header${classAttr(mergeClassNames(props.headerCssClass || "card-header", "custom-card-header-content"))}>`,
+        indent(headerRows, 4),
+        "  </header>"
+      );
+    }
+    parts.push(
       `  <div${classAttr(props.bodyCssClass || "card-body")}>`,
       indent(bodyRows, 4),
       "  </div>",
       "</article>"
-    ].join("\n");
+    );
+    return parts.join("\n");
   }
 
   function renderModalContainerHtml(component) {
@@ -2768,6 +2782,10 @@
       accepts: Array.isArray(zone.accepts) ? zone.accepts : config.accepts,
       rejectKinds: Array.isArray(zone.rejectKinds) ? zone.rejectKinds : config.rejectKinds
     }));
+  }
+
+  function rowContainerHasZone(component, zoneId) {
+    return getRowContainerZoneConfigs(getComponentDefinition(component.type)).some((zone) => zone.id === zoneId);
   }
 
   function getRowContainerZoneConfig(component, zoneId) {
@@ -3172,6 +3190,7 @@
     const showPositionAndTheme = menuLayout !== "none";
     const showNavbarOptions = menuLayout === "horizontal" || menuLayout === "combo";
     const showSidebarOptions = menuLayout === "vertical" || menuLayout === "combo";
+    const isPill = menuLayout === "combo-pill";
 
     const menuSection = isLoginPage
       ? '<section class="property-group"><h3>Menu de navegacao</h3><p class="properties-note">Indisponivel em paginas de login.</p></section>'
@@ -3197,6 +3216,11 @@
             ["compact", "Compacto (so icones)"],
             ["normal", "Normal (220px)"],
             ["wide", "Largo (280px)"]
+          ]) : "",
+          showSidebarOptions ? fieldCheckbox("Permitir recolher o menu (collapse)", "menuCollapsible", page.props.menuCollapsible !== false) : "",
+          isPill ? fieldSelect("Altura do menu lateral", "menuPillSidebarHeight", page.props.menuPillSidebarHeight || "center", [
+            ["center", "Centralizado (altura dinamica)"],
+            ["full", "Altura total"]
           ]) : "",
           showNavbarOptions ? fieldCheckbox("Navbar fixa no scroll (sticky)", "menuSticky", page.props.menuSticky) : "",
           "</section>"
@@ -4188,6 +4212,9 @@
   function renderRepeaterItemField(prop, index, field, value) {
     const inputId = `repeater-${prop}-${index}-${field.prop}`;
     const dataAttrs = `data-repeater-prop="${escapeAttr(prop)}" data-repeater-index="${index}" data-repeater-key="${escapeAttr(field.prop)}"`;
+    if (field.field === "repeater") {
+      return fieldSubRepeater(prop, index, field, value);
+    }
     if (field.field === "keyvalue" || field.field === "attributes") {
       return fieldRepeaterKeyValue(prop, index, field, value, {
         keyLabel: field.keyLabel || (field.field === "attributes" ? "Atributo" : "Caminho JSON"),
@@ -4226,6 +4253,55 @@
       extraAttrs = "";
     }
     return `<div class="field"><label class="form-label" for="${inputId}">${escapeHtml(field.label)}</label><input id="${inputId}" class="form-control" type="${inputType}" ${dataAttrs} value="${escapeAttr(value == null ? "" : value)}"${extraAttrs}></div>`;
+  }
+
+  // Repeater aninhado (2o nivel): renderiza uma lista dentro de um item de repeater.
+  // Usa data-subrepeater-* para nao colidir com os handlers do repeater de 1o nivel.
+  function fieldSubRepeater(parentProp, parentIndex, field, value) {
+    const itemFields = getRepeaterItemFields(field);
+    const items = normalizeRepeaterItems(value, itemFields);
+    const rows = items.map((item, childIndex) => {
+      const inputs = itemFields
+        .map((itemField) => renderSubRepeaterItemField(parentProp, parentIndex, field.prop, childIndex, itemField, item[itemField.prop]))
+        .join("");
+      return [
+        '<div class="repeater-item repeater-subitem">',
+        `  <div class="repeater-item-head"><strong>${escapeHtml(getRepeaterItemTitle(item, childIndex))}</strong><button type="button" class="structured-remove" data-subrepeater-action="remove" data-subrepeater-prop="${escapeAttr(parentProp)}" data-subrepeater-index="${parentIndex}" data-subrepeater-key="${escapeAttr(field.prop)}" data-subrepeater-child="${childIndex}" title="Remover item" aria-label="Remover item">&times;</button></div>`,
+        `  <div class="repeater-item-fields">${inputs}</div>`,
+        "</div>"
+      ].join("");
+    }).join("");
+
+    return [
+      '<div class="field structured-field structured-subfield">',
+      `  <label class="form-label">${escapeHtml(field.label)}</label>`,
+      `  <div class="repeater-items">${rows}</div>`,
+      `  <button type="button" class="btn btn-outline-secondary structured-add" data-subrepeater-action="add" data-subrepeater-prop="${escapeAttr(parentProp)}" data-subrepeater-index="${parentIndex}" data-subrepeater-key="${escapeAttr(field.prop)}">${escapeHtml(field.addLabel || "Adicionar item")}</button>`,
+      "</div>"
+    ].join("");
+  }
+
+  function renderSubRepeaterItemField(parentProp, parentIndex, childKey, childIndex, field, value) {
+    const inputId = `subrepeater-${parentProp}-${parentIndex}-${childKey}-${childIndex}-${field.prop}`;
+    const dataAttrs = `data-subrepeater-prop="${escapeAttr(parentProp)}" data-subrepeater-index="${parentIndex}" data-subrepeater-key="${escapeAttr(childKey)}" data-subrepeater-child="${childIndex}" data-subrepeater-field="${escapeAttr(field.prop)}"`;
+    if (field.field === "select") {
+      const options = normalizePropertySelectOptions(field.options || []).map(([optionValue, optionLabel]) => {
+        const selected = String(value) === String(optionValue) ? " selected" : "";
+        return `<option value="${escapeAttr(optionValue)}"${selected}>${escapeHtml(optionLabel)}</option>`;
+      }).join("");
+      return `<div class="field"><label class="form-label" for="${inputId}">${escapeHtml(field.label)}</label><select id="${inputId}" class="form-select" ${dataAttrs}>${options}</select></div>`;
+    }
+    if (field.field === "icon") {
+      return iconSelectControl(field.label, inputId, value, dataAttrs);
+    }
+    if (field.field === "checkbox") {
+      return `<label class="field form-check form-switch"><input id="${inputId}" class="form-check-input" type="checkbox" ${dataAttrs}${toBooleanValue(value) ? " checked" : ""}><span class="form-check-label">${escapeHtml(field.label)}</span></label>`;
+    }
+    if (field.field === "textarea") {
+      return `<div class="field"><label class="form-label" for="${inputId}">${escapeHtml(field.label)}</label><textarea id="${inputId}" class="form-control" ${dataAttrs} rows="${Number(field.rows || 3)}">${escapeHtml(value == null ? "" : value)}</textarea></div>`;
+    }
+    const inputType = getSafePropertyInputType(field.field);
+    return `<div class="field"><label class="form-label" for="${inputId}">${escapeHtml(field.label)}</label><input id="${inputId}" class="form-control" type="${inputType}" ${dataAttrs} value="${escapeAttr(value == null ? "" : value)}"></div>`;
   }
 
   function fieldRepeaterKeyValue(parentProp, parentIndex, field, value, config) {
@@ -4296,7 +4372,7 @@
     if (field.field === "checkbox") {
       return false;
     }
-    if (field.field === "keyvalue" || field.field === "attributes") {
+    if (field.field === "keyvalue" || field.field === "attributes" || field.field === "repeater") {
       return [];
     }
     if (field.field === "select" && normalizePropertySelectOptions(field.options || []).length) {
@@ -4408,6 +4484,53 @@
       });
       syncTableRowCellCounts(node);
     }
+  }
+
+  // Atualiza um campo de um item do repeater aninhado (2o nivel): node.props[prop][index][key][child][field].
+  function updateSubRepeaterProperty(node, input) {
+    const prop = input.dataset.subrepeaterProp;
+    const index = Number(input.dataset.subrepeaterIndex);
+    const key = input.dataset.subrepeaterKey;
+    const child = Number(input.dataset.subrepeaterChild);
+    const fieldKey = input.dataset.subrepeaterField;
+    const items = normalizeRepeaterItems(node.props[prop], []);
+    if (!items[index] || !key || !fieldKey) {
+      return;
+    }
+    const children = normalizeRepeaterItems(items[index][key], []);
+    if (!children[child]) {
+      return;
+    }
+    if (input.type === "checkbox") {
+      children[child][fieldKey] = input.checked;
+    } else {
+      children[child][fieldKey] = input.value;
+    }
+    items[index][key] = children;
+    node.props[prop] = items;
+  }
+
+  function applySubRepeaterAction(node, button) {
+    const prop = button.dataset.subrepeaterProp;
+    const index = Number(button.dataset.subrepeaterIndex);
+    const key = button.dataset.subrepeaterKey;
+    const items = normalizeRepeaterItems(node.props[prop], []);
+    if (!items[index] || !key) {
+      return;
+    }
+    const children = normalizeRepeaterItems(items[index][key], []);
+    const action = button.dataset.subrepeaterAction;
+    if (action === "add") {
+      const parentField = getComponentPropertySchema(node).find((item) => item.prop === prop);
+      const parentItemFields = parentField ? getRepeaterItemFields(parentField) : [];
+      const childField = parentItemFields.find((item) => item.prop === key && item.field === "repeater");
+      children.push(createRepeaterItem(childField || {}));
+    }
+    if (action === "remove") {
+      children.splice(Number(button.dataset.subrepeaterChild), 1);
+    }
+    items[index][key] = children;
+    node.props[prop] = items;
   }
 
   function fieldMatrix(field, props) {
@@ -5309,7 +5432,8 @@
         }
         return {
           type,
-          text: String(action.text || `Acao ${index + 1}`),
+          // Texto vazio + icone => botao so com icone. Fallback "Acao N" so quando nao ha texto nem icone.
+          text: String(action.text || (action.icon ? "" : `Acao ${index + 1}`)),
           href: String(action.href || "#"),
           id: String(action.id || ""),
           cssClass: String(action.cssClass || (type === "link" ? "btn btn-primary" : "btn btn-outline-secondary")),

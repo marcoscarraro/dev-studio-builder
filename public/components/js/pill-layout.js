@@ -253,7 +253,8 @@
         var willOpen = !item.classList.contains("open");
         expandSidebar();
         sidebar.querySelectorAll(".side-item.open").forEach(function (openItem) {
-          if (openItem !== item) {
+          // Nao fecha o proprio item nem um ancestral dele (submenu de 2o nivel aberto).
+          if (openItem !== item && !openItem.contains(item)) {
             openItem.classList.remove("open");
           }
         });
@@ -288,9 +289,33 @@
     collapseSidebar();
   }
 
+  // Mobile: fecha o offcanvas do menu ao clicar num item final (igual ao combo). Ignora gatilhos
+  // de dropdown/submenu e o proprio botao de fechar. Gate pelo .show (so quando aberto = mobile).
+  var offcanvasAutoCloseBound = false;
+  function initOffcanvasAutoClose() {
+    if (offcanvasAutoCloseBound) {
+      return;
+    }
+    offcanvasAutoCloseBound = true;
+    document.addEventListener("click", function (e) {
+      var oc = e.target.closest ? e.target.closest(".app-menu-offcanvas.show") : null;
+      if (!oc) {
+        return;
+      }
+      if (e.target.closest('[data-bs-toggle="dropdown"], .dropdown-toggle, .dsb-submenu-toggle, [data-bs-dismiss="offcanvas"]')) {
+        return;
+      }
+      if (e.target.closest(".dropdown-item, .nav-link")) {
+        var dismiss = oc.querySelector('[data-bs-dismiss="offcanvas"]');
+        if (dismiss) { dismiss.click(); }  // fecha via data-api do Bootstrap
+      }
+    });
+  }
+
   function initPillLayout() {
     initRailDropdowns();
     initIconSidebar();
+    initOffcanvasAutoClose();
   }
 
   window.DsbPillLayout = window.DsbPillLayout || {};

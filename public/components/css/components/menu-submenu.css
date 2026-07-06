@@ -1,0 +1,37 @@
+/* Submenu de 2o nivel (inline accordion) dentro de .dropdown-menu do componente menu-dropdown.
+   Usado nos layouts com dropdown Bootstrap (navbar superior, sidebar padrao, menu mobile).
+   O runtime menu-submenu-runtime.js alterna a classe .open. */
+
+.dsb-submenu-toggle {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	width: 100%;
+	border: 0;
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+}
+
+.dsb-submenu-caret {
+	margin-left: auto;
+	display: inline-flex;
+	transition: transform .18s ease;
+}
+
+.dsb-submenu-toggle[aria-expanded="true"] .dsb-submenu-caret {
+	transform: rotate(90deg);
+}
+
+.dsb-submenu {
+	display: none;
+}
+
+.dsb-submenu.open {
+	display: block;
+}
+
+/* Itens do 3o nivel indentados para indicar a hierarquia */
+.dsb-submenu .dsb-submenu-link {
+	padding-left: 2.25rem;
+}

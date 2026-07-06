@@ -69,11 +69,15 @@
     var modalEl = (createModal && modalId) ? document.getElementById(modalId) : null;
     var iframeEl = modalEl ? modalEl.querySelector("[data-create-iframe]") : null;
 
+    var checkboxOptions = select.dataset.checkboxOptions === "true";
     var plugins;
     if (select.multiple) {
       plugins = ["remove_button", "clear_button"];
     } else {
       plugins = ["clear_button"];
+    }
+    if (checkboxOptions) {
+      plugins.push("checkbox_options");
     }
 
     var settings = {

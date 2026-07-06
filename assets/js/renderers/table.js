@@ -114,21 +114,36 @@
       rowSelect ? context.attr("data-dt-select-name", props.rowSelectName || "selecionados") : "",
       context.attr("data-dt-empty-text", props.emptyText)
     ].join("");
+    // Titulo e descricao do card sao opcionais: se ambos vazios, o card-header nem e renderizado.
+    let cardTitleHtml;
+    if (props.cardTitle) {
+      cardTitleHtml = `      <h3 class="card-title">${context.escapeHtml(props.cardTitle)}</h3>`;
+    } else {
+      cardTitleHtml = "";
+    }
     let description;
     if (props.description) {
       description = `      <div class="text-secondary">${context.escapeHtml(props.description)}</div>`;
     } else {
       description = "";
     }
+    let cardHeader;
+    if (cardTitleHtml || description) {
+      cardHeader = [
+        '  <div class="card-header">',
+        '    <div>',
+        cardTitleHtml,
+        description,
+        '    </div>',
+        '  </div>'
+      ].filter((line) => line !== "").join("\n");
+    } else {
+      cardHeader = "";
+    }
 
     return [
       '<div class="card">',
-      '  <div class="card-header">',
-      '    <div>',
-      `      <h3 class="card-title">${context.escapeHtml(props.cardTitle || "Registros")}</h3>`,
-      description,
-      '    </div>',
-      '  </div>',
+      cardHeader,
       '  <div class="card-table table-responsive">',
       `    <table id="${context.escapeAttr(tableId)}"${cssClassAttr}${dataTableAttrs}>`,
       `      <thead><tr>${header}</tr></thead>`,

@@ -21,6 +21,9 @@
       return `<a class="dropdown-item" href="${context.escapeAttr(item.href || "#")}">${context.escapeHtml(item.label || "")}</a>`;
     }).join("");
 
+    // Chevrons up/down (selector): sinaliza que ha um menu com opcoes.
+    const selectorHtml = '<span class="button-icon ms-auto" style="-webkit-mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;);mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;)" aria-hidden="true"></span>';
+
     return [
       `<div class="nav-item dropdown" style="display:flex">`,
       `  <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">`,
@@ -29,8 +32,9 @@
       `      <div style="font-weight:600;font-size:.875rem">${name}</div>`,
       role ? `      <div style="font-size:.75rem;opacity:.7">${role}</div>` : "",
       `    </div>`,
+      `    ${selectorHtml}`,
       `  </a>`,
-      `  <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" id="${dropdownId}">`,
+      `  <div class="dropdown-menu dropdown-menu-end" id="${dropdownId}">`,
       itemsHtml || '<span class="dropdown-item text-muted" style="pointer-events:none">Sem itens</span>',
       `  </div>`,
       `</div>`

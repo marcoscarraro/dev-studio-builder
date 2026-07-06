@@ -43,4 +43,11 @@
 	box-shadow: none !important;
 }
 
+/* Plugin checkbox_options: checkbox em cada opcao do dropdown */
+.ts-dropdown .option > input.tomselect-checkbox {
+	margin-right: .5rem;
+	vertical-align: -2px;
+	cursor: pointer;
+}
+
 
