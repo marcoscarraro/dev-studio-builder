@@ -9,6 +9,7 @@ Este guia explica a arquitetura atual para manutencao sem depender de IA.
 ## Documentos Relacionados
 
 - [Como criar componente](COMO_CRIAR_COMPONENTE.md)
+- [Temas & funcionamento do CSS](TEMAS_E_CSS.md)
 - [Exemplos de componentes](EXEMPLOS_COMPONENTES.md)
 - [Contrato do components.json](CONTRATO_COMPONENTS_JSON.md)
 - [Checklist de testes](CHECKLIST_TESTES.md)
@@ -179,7 +180,11 @@ auto-discovery (varre `[data-x]`, le `data-*` e inicializa). Exemplos:
 O CSS proprio do projeto vive em `public/components/css/`:
 
 - `base.css` — estilos base e utilitarios proprios (ex.: `.button-icon` com mascara de SVG).
-- `theme.css` — variaveis e tema; o modo escuro usa `[data-bs-theme=dark]` (mesma convencao do Tabler, com `--tblr-*`).
+- `theme.css` — variaveis e tema. Importa no topo **um** tema base `theme-<nome>.css` (rampa de
+  cinza `--tblr-gray-*`: gray/slate/zinc/neutral/stone/pink + os de conforto sepia/sage/solarized) e o
+  `theme-config.css` (cor primaria, radius, fonte). O modo escuro usa `[data-bs-theme=dark]` (mesma
+  convencao do Tabler, com `--tblr-*`). Superficies (cards/sidebars/inputs) podem ser tingidas via
+  `--tblr-surface-base` (fallback branco). Explicacao completa: [`TEMAS_E_CSS.md`](TEMAS_E_CSS.md).
 - `components/<componente>.css` — um arquivo por componente que precisa de CSS proprio
   (ex.: `gantt.css`, `tom-select.css`). E incluido no export **somente quando o componente
   e usado**, via `assets.styles` no bloco do componente em `components.json`.
@@ -231,11 +236,13 @@ Valores de `init` reconhecidos atualmente:
 | `mask` | IMask | `mask-runtime.js` |
 | `gantt` | Gantt (proprio) | `gantt-runtime.js` |
 | `pdfViewer` | PDF.js | `pdf-runtime.js` |
+| `fab` | Botao flutuante (proprio) | `fab-runtime.js` |
 
 Alem dos `init`, alguns runtimes sao incluidos por **deteccao do componente/uso** (nao por
 `init`): `fieldlist-runtime.js` (FieldList), `ajax-fill-runtime.js` (botoes com `ajaxEnabled`),
 `clipboard-runtime.js`, `quantity-stepper-runtime.js`, `unsaved-guard-runtime.js`,
-`pwa-runtime.js`, `otp-runtime.js` e `fullscreen-runtime.js`. Os runtimes de layout
+`pwa-runtime.js`, `otp-runtime.js`, `fullscreen-runtime.js` e `theme-toggle-runtime.js` (menu
+**Alternar tema**, detectado por `component.type === "menu-theme-toggle"`). Os runtimes de layout
 (`pill-layout.js`, `sidebar-collapse-runtime.js`) sao incluidos conforme o `menuLayout`.
 
 Excecao do "zero JS inline": o **envio AJAX do formulario** (form com "Enviar via AJAX") e o

@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Tema base "Solarized (suave)" — CONFORTO VISUAL (baixa fadiga ocular).
+   Versão atenuada da paleta clássica de Ethan Schanin: o cast de cor
+   (creme/teal) foi reduzido ~50% (cada tom misturado com seu cinza neutro),
+   mantendo a estrutura clara/escura. Fundo levemente creme, texto teal-gray
+   discreto. Define --tblr-surface-base para o conteúdo.
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #f8f4eb !important;  /* fundo da página (e superfícies secundárias) */
+  --tblr-gray-100: #e0ddd1 !important;
+  --tblr-gray-200: #d2cdbf !important;
+  --tblr-gray-300: #b3b3a5 !important;
+  --tblr-gray-400: #989f9f !important;  /* desabilitado/muted */
+  --tblr-gray-500: #899293 !important;
+  --tblr-gray-600: #6e797d !important;  /* texto secundário */
+  --tblr-gray-700: #616c6f !important;  /* cor do texto */
+  --tblr-gray-800: #193036 !important;
+  --tblr-gray-900: #10262b !important;
+  --tblr-gray-950: #0c1b1f !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+
+  --tblr-surface-base: #fbf9f5 !important;  /* cards/superfícies (mais claras que o fundo) */
+}

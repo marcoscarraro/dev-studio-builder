@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Tema base "Sépia" — CONFORTO VISUAL / DESCANSO (menos fadiga ocular).
+   Paleta quente (papel/creme), baixa luz azul e contraste suave — ideal para
+   leitura prolongada. Além da escala de cinza, define --tblr-surface-base para
+   que cards/sidebars/inputs também fiquem em tom creme (não branco estourado).
+   Ativado via @import no topo de theme.css. Combina bem com o tema escuro à noite.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #f5efe1 !important;  /* fundo da página */
+  --tblr-gray-100: #ebe1cc !important;
+  --tblr-gray-200: #dccbaa !important;
+  --tblr-gray-300: #c9b184 !important;
+  --tblr-gray-400: #b39461 !important;
+  --tblr-gray-500: #9c7d4e !important;
+  --tblr-gray-600: #816441 !important;
+  --tblr-gray-700: #664f36 !important;  /* cor do texto (marrom suave, não preto) */
+  --tblr-gray-800: #4a3a29 !important;
+  --tblr-gray-900: #2f2619 !important;
+  --tblr-gray-950: #1a140d !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+
+  /* Superfícies quentes (cards/sidebars/dropdowns/inputs) — mais claras que o
+     fundo da página, para manter profundidade sem o branco puro cansativo. */
+  --tblr-surface-base: #fbf7ee !important;
+}

@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Tema base "Sálvia" (Sage) — CONFORTO VISUAL (verde suave e natural).
+   Verde é a cor em que o olho foca com menos esforço; tons dessaturados de
+   verde-cinza reduzem a fadiga. Define também --tblr-surface-base para tingir
+   levemente as superfícies. Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #eff3ed !important;  /* fundo da página */
+  --tblr-gray-100: #dde6d9 !important;
+  --tblr-gray-200: #c1d0ba !important;
+  --tblr-gray-300: #9db492 !important;
+  --tblr-gray-400: #789669 !important;
+  --tblr-gray-500: #5c7b4e !important;
+  --tblr-gray-600: #48633d !important;
+  --tblr-gray-700: #3a4f32 !important;  /* cor do texto (verde escuro) */
+  --tblr-gray-800: #2d3c28 !important;
+  --tblr-gray-900: #1e281b !important;
+  --tblr-gray-950: #10160e !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+
+  --tblr-surface-base: #f6faf4 !important;  /* cards/sidebars em verde-branco suave */
+}

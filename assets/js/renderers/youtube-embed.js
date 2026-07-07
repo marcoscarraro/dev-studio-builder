@@ -73,7 +73,7 @@
     if (!src) {
       return [
         "<div" + cssClassAttr + ">",
-        "  <div class=\"ratio ratio-" + ratio + "\" style=\"background:#f0f4f8;border:2px dashed #c8cfd8;display:flex;align-items:center;justify-content:center;color:#8a99af;font-size:13px\">",
+        "  <div class=\"ratio ratio-" + ratio + "\" style=\"background:var(--tblr-secondary-bg,#f0f4f8);border:2px dashed var(--tblr-border-color,#c8cfd8);display:flex;align-items:center;justify-content:center;color:var(--tblr-secondary-color,#8a99af);font-size:13px\">",
         "    Cole a URL do YouTube ou Vimeo nas propriedades",
         "  </div>",
         "</div>"

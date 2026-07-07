@@ -20,7 +20,7 @@
     if (!url) {
       return [
         "<div" + cssClassAttr + ">",
-        "  <div style=\"background:#f0f4f8;border:2px dashed #c8cfd8;display:flex;align-items:center;justify-content:center;height:200px;color:#8a99af;font-size:13px\">",
+        "  <div style=\"background:var(--tblr-secondary-bg,#f0f4f8);border:2px dashed var(--tblr-border-color,#c8cfd8);display:flex;align-items:center;justify-content:center;height:200px;color:var(--tblr-secondary-color,#8a99af);font-size:13px\">",
         "    Cole a URL do documento nas propriedades",
         "  </div>",
         "</div>"

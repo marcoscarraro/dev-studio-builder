@@ -25,7 +25,33 @@
 .app-pill-navbar .navbar-nav .nav-item.active .nav-link {
   background: rgba(var(--tblr-body-color-rgb, 51,51,51), .09);
 }
-.app-pill-navbar .dropdown-menu { color-scheme: light; }
+/* dropdown herda o color-scheme do tema (light no claro, dark no escuro) — nao forcar light. */
+
+/* Variante: barra superior em largura total e mais alta (edge-to-edge). Sobrescreve as variaveis
+   --pn-* no <body>, entao conteudo (.page-wrapper) e sidebar (.app-icon-sidebar) se reposicionam
+   sozinhos sob a barra. So a barra superior muda; a sidebar de icones continua flutuante. */
+.pill-navbar-full {
+  --pn-navbar-h: 80px;                 /* mais alta (padrao 64px) */
+  --pn-top-offset: var(--pn-navbar-h); /* sem gap: conteudo/sidebar comecam logo abaixo */
+  --pn-navbar-overlap: 22px;           /* quanto o menu da esquerda sobe SOBRE a barra */
+}
+.pill-navbar-full .app-pill-navbar {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: 0 2px 12px -6px rgba(0, 0, 0, .25);
+}
+
+@media (min-width: 768px) {
+  /* Barra superior maior: o menu de icones (altura total) sobe levemente para ficar SOBRE a barra,
+     como no print de referencia. Combina com "Altura do menu lateral: Altura total". */
+  .pill-navbar-full .app-icon-sidebar {
+    z-index: 1041;   /* acima da barra (1040) para aparecer sobre ela */
+  }
+  .pill-navbar-full .app-icon-sidebar-full {
+    top: calc(var(--pn-top-offset) - var(--pn-navbar-overlap, 22px));
+    height: calc(100vh - var(--pn-top-offset) + var(--pn-navbar-overlap, 22px) - var(--pn-gap));
+  }
+}
 
 /* Sidebar de icones */
 .app-icon-sidebar {

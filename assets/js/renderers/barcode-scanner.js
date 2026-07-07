@@ -30,8 +30,8 @@
         " data-bs-fps=\"" + fps + "\"" +
         " data-bs-qrbox=\"" + qrboxSize + "\"" +
         " data-bs-show-result=\"" + showResult + "\">",
-      "  <div data-barcode-placeholder class=\"text-center py-4 border rounded bg-light\">",
-      "    <span class=\"button-icon\" style=\"width:3rem;height:3rem;background-color:#adb5bd;display:block;margin:0 auto .75rem;-webkit-mask-image:url('public/components/icons/outline/qrcode.svg');mask-image:url('public/components/icons/outline/qrcode.svg')\"></span>",
+      "  <div data-barcode-placeholder class=\"text-center py-4 border rounded\" style=\"background:var(--tblr-secondary-bg,#f8fafc)\">",
+      "    <span class=\"button-icon\" style=\"width:3rem;height:3rem;background-color:var(--tblr-secondary-color,#adb5bd);display:block;margin:0 auto .75rem;-webkit-mask-image:url('public/components/icons/outline/qrcode.svg');mask-image:url('public/components/icons/outline/qrcode.svg')\"></span>",
       "    <button type=\"button\" class=\"btn btn-primary\" data-barcode-btn-start>" + btnStartLabel + "</button>",
       "  </div>",
       "  <div data-barcode-reader-wrap style=\"display:none\">",

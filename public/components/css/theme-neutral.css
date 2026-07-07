@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Tema base "Neutral" (paleta de cinza do Tabler).
+   Aplica a escala de cinza no :root — sem depender de [data-bs-theme-base=neutral].
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #fafafa !important;
+  --tblr-gray-100: #f5f5f5 !important;
+  --tblr-gray-200: #e5e5e5 !important;
+  --tblr-gray-300: #d4d4d4 !important;
+  --tblr-gray-400: #a3a3a3 !important;
+  --tblr-gray-500: #737373 !important;
+  --tblr-gray-600: #525252 !important;
+  --tblr-gray-700: #404040 !important;
+  --tblr-gray-800: #262626 !important;
+  --tblr-gray-900: #171717 !important;
+  --tblr-gray-950: #0a0a0a !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+}

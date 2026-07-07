@@ -19,7 +19,7 @@
     if (!url) {
       return [
         "<div" + cssClassAttr + ">",
-        "  <div style=\"background:#f0f4f8;border:2px dashed #c8cfd8;display:flex;align-items:center;justify-content:center;height:200px;color:#8a99af;font-size:13px\">",
+        "  <div style=\"background:var(--tblr-secondary-bg,#f0f4f8);border:2px dashed var(--tblr-border-color,#c8cfd8);display:flex;align-items:center;justify-content:center;height:200px;color:var(--tblr-secondary-color,#8a99af);font-size:13px\">",
         "    Cole a URL do PDF nas propriedades",
         "  </div>",
         "</div>"
@@ -36,7 +36,7 @@
         " data-pdf-gap=\"" + gap + "\"" +
         " data-pdf-max-pages=\"" + maxPages + "\"" +
         " style=\"max-width:" + maxWidth + "px;margin:0 auto\">",
-      "    <div class=\"dsb-pdf-placeholder\" style=\"background:#f0f4f8;border:1px solid #e0e6ee;border-radius:6px;display:flex;align-items:center;justify-content:center;height:240px;color:#8a99af;font-size:13px;text-align:center;padding:16px\">",
+      "    <div class=\"dsb-pdf-placeholder\" style=\"background:var(--tblr-secondary-bg,#f0f4f8);border:1px solid var(--tblr-border-color,#e0e6ee);border-radius:6px;display:flex;align-items:center;justify-content:center;height:240px;color:var(--tblr-secondary-color,#8a99af);font-size:13px;text-align:center;padding:16px\">",
       "      Visualizador de PDF &mdash; as paginas sao renderizadas no Preview / HTML exportado",
       "    </div>",
       "  </div>"

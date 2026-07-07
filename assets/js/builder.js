@@ -1676,9 +1676,10 @@
     const themeClass = theme === "dark" ? " navbar-theme-dark" : "";
     const stickyClass = sticky && !isRail ? " navbar-sticky" : "";
     const pillClass = isRail ? " navbar-pill" : "";
+    const pillFullClass = (menuLayout === "combo-pill" && state.page.props.menuPillNavbarStyle === "full") ? " navbar-pill-full" : "";
     const railFlatClass = menuLayout === "module-rail" ? " navbar-rail-flat" : "";
 
-    els.pageNavbar.className = `editor-page-navbar${selected}${empty}${themeClass}${stickyClass}${pillClass}${railFlatClass}`;
+    els.pageNavbar.className = `editor-page-navbar${selected}${empty}${themeClass}${stickyClass}${pillClass}${pillFullClass}${railFlatClass}`;
     els.pageNavbar.dataset.dropZone = "navbar";
     els.pageNavbar.dataset.section = "navbar";
     els.pageNavbar.innerHTML = "";
@@ -3325,6 +3326,10 @@
           isPill ? fieldSelect("Altura do menu lateral", "menuPillSidebarHeight", page.props.menuPillSidebarHeight || "center", [
             ["center", "Centralizado (altura dinamica)"],
             ["full", "Altura total"]
+          ]) : "",
+          isPill ? fieldSelect("Barra superior", "menuPillNavbarStyle", page.props.menuPillNavbarStyle || "pill", [
+            ["pill", "Flutuante (pill)"],
+            ["full", "Largura total (mais alta)"]
           ]) : "",
           showNavbarOptions ? fieldCheckbox("Navbar fixa no scroll (sticky)", "menuSticky", page.props.menuSticky) : "",
           "</section>"

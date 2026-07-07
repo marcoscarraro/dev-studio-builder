@@ -13,12 +13,12 @@
   <link rel="stylesheet" href="public/components/css/base.css">
   <link rel="stylesheet" href="public/components/css/theme.css">
   <link rel="stylesheet" href="public/components/css/components/menu-submenu.css">
+  <link rel="stylesheet" href="public/components/css/components/fab.css">
   <link rel="stylesheet" href="public/components/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
   <link rel="stylesheet" href="public/components/css/components/tom-select.css">
   <link rel="stylesheet" href="public/components/css/layouts/pill-layout.css">
-  <link rel="stylesheet" href="public/components/css/layouts/module-rail.css?v=6">
 </head>
-<body class="layout-fluid layout-module-rail">
+<body class="layout-fluid">
   <script src="public/tabler/js/tabler-theme.js"></script>
   <div class="page">
     <aside class="app-icon-sidebar" id="appIconSidebar">
@@ -67,47 +67,56 @@
         </li>
       </ul>
     </aside>
-    <div class="page-wrapper">
-      <div class="page-body">
-        <header class="navbar navbar-expand-md app-pill-navbar app-rail-navbar d-print-none">
-          <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#railModulesOffcanvas" aria-controls="railModulesOffcanvas" aria-label="Abrir modulos"><span class="navbar-toggler-icon"></span></button>
-            <div class="app-rail-topwrap">
-              <ul class="navbar-nav me-auto">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_gtp9f2_mr93m9zb" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                  <span class="nav-link-title">Dropdown</span>
-                </a>
-                <div class="dropdown-menu" id="dd-menu-dropdown_gtp9f2_mr93m9zb">
-                  <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 1</a>
-                  <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 2</a>
-                </div>
-              </li>
-              </ul>
-              <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">
-                  <span class="avatar avatar-sm bg-blue-lt">JS</span>
-                  <div class="d-none d-xl-block"><div style="font-weight:600">Joao Silva</div><div class="small text-secondary">Administrador</div></div>
-                  <span class="button-icon ms-auto" style="-webkit-mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;);mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;)" aria-hidden="true"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" id="user-dd-menu-user_li468w_mr3rnxt8">
-                  <a class="dropdown-item" href="#">Perfil</a>
-                  <a class="dropdown-item" href="#">Configuracoes</a>
-                  <a class="dropdown-item" href="#">Sair</a>
-                </div>
-              </li>
-              </ul>
-            </div>
-          </div>
-        </header>
-        <div class="offcanvas offcanvas-start d-md-none app-menu-offcanvas" tabindex="-1" id="railModulesOffcanvas" aria-label="Modulos">
-          <div class="offcanvas-header app-offcanvas-topbar">
-            <button class="navbar-toggler" type="button" data-bs-dismiss="offcanvas" aria-expanded="true" aria-label="Fechar menu">
+    <header class="navbar navbar-expand-md app-pill-navbar d-print-none">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#pillNavOffcanvas" aria-controls="pillNavOffcanvas" aria-expanded="false" aria-label="Abrir menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-start offcanvas-md app-menu-offcanvas" tabindex="-1" id="pillNavOffcanvas" aria-label="Menu">
+          <div class="offcanvas-header app-offcanvas-topbar d-md-none">
+            <button class="navbar-toggler" type="button" data-bs-dismiss="offcanvas" data-bs-target="#pillNavOffcanvas" aria-expanded="true" aria-label="Fechar menu">
               <span class="navbar-toggler-icon"></span>
             </button>
           </div>
           <div class="offcanvas-body">
+            <ul class="navbar-nav me-auto">
+            <div class="navbar-brand navbar-brand-autodark"><a href="#"><span class="navbar-brand-text">Minha Marca</span></a></div>
+            </ul>
+            <ul class="navbar-nav mx-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_gtp9f2_mr93m9zb" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                <span class="nav-link-title">Dropdown</span>
+              </a>
+              <div class="dropdown-menu" id="dd-menu-dropdown_gtp9f2_mr93m9zb">
+                <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 1</a>
+                <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 2</a>
+              </div>
+            </li>
+            </ul>
+            <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" role="button" data-theme-toggle data-icon-light="sun" data-icon-dark="moon">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/sun.svg&quot;);mask-image:url(&quot;public/components/icons/outline/sun.svg&quot;)" aria-hidden="true"></span></span>
+                <span class="nav-link-title">Tema</span>
+              </a>
+            </li>
+            </ul>
+            <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">
+                <span class="avatar avatar-sm bg-blue-lt">JS</span>
+                <div class="d-none d-xl-block"><div style="font-weight:600">Joao Silva</div><div class="small text-secondary">Administrador</div></div>
+                <span class="button-icon ms-auto" style="-webkit-mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;);mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;)" aria-hidden="true"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end" id="user-dd-menu-user_li468w_mr3rnxt8">
+                <a class="dropdown-item" href="#">Perfil</a>
+                <a class="dropdown-item" href="#">Configuracoes</a>
+                <a class="dropdown-item" href="#">Sair</a>
+              </div>
+            </li>
+            </ul>
+          <div class="app-mobile-modules d-md-none">
+            <div class="app-mobile-modules-label">Menu</div>
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_bsy6xa_mr3rvmvc" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
@@ -141,7 +150,12 @@
               </li>
             </ul>
           </div>
+          </div>
         </div>
+      </div>
+    </header>
+    <div class="page-wrapper">
+      <div class="page-body">
         <div class="container-xl">
           <div class="export-page">
           <section class="row g-3 mb-3">
@@ -185,6 +199,12 @@
                                     <button type="button" class="btn btn-outline-secondary" data-ajax-fill="1" data-ajax-url-template="https://viacep.com.br/ws/{{value}}/json" data-ajax-method="GET" data-ajax-mappings="[{&quot;key&quot;:&quot;logradouro&quot;,&quot;value&quot;:&quot;endereco&quot;},{&quot;key&quot;:&quot;bairro&quot;,&quot;value&quot;:&quot;bairro&quot;},{&quot;key&quot;:&quot;localidade&quot;,&quot;value&quot;:&quot;cidade&quot;},{&quot;key&quot;:&quot;estado&quot;,&quot;value&quot;:&quot;estado&quot;}]"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span></button>
                                   </div>
                                   <div class="invalid-feedback">Informe um valor valido.</div></div>
+                                  <div class="export-component"><label class="form-label">Input com Botoes</label>
+                                  <div class="input-group" data-ajax-input-group>
+                                    <input class="form-control" type="text" id="input_com_botao-j12rmr9bvi0f" name="input_com_botao-j12rmr9bvi0f" placeholder="Digite um valor" data-ajax-source>
+                                    <button type="button" class="btn btn-outline-secondary" data-ajax-fill="1" data-ajax-url-template="https://brasilapi.com.br/api/banks/v1/{{value}}" data-ajax-method="GET" data-ajax-mappings="[{&quot;key&quot;:&quot;name&quot;,&quot;value&quot;:&quot;banco_nome&quot;},{&quot;key&quot;:&quot;fullName&quot;,&quot;value&quot;:&quot;banco_nome_completo&quot;},{&quot;key&quot;:&quot;code&quot;,&quot;value&quot;:&quot;banco_codigo&quot;},{&quot;key&quot;:&quot;ispb&quot;,&quot;value&quot;:&quot;banco_ispb&quot;}]"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span>Buscar</button>
+                                  </div>
+                                  <div class="invalid-feedback">Informe um valor valido.</div></div>
                                 </div>
                                 <div class="col-12 col-md-3">
                                   <div class="export-component"><label class="form-label">Estado</label><input class="form-control" type="text" id="estado" name="estado"></div>
@@ -222,23 +242,16 @@
                             </section>
                           </div>
                         </article></div>
+                        <div class="export-component"><div class="dsb-fab dsb-fab-bottom-right" data-fab style="--dsb-fab-radius:16px;--dsb-fab-fg:#ffffff">
+                          <ul class="dsb-fab-items">
+                            <li class="dsb-fab-item"><a class="dsb-fab-sub" href="#"><span class="dsb-fab-sub-label">asasdasd</span><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/a-b-off.svg&quot;);mask-image:url(&quot;public/components/icons/outline/a-b-off.svg&quot;)" aria-hidden="true"></span></span></a></li>
+                            <li class="dsb-fab-item"><a class="dsb-fab-sub" href="#"><span class="dsb-fab-sub-label">a123123</span><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/ai-agent.svg&quot;);mask-image:url(&quot;public/components/icons/outline/ai-agent.svg&quot;)" aria-hidden="true"></span></span></a></li>
+                          </ul>
+                          <button class="dsb-fab-btn" type="button" data-fab-toggle data-icon="help" data-icon-open="x" aria-expanded="false" aria-label="Ajuda"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/help.svg&quot;);mask-image:url(&quot;public/components/icons/outline/help.svg&quot;)" aria-hidden="true"></span></button>
+                        </div></div>
                       </div>
                   </section>
                 </form></div>
-              </div>
-          </section>
-          <section class="row g-3 mb-3">
-              <div class="col-12 col-md-12">
-                <div class="export-component"><article class="card">
-                  <div class="card-body">
-                    <section class="row g-3 mb-3">
-                        <div class="col-12 col-md-12">
-                          <div class="export-component"><label class="form-label">Input com icone</label>
-                          <div class="input-icon"><input class="form-control" type="text" id="input_icone-oy65mr6bw0kc" name="input_icone-oy65mr6bw0kc" placeholder="Pesquisar..."><span class="input-icon-addon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span></span></div></div>
-                        </div>
-                    </section>
-                  </div>
-                </article></div>
               </div>
           </section>
           </div>
@@ -248,7 +261,9 @@
   </div>
   <script src="public/components/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="public/tabler/js/tabler.js" defer></script>
+  <script src="public/components/js/theme-toggle-runtime.js"></script>
   <script src="public/components/js/menu-submenu-runtime.js"></script>
+  <script src="public/components/js/fab-runtime.js"></script>
   <script src="public/components/js/tomselect-runtime.js?v=2"></script>
   <script src="public/components/js/ajax-fill-runtime.js"></script>
   <script src="public/components/js/pill-layout.js?v=9" defer></script>

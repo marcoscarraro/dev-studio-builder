@@ -120,10 +120,11 @@ Mais de 60 componentes prontos para uso:
 * Tabs (com badge por aba)
 * Accordion
 * Breadcrumb
+* FAB — Botão flutuante de ajuda/suporte (link único ou *speed-dial* com subitens; ícone, cor, raio e posição configuráveis)
 
 **Navegação**
 * Navbar / Sidebar (sistema de menus visuais)
-* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer, Tela Cheia
+* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer, Tela Cheia, **Alternar Tema (claro/escuro)**
 
 **Avançados**
 * DataTable (client-side, AJAX, server-side, seleção por checkbox)
@@ -160,6 +161,16 @@ O menu é montado visualmente (componentes **Navbar** e **Sidebar**) e exportado
 | **Rail de módulos + topo (Metronic)** | Rail de ícones *full-height* à esquerda (os módulos) + barra superior embutida no conteúdo (os itens do módulo ativo). No desktop o conteúdo fica em um painel arredondado "dentro" do menu; no mobile ocupa 100% da tela e o rail vira off-canvas (hambúrguer). Os dropdowns flutuam acima do conteúdo. |
 
 Recursos comuns aos layouts: tema **claro/escuro**, **posição do sidebar** (esquerda/direita), menu **fixo** (sticky), **rolagem horizontal** dos itens quando não cabem e o componente **Tela Cheia**.
+
+### Temas & Aparência
+
+* **Tema base trocável:** a paleta de cinza vem de um arquivo `theme-<nome>.css` importado no `theme.css` — *gray, slate, zinc, neutral, stone, pink*.
+* **Temas de conforto visual** (menos fadiga ocular): **Sépia** (papel/creme, foco em descanso), **Sálvia** (verde suave) e **Solarized** (versão suavizada).
+* **Cor primária, radius e fonte** ajustáveis em um único arquivo (`theme-config.css`).
+* **Superfícies tingíveis** (`--tblr-surface-base`): cards/sidebars acompanham o tema, não só o fundo.
+* **Modo claro/escuro** com persistência no navegador (componente de menu **Alternar Tema**).
+
+Como tudo se conecta: [`docs/TEMAS_E_CSS.md`](docs/TEMAS_E_CSS.md).
 
 ---
 
@@ -501,6 +512,7 @@ docs/
 Documentação para desenvolvedores:
 
 * [Guia do Desenvolvedor (arquitetura)](docs/GUIA_DESENVOLVEDOR.md)
+* [Temas & Funcionamento do CSS](docs/TEMAS_E_CSS.md)
 * Como Criar Componentes
 * Exemplos de Componentes
 * Contrato do components.json

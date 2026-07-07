@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Tema base "Slate" (paleta de cinza do Tabler).
+   Aplica a escala de cinza no :root — sem depender de [data-bs-theme-base=slate].
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #f8fafc !important;
+  --tblr-gray-100: #f1f5f9 !important;
+  --tblr-gray-200: #e2e8f0 !important;
+  --tblr-gray-300: #cbd5e1 !important;
+  --tblr-gray-400: #94a3b8 !important;
+  --tblr-gray-500: #64748b !important;
+  --tblr-gray-600: #475569 !important;
+  --tblr-gray-700: #334155 !important;
+  --tblr-gray-800: #1e293b !important;
+  --tblr-gray-900: #0f172a !important;
+  --tblr-gray-950: #020617 !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+}

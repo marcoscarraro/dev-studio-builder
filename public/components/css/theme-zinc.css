@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Tema base "Zinc" (paleta de cinza do Tabler).
+   Aplica a escala de cinza no :root — sem depender de [data-bs-theme-base=zinc].
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #fafafa !important;
+  --tblr-gray-100: #f4f4f5 !important;
+  --tblr-gray-200: #e4e4e7 !important;
+  --tblr-gray-300: #d4d4d8 !important;
+  --tblr-gray-400: #a1a1aa !important;
+  --tblr-gray-500: #71717a !important;
+  --tblr-gray-600: #52525b !important;
+  --tblr-gray-700: #3f3f46 !important;
+  --tblr-gray-800: #27272a !important;
+  --tblr-gray-900: #18181b !important;
+  --tblr-gray-950: #09090b !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+}

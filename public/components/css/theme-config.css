@@ -1,0 +1,28 @@
+/* ==========================================================================
+   CONFIGURACAO DO TEMA — ajustes pontuais (cor primaria, radius, fonte).
+   Importado no topo de theme.css. Edite os valores abaixo; substitui os
+   atributos [data-bs-theme-primary=...], [data-bs-theme-radius=...] e
+   [data-bs-theme-font=...] do Tabler.
+   ========================================================================== */
+:root {
+  /* ---- Cor primaria --------------------------------------------------------
+     Presets Tabler (troque os DOIS valores: hex + rgb):
+       blue   #066fd1  ->  6, 111, 209        azure  #4299e1  ->  66, 153, 225
+       indigo #4263eb  ->  66, 99, 235        purple #ae3ec9  ->  174, 62, 201
+       pink   #d6336c  ->  214, 51, 108       red    #d63939  ->  214, 57, 57
+       orange #f76707  ->  247, 103, 7        yellow #f59f00  ->  245, 159, 0
+       lime   #74b816  ->  116, 184, 22       green  #2fb344  ->  47, 179, 68
+       teal   #0ca678  ->  12, 166, 120       cyan   #17a2b8  ->  23, 162, 184  */
+  --tblr-primary: #066fd1 !important;
+  --tblr-primary-rgb: 6, 111, 209 !important;
+
+  /* ---- Radius (escala) -----------------------------------------------------
+     0 (reto) | 0.5 | 1 (padrao) | 1.5 | 2 (bem arredondado) */
+  --tblr-border-radius-scale: 1 !important;
+
+  /* ---- Fonte do corpo ------------------------------------------------------
+     var(--tblr-font-sans-serif) (padrao) | var(--tblr-font-serif) |
+     var(--tblr-font-monospace) | var(--tblr-font-comic).
+     Para monospace, o Tabler tambem reduz o tamanho (~80%) se desejar. */
+  --tblr-body-font-family: var(--tblr-font-sans-serif) !important;
+}

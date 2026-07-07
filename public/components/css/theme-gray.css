@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Tema base "Gray" (paleta de cinza do Tabler).
+   Aplica a escala de cinza no :root — sem depender de [data-bs-theme-base=gray].
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #f9fafb !important;
+  --tblr-gray-100: #f3f4f6 !important;
+  --tblr-gray-200: #e5e7eb !important;
+  --tblr-gray-300: #d1d5db !important;
+  --tblr-gray-400: #9ca3af !important;
+  --tblr-gray-500: #6b7280 !important;
+  --tblr-gray-600: #4b5563 !important;
+  --tblr-gray-700: #374151 !important;
+  --tblr-gray-800: #1f2937 !important;
+  --tblr-gray-900: #111827 !important;
+  --tblr-gray-950: #030712 !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+}

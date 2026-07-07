@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Tema base "Pink" (paleta de cinza do Tabler).
+   Aplica a escala de cinza no :root — sem depender de [data-bs-theme-base=pink].
+   Ativado via @import no topo de theme.css.
+   ========================================================================== */
+:root {
+  --tblr-gray-50:  #fdf2f8 !important;
+  --tblr-gray-100: #fce7f3 !important;
+  --tblr-gray-200: #fbcfe8 !important;
+  --tblr-gray-300: #f9a8d4 !important;
+  --tblr-gray-400: #f472b6 !important;
+  --tblr-gray-500: #ec4899 !important;
+  --tblr-gray-600: #db2777 !important;
+  --tblr-gray-700: #be185d !important;
+  --tblr-gray-800: #9d174d !important;
+  --tblr-gray-900: #831843 !important;
+  --tblr-gray-950: #500724 !important;
+  --tblr-gray:      var(--tblr-gray-600) !important;
+  --tblr-gray-dark: var(--tblr-gray-800) !important;
+}

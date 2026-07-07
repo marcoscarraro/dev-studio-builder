@@ -43,6 +43,8 @@
       "pwa": "public/components/js/pwa-runtime.js",
       "otp": "public/components/js/otp-runtime.js",
       "fullscreen": "public/components/js/fullscreen-runtime.js",
+      "themeToggle": "public/components/js/theme-toggle-runtime.js",
+      "fab": "public/components/js/fab-runtime.js",
       "pdfViewer": "public/components/js/pdf-runtime.js",
       "gantt": "public/components/js/gantt-runtime.js",
       "menuSubmenu": "public/components/js/menu-submenu-runtime.js"
@@ -1157,6 +1159,52 @@
       "id": "content",
       "label": "Conteudo",
       "blocks": [
+        {
+          "id": "fab",
+          "label": "Botao flutuante (ajuda/suporte)",
+          "kind": "fab",
+          "icon": "block-icon fab",
+          "assets": {
+            "styles": ["public/components/css/components/fab.css"],
+            "init": "fab"
+          },
+          "defaults": {
+            "icon": "help",
+            "iconOpen": "x",
+            "href": "#",
+            "target": "_self",
+            "color": "#4263eb",
+            "iconColor": "#ffffff",
+            "radius": "50%",
+            "position": "bottom-right",
+            "items": [
+              { "icon": "message-circle", "label": "", "href": "#", "target": "_self" },
+              { "icon": "phone", "label": "", "href": "#", "target": "_self" }
+            ]
+          },
+          "properties": [
+            { "label": "Icone principal", "prop": "icon", "field": "icon" },
+            { "label": "Icone quando aberto (com subitens)", "prop": "iconOpen", "field": "icon" },
+            { "label": "Link (href)", "prop": "href", "field": "text", "placeholder": "#" },
+            { "label": "Abrir link em", "prop": "target", "field": "select", "options": [["_self", "Mesma tela"], ["_blank", "Outra tela"]] },
+            { "label": "Cor do FAB (fundo)", "prop": "color", "field": "text", "placeholder": "#4263eb", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Cor dos icones", "prop": "iconColor", "field": "text", "placeholder": "#ffffff", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            { "label": "Formato da borda", "prop": "radius", "field": "select", "options": [["50%", "Redondo"], ["16px", "Quadrado (arredondado)"], ["0", "Quadrado (reto)"]] },
+            { "label": "Posicao", "prop": "position", "field": "select", "options": [["bottom-right", "Inferior direito"], ["bottom-left", "Inferior esquerdo"]] },
+            {
+              "label": "Subitens (aparecem ao clicar)",
+              "prop": "items",
+              "field": "repeater",
+              "addLabel": "Adicionar subitem",
+              "itemFields": [
+                { "label": "Icone", "prop": "icon", "field": "icon", "default": "" },
+                { "label": "Texto", "prop": "label", "field": "text", "default": "" },
+                { "label": "Link (href)", "prop": "href", "field": "text", "default": "#" },
+                { "label": "Abrir em", "prop": "target", "field": "select", "default": "_self", "options": [["_self", "Mesma tela"], ["_blank", "Outra tela"]] }
+              ]
+            }
+          ]
+        },
         {
           "id": "alert",
           "label": "Alert",
@@ -3280,6 +3328,22 @@
             { "label": "Texto", "prop": "label", "field": "text" },
             { "label": "Icone (entrar)", "prop": "icon", "field": "icon" },
             { "label": "Icone (sair)", "prop": "iconExit", "field": "icon" }
+          ]
+        },
+        {
+          "id": "menu-theme-toggle",
+          "label": "Alternar tema (claro/escuro)",
+          "kind": "component",
+          "icon": "block-icon menu-theme-toggle",
+          "defaults": {
+            "label": "Tema",
+            "iconLight": "sun",
+            "iconDark": "moon"
+          },
+          "properties": [
+            { "label": "Texto", "prop": "label", "field": "text" },
+            { "label": "Icone (modo claro)", "prop": "iconLight", "field": "icon" },
+            { "label": "Icone (modo escuro)", "prop": "iconDark", "field": "icon" }
           ]
         }
       ]

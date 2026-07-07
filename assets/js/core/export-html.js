@@ -37,6 +37,7 @@
     const isPillLayout = !isLoginPage && menuLayout === "combo-pill";
     const isModuleRail = !isLoginPage && menuLayout === "module-rail";
     const isCombo = !isLoginPage && menuLayout === "combo";
+    const isPillFull = isPillLayout && context.state.page.props.menuPillNavbarStyle === "full";
     const usesIconRail = isPillLayout || isModuleRail; // ambos: rail de icones + navbar superior
     const hasSidebar = !isLoginPage && (menuLayout === "vertical" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
     const hasNavbar = !isLoginPage && (menuLayout === "horizontal" || menuLayout === "combo" || menuLayout === "combo-pill" || menuLayout === "module-rail");
@@ -68,7 +69,7 @@
       ...(isCombo ? ['  <link rel="stylesheet" href="public/components/css/layouts/combo-topbar.css">'] : []),
       ...assets.headExtra.map((line) => `  ${line}`),
       "</head>",
-      `<body class="layout-fluid${isModuleRail ? " layout-module-rail" : ""}${isCombo ? " layout-combo-topbar" : ""}">`,
+      `<body class="layout-fluid${isModuleRail ? " layout-module-rail" : ""}${isCombo ? " layout-combo-topbar" : ""}${isPillFull ? " pill-navbar-full" : ""}">`,
       ...assets.headScripts.map((asset) => renderScriptAsset(context, asset)).filter(Boolean).map((line) => `  ${line}`),
       '  <div class="page">'
     ];
@@ -457,6 +458,21 @@
       ].join("\n");
     }
 
+    if (component.type === "menu-theme-toggle") {
+      const props = component.props || {};
+      const label = html(props.label || "Tema");
+      const iconLight = esc((props.iconLight || "sun").replace(/[^A-Za-z0-9_-]/g, ""));
+      const iconDark = esc((props.iconDark || "moon").replace(/[^A-Za-z0-9_-]/g, ""));
+      return [
+        '<li class="nav-item">',
+        `  <a class="nav-link" href="#" role="button" data-theme-toggle data-icon-light="${iconLight}" data-icon-dark="${iconDark}">`,
+        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/${iconLight}.svg&quot;);mask-image:url(&quot;public/components/icons/outline/${iconLight}.svg&quot;)" aria-hidden="true"></span></span>`,
+        `    <span class="nav-link-title">${label}</span>`,
+        '  </a>',
+        '</li>'
+      ].join("\n");
+    }
+
     if (component.type === "menu-dropdown") {
       const props = component.props || {};
       const label = html(props.label || "Dropdown");
@@ -665,6 +681,7 @@
       if (componentAssets.init === "speechReader") { neededRuntimes.add("speechReader"); }
       if (componentAssets.init === "pdfViewer") { neededRuntimes.add("pdfViewer"); }
       if (componentAssets.init === "gantt") { neededRuntimes.add("gantt"); }
+      if (componentAssets.init === "fab") { neededRuntimes.add("fab"); }
       if (context.toBooleanValue(props.showCopy)) { neededRuntimes.add("clipboard"); }
       if (componentAssets.init === "passwordToggle") {
         const inputType = props.inputType || definition.inputType || component.type || "text";
@@ -682,6 +699,9 @@
       // Botao "Tela cheia" no menu: runtime que alterna a Fullscreen API.
       if (component.type === "menu-fullscreen") {
         neededRuntimes.add("fullscreen");
+      }
+      if (component.type === "menu-theme-toggle") {
+        neededRuntimes.add("themeToggle");
       }
       // Dropdown de menu com submenu (2o nivel): runtime que expande o accordion inline.
       if (component.type === "menu-dropdown" && menuDropdownHasChildren(props.items)) {
@@ -1300,6 +1320,19 @@
             lines.push(
               '<li class="side-item">',
               `  <a class="side-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `    ${iconHtml}`,
+              `    <span class="side-text">${label}</span>`,
+              '  </a>',
+              '</li>'
+            );
+          } else if (component.type === "menu-theme-toggle") {
+            const label = html(props.label || "Tema");
+            const iconLight = esc((props.iconLight || "sun").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconDark = esc((props.iconDark || "moon").replace(/[^A-Za-z0-9_-]/g, ""));
+            const iconHtml = makeSideIconHtml(iconLight, esc);
+            lines.push(
+              '<li class="side-item">',
+              `  <a class="side-link" href="#" role="button" data-theme-toggle data-icon-light="${iconLight}" data-icon-dark="${iconDark}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
               `    ${iconHtml}`,
               `    <span class="side-text">${label}</span>`,
               '  </a>',

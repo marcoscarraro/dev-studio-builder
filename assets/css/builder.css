@@ -1010,6 +1010,14 @@ button {
   margin: 10px 10px 4px;
 }
 
+/* Canvas: variante "Barra superior em largura total" — edge-to-edge e mais alta. */
+.editor-page-navbar.navbar-pill.navbar-pill-full,
+.app-shell[data-preview="true"] .editor-page-navbar.navbar-pill.navbar-pill-full {
+  margin: 0;
+  border-radius: 0;
+  padding: 16px 20px;
+}
+
 /* Canvas: skin plana do layout "Rail de modulos + topo" (module-rail) */
 .editor-page-navbar.navbar-rail-flat,
 .app-shell[data-preview="true"] .editor-page-navbar.navbar-rail-flat {
@@ -2138,3 +2146,44 @@ button {
     grid-template-columns: 250px minmax(380px, 1fr) 310px;
   }
 }
+
+/* ===== Preview do "Botao flutuante" (FAB) no canvas =====
+   O fab.css real (fixed, z-index alto) so entra no export. No builder mostramos
+   inline para o dev ver/selecionar o componente sem flutuar sobre a UI. */
+#canvas .dsb-fab {
+  position: static;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+#canvas .dsb-fab-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#canvas .dsb-fab-btn,
+#canvas .dsb-fab-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 0;
+  text-decoration: none;
+  color: var(--dsb-fab-fg, #fff);
+  background: var(--dsb-fab-bg, var(--tblr-primary, #4263eb));
+  border-radius: var(--dsb-fab-radius, 50%);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, .35);
+}
+#canvas .dsb-fab-btn {
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  cursor: default;
+}
+#canvas .dsb-fab-sub { padding: .3rem .7rem; font-size: .8rem; }
+#canvas .dsb-fab-sub--icon { width: 40px; height: 40px; padding: 0; justify-content: center; }
+#canvas .dsb-fab-btn .button-icon { width: 22px; height: 22px; margin: 0; }
+#canvas .dsb-fab-sub .button-icon { width: 18px; height: 18px; margin: 0; }

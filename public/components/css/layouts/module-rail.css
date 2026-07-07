@@ -6,7 +6,7 @@
 
 .layout-module-rail,
 .layout-module-rail .page {
-  background: #ffffff;
+  background: var(--tblr-body-bg, #ffffff);
 }
 
 /* Topbar */
@@ -336,7 +336,10 @@
     margin: 0;
     border: 0;
     border-radius: 0;
+    /* 100dvh (altura do viewport VISIVEL) evita o scroll vertical do overshoot do 100vh no mobile,
+       que inclui a area atras da barra de enderecos do navegador. */
     min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .layout-module-rail .page-body > .app-pill-navbar {
@@ -344,6 +347,10 @@
   }
 
   .layout-module-rail .page-body > .container-xl {
-    padding: 0;
+    /* Padding lateral padrao do container (absorve as margens negativas de gutter das .row do
+       Bootstrap). Com padding:0 elas transbordavam ~0.75rem/lado e criavam scroll horizontal no
+       mobile. Vertical fica 0 (o painel continua flush no topo/rodape). */
+    padding-block: 0;
+    padding-inline: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
   }
 }

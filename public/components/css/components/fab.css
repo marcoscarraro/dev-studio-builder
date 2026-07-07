@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Botao flutuante (FAB) de ajuda / suporte / info.
+   Fixo no canto inferior e SEMPRE por cima (z-index alto). Pode ser um link
+   simples ou um "speed-dial" com subitens que sobem ao abrir.
+   Cor via --dsb-fab-bg e raio via --dsb-fab-radius (definidos inline pelo componente).
+   ========================================================================== */
+.dsb-fab {
+  --dsb-fab-size: 56px;
+  --dsb-fab-sub-size: 44px;
+  --dsb-fab-bg: var(--tblr-primary, #4263eb);
+  --dsb-fab-fg: #fff;
+  --dsb-fab-radius: 50%;
+  position: fixed;
+  z-index: 1090;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dsb-fab-bottom-right { right: 24px; bottom: 24px; align-items: flex-end; }
+.dsb-fab-bottom-left  { left: 24px;  bottom: 24px; align-items: flex-start; }
+
+/* Botao principal (link ou toggle) */
+.dsb-fab-btn {
+  width: var(--dsb-fab-size);
+  height: var(--dsb-fab-size);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--dsb-fab-radius);
+  background: var(--dsb-fab-bg);
+  color: var(--dsb-fab-fg, #fff);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, .4);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.dsb-fab-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(0, 0, 0, .45); }
+.dsb-fab-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.dsb-fab-btn .button-icon { width: 26px; height: 26px; margin: 0; }
+
+/* Lista de subitens: escondida ate abrir; sobe (aparece acima do botao). */
+.dsb-fab-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column-reverse;   /* primeiro subitem fica mais perto do botao */
+  align-items: inherit;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.dsb-fab.dsb-fab-open .dsb-fab-items {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.dsb-fab-item { display: flex; }
+
+/* Subitem: pilula com (opcional) texto + (opcional) icone. */
+.dsb-fab-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: var(--dsb-fab-sub-size);
+  padding: 0 .9rem;
+  border-radius: var(--dsb-fab-radius);
+  background: var(--dsb-fab-bg);
+  color: var(--dsb-fab-fg, #fff);
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .35);
+  transition: filter .15s ease, transform .15s ease;
+}
+.dsb-fab-sub:hover { filter: brightness(1.08); transform: translateY(-1px); }
+/* So icone -> circulo/quadrado (largura = altura). */
+.dsb-fab-sub--icon {
+  width: var(--dsb-fab-sub-size);
+  min-width: var(--dsb-fab-sub-size);
+  padding: 0;
+  justify-content: center;
+}
+.dsb-fab-sub-icon { display: inline-flex; align-items: center; justify-content: center; }
+.dsb-fab-sub-icon .button-icon { width: 20px; height: 20px; margin: 0; }
+.dsb-fab-sub-label { line-height: 1; }
+
+@media print { .dsb-fab { display: none !important; } }

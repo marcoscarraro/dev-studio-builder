@@ -1,3 +1,22 @@
+/* ============================================================================
+   TEMA BASE (paleta de cinza) — escolha UM descomentando o @import desejado.
+   Substitui a dependencia de [data-bs-theme-base=...]. Arquivos: theme-<nome>.css.
+   ============================================================================ */
+/*@import "theme-gray.css";*/
+/* @import "theme-slate.css"; */
+/* @import "theme-zinc.css";
+/*@import "theme-neutral.css";*/
+/* @import "theme-stone.css"; */
+/* @import "theme-pink.css";*/ 
+
+/* --- Temas de conforto visual (menos fadiga ocular) — tingem também as superfícies --- */
+/* @import "theme-sepia.css"; */      /* papel/creme quente — foco em descanso */
+/* @import "theme-sage.css"; */       /* verde suave, natural */
+ @import "theme-solarized.css";  /* solarized light, baixa fadiga */
+
+/* Ajustes pontuais do tema (cor primaria, radius, fonte) — edite theme-config.css. */
+@import "theme-config.css";
+
 :root,
 [data-bs-theme=light] {
   --tblr-blue: #066fd1 !important;
@@ -12,18 +31,9 @@
   --tblr-cyan: #17a2b8 !important;
   --tblr-black: #000000 !important;
   --tblr-white: #ffffff !important;
-  --tblr-gray: #4b5563 !important;
-  --tblr-gray-dark: #1f2937 !important;
-  --tblr-gray-100: #f3f4f6 !important;
-  --tblr-gray-200: #e5e7eb !important;
-  --tblr-gray-300: #d1d5db !important;
-  --tblr-gray-400: #9ca3af !important;
-  --tblr-gray-500: #6b7280 !important;
-  --tblr-gray-600: #4b5563 !important;
-  --tblr-gray-700: #374151 !important;
-  --tblr-gray-800: #1f2937 !important;
-  --tblr-gray-900: #111827 !important;
-  --tblr-primary: #066fd1 !important;
+  /* Escala de cinza (--tblr-gray-50..950, --tblr-gray, --tblr-gray-dark) vem do tema base
+     importado no topo deste arquivo (theme-<nome>.css) — nao definir aqui.
+     Cor primaria, radius e fonte: veja theme-config.css. */
   --tblr-secondary: #6b7280 !important;
   --tblr-success: #2fb344 !important;
   --tblr-info: #4299e1 !important;
@@ -44,7 +54,6 @@
   --tblr-green: #2fb344 !important;
   --tblr-teal: #0ca678 !important;
   --tblr-cyan: #17a2b8 !important;
-  --tblr-primary-rgb: 6, 111, 209 !important;
   --tblr-secondary-rgb: 107, 114, 128 !important;
   --tblr-success-rgb: 47, 179, 68 !important;
   --tblr-info-rgb: 66, 153, 225 !important;
@@ -94,7 +103,7 @@
   --tblr-font-sans-serif:    "Inter Var", Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif !important;
   --tblr-font-monospace:  Monaco, Consolas, Liberation Mono, Courier New, monospace !important;
   --tblr-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)) !important;
-  --tblr-body-font-family: var(--tblr-font-sans-serif) !important;
+  /* --tblr-body-font-family: definido em theme-config.css */
   --tblr-body-font-size: 0.875rem !important;
   --tblr-body-font-weight: 400 !important;
   --tblr-body-line-height: 1.4285714286 !important;
@@ -156,8 +165,7 @@
   --tblr-font-serif: Georgia, Times New Roman, times, serif !important;
   --tblr-font-comic: Comic Sans MS, Comic Sans, Chalkboard SE, Comic Neue, sans-serif, cursive !important;
 
-  --tblr-gray-50: #f9fafb !important;
-  --tblr-gray-950: #030712 !important;
+  /* Escala de cinza (--tblr-gray-*) vem do tema base importado (theme-<nome>.css) — nao redeclarar aqui. */
 
   --tblr-brand: #066fd1 !important;
 
@@ -562,7 +570,7 @@
   color-scheme: light !important;
   --tblr-spacer: var(--tblr-spacer-2) !important;
   --tblr-bg-surface: var(--tblr-bg-surface-primary) !important;
-  --tblr-bg-surface-primary: var(--tblr-white) !important;
+  --tblr-bg-surface-primary: var(--tblr-surface-base, var(--tblr-white)) !important; /* temas de conforto podem tingir via --tblr-surface-base; senão, branco */
   --tblr-bg-surface-secondary: var(--tblr-gray-50) !important;
   --tblr-bg-surface-tertiary: var(--tblr-gray-50) !important;
   --tblr-bg-surface-dark: var(--tblr-gray-900) !important;
@@ -648,4 +656,16 @@
   --tblr-form-valid-border-color: rgb(130.2, 209.4, 142.8) !important;
   --tblr-form-invalid-color: rgb(230.4, 136.2, 136.2) !important;
   --tblr-form-invalid-border-color: rgb(230.4, 136.2, 136.2) !important;
+  /* Superfícies — sem isto, cards/sidebars/dropdowns/inputs ficam brancos no dark
+     (o bloco light define esta família com !important e suprime o override do Tabler). */
+  --tblr-bg-surface: #1f2937 !important;             /* cards, dropdowns, offcanvas, rails */
+  --tblr-bg-surface-primary: #1f2937 !important;
+  --tblr-bg-surface-secondary: #111827 !important;   /* = body-bg */
+  --tblr-bg-surface-tertiary: rgb(24, 32.5, 47) !important; /* = --tblr-tertiary-bg já usado */
+  --tblr-bg-forms: #111827 !important;               /* inputs/textarea/select */
+  --tblr-bg-surface-inverted: #e5e7eb !important;    /* chip invertido: claro sobre o dark */
+  --tblr-text-inverted: #111827 !important;
+  --tblr-active-bg: rgba(255, 255, 255, 0.05) !important;
+  --tblr-border-active-color: var(--tblr-dark-mode-border-active-color) !important;
+  --tblr-secondary: rgba(229, 231, 235, 0.55) !important;
 }
