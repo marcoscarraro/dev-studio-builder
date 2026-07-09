@@ -9,7 +9,11 @@ Este guia explica a arquitetura atual para manutencao sem depender de IA.
 ## Documentos Relacionados
 
 - [Como criar componente](COMO_CRIAR_COMPONENTE.md)
+- [Icones (Tabler, Lineicons, Font Awesome)](ICONES.md)
 - [Temas & funcionamento do CSS](TEMAS_E_CSS.md)
+- [Analise de manutencao & roadmap de evolucao](ANALISE_MANUTENCAO.md)
+- [Database Builder (DDL multi-banco)](DATABASE_BUILDER.md)
+- [Referencia dos data-* dos runtimes](RUNTIMES_DATA_ATTRIBUTES.md)
 - [Exemplos de componentes](EXEMPLOS_COMPONENTES.md)
 - [Contrato do components.json](CONTRATO_COMPONENTS_JSON.md)
 - [Checklist de testes](CHECKLIST_TESTES.md)
@@ -58,10 +62,15 @@ O fluxo normal e:
 ## Estrutura de Arquivos
 
 ```text
-assets/js/builder.js
-assets/js/core/helpers.js
+assets/js/builder.js            <- orquestrador (estado, canvas, arvore de nos)
+assets/js/data/pattern-templates.js  <- dados constantes (regex + presets AJAX)
+assets/js/core/helpers.js       <- helpers de HTML/string
+assets/js/core/parsers.js       <- parsers de dados (props -> formato canonico)
+assets/js/core/history-storage.js    <- undo/redo + localStorage
+assets/js/core/preview-libs.js  <- preview "vivo" das libs no canvas
+assets/js/core/properties-panel.js   <- painel de propriedades (render + controles)
 assets/js/core/drag-drop.js
-assets/js/core/properties.js
+assets/js/core/properties.js    <- eventos do painel
 assets/js/core/export-html.js
 
 assets/js/renderers/registry.js
@@ -113,9 +122,45 @@ e edicao **ao vivo no painel de propriedades** — sem modais. O SQL gerado sai 
 
 Orquestra o editor. Ele guarda o estado (`state`), carrega o registry, renderiza a tela, normaliza dados e conecta os modulos. Evite colocar HTML grande ou regra isolada de componente aqui. Quando possivel, crie ou edite um arquivo em `renderers/`, `core/` ou `runtime/`.
 
+Em jul/2026 o builder.js foi dividido por assunto: parsers, historico/persistencia,
+preview das libs e o painel de propriedades viraram modulos proprios (abaixo). Os
+modulos com estado recebem um `context` do builder via `create(context)` — a secao de
+imports no topo do builder.js mostra exatamente o que cada modulo enxerga. Mapa
+completo: [MAPA_BUILDER_JS.md](MAPA_BUILDER_JS.md).
+
 `assets/js/core/helpers.js`
 
 Helpers globais de HTML, atributo, classe CSS, boolean, strings JS e IDs seguros. Use estes helpers nos renderers pelo `context`.
+
+`assets/js/data/pattern-templates.js`
+
+Arquivo so de dados: `PATTERN_TEMPLATES` (templates de regex de validacao) e
+`AJAX_PRESETS` (presets do "Buscar JSON via AJAX"). Para adicionar um template/preset,
+basta acrescentar um item no array.
+
+`assets/js/core/parsers.js`
+
+Parsers de dados puros (`parseOptions`, `parseTableColumns`, `parseDropdownItems`,
+`normalizeKeyValueEntries`...): normalizam o que esta salvo em `props` para o formato
+canonico dos renderers. Sem estado e sem DOM — facil de testar isolado.
+
+`assets/js/core/history-storage.js`
+
+Undo/redo (`commitHistory`, `undo`, `redo`) e persistencia no `localStorage`
+(`saveToStorage`, `loadStoredPage`). Criado com `TemplateBuilderHistory.create(context)`.
+
+`assets/js/core/preview-libs.js`
+
+Inicializa as libs "vivas" no canvas do editor (TomSelect, ApexCharts, Litepicker,
+Dropzone, FullCalendar, Gantt, toggle de senha, quantity stepper), carregando scripts
+das libs sob demanda com cache (`loadPreviewAsset`).
+
+`assets/js/core/properties-panel.js`
+
+Renderiza o painel de propriedades: grupos e campos (`renderProperties`,
+`renderPropertyField`, `fieldRepeater`, `fieldMatrix`, `fieldKeyValue`), campos
+condicionais (`matchesShowWhen`) e as acoes de atualizacao chamadas pelo
+`core/properties.js` (`updateRepeaterProperty`, `applyMatrixAction`...).
 
 `assets/js/core/drag-drop.js`
 
@@ -199,6 +244,14 @@ Sempre que possivel, prefira variaveis do Tabler que respeitam o tema (`--tblr-b
 `--tblr-body-color`, `--tblr-border-color`, `--tblr-secondary`, `--tblr-primary`,
 `--tblr-tertiary-bg`) em vez de cores fixas, para o componente seguir claro/escuro.
 
+**Icones de fonte (Lineicons/Font Awesome):** o CSS de `public/components/libs/lineicons-5.1-free/`
+e `public/components/libs/fontawesome-free-7.3.0-web/` **so** entra no export quando a pagina usa
+algum icone daquela biblioteca (deteccao em `collectIconLibraryStyles`, `core/export-html.js`; o
+canvas faz o mesmo sob demanda em `core/preview-libs.js`). As listas de nomes de icone por
+biblioteca ficam em `assets/data/lineicons-regular-icons.json`, `lineicons-solid-icons.json`,
+`fontawesome-solid-icons.json`, `fontawesome-regular-icons.json`, `fontawesome-brands-icons.json`
+(mesmo formato de `tabler-icons.json`, ja existente). Detalhes: [`ICONES.md`](ICONES.md).
+
 ## Componentes com Inicializacao JS no Canvas e no Export
 
 Alguns componentes usam bibliotecas externas que precisam ser inicializadas tanto no canvas do editor quanto no HTML exportado.
@@ -216,7 +269,20 @@ O padrao e:
 
 2. Em `builder.js`, a funcao `initializePreviewComponents` carrega os scripts dinamicamente para os valores de `init` conhecidos (`litepicker`, `apexchart`, `dropzone`, `fullcalendar`, `gantt`, ...) e chama a funcao de inicializacao correspondente no canvas. **Excecao:** `barcodeScanner` nao e inicializado no canvas (acesso a camera e intrusivo no editor) — o canvas exibe apenas o HTML estatico do renderer; o runtime so roda na pagina exportada.
 
-3. Em `export-html.js`, a funcao `collectExportAssets` verifica o valor de `init` e inclui o **runtime** correspondente de `public/components/js/` (a pagina exportada **nao tem mais JS inline**). O runtime varre o DOM por `[data-xxx]` e inicializa lendo os `data-*` emitidos pelo renderer.
+3. Em `export-html.js`, a funcao `collectExportAssets` verifica o valor de `init` e decide entre
+   **dois caminhos** para a pagina exportada:
+   - **Init inline (preferido)**: se o renderer registrou um gerador via
+     `window.TemplateBuilderRenderers.registerInlineInits({ chaveInit: fn })`, o export emite
+     codigo JS **legivel, direto na lib** (ex.: `new TomSelect("#cliente", {...})`), com os
+     valores do componente ja resolvidos, no bloco "Scripts da pagina" no fim do body — o dev
+     edita ali. Nesse caso os `data-*` do elemento sao ignorados na pagina exportada.
+     Geradores existentes: `tomselect` (tom-select.js), `datatable` (table.js), `apexchart`
+     (chart.js), `litepicker` (date-picker.js), `fullcalendar` (fullcalendar.js), `hugerte`
+     (wysiwyg.js), `dropzone` (dropzone.js), `signature` (signature.js).
+   - **Runtime generico**: sem gerador, ou quando o gerador devolve `null` (casos com
+     maquinario: DataTable com selecao de linhas, TomSelect com criar via modal, TomSelect em
+     pagina com FieldList), inclui o **runtime** de `public/components/js/`, que varre o DOM
+     por `[data-xxx]` e inicializa lendo os `data-*` emitidos pelo renderer.
 
 Valores de `init` reconhecidos atualmente:
 
@@ -250,7 +316,14 @@ componente **Script JS** geram codigo aberto/editavel num bloco `<script>` unico
 body, depois das libs (o export inclui o jQuery junto) — e codigo autoral da pagina, que o
 dev pode personalizar direto no HTML exportado.
 
-Para adicionar suporte a uma nova biblioteca: implemente a inicializacao no canvas em `builder.js` (funcao `initializePreviewXxx`); crie o runtime `public/components/js/xxx-runtime.js` (auto-discovery, le `data-*`); registre o caminho em `assets.runtimes` e adicione a linha `if (componentAssets.init === "xxx") { neededRuntimes.add("xxx"); }` em `collectExportAssets`; e garanta que o renderer emite os `data-*`.
+Para adicionar suporte a uma nova biblioteca: implemente a inicializacao no canvas em `builder.js` (funcao `initializePreviewXxx`); crie o runtime `public/components/js/xxx-runtime.js` (auto-discovery, le `data-*`; copie o molde do `mask-runtime.js`); registre o caminho em `assets.runtimes` e aponte o `assets.init` do componente para a mesma chave — o `collectExportAssets` inclui o runtime automaticamente (`init` e chave de `runtimes` devem ter o MESMO nome; nao e preciso editar `export-html.js`); e garanta que o renderer emite os `data-*`.
+
+**Recomendado — init inline na pagina exportada**: alem (ou em vez) do runtime, registre no
+arquivo do renderer um gerador `registerInlineInits({ chaveInit: fn })` em que
+`fn(component, context)` devolve `{ title, code }` com o codigo de inicializacao **direto na
+lib**, valores resolvidos (veja `renderTomSelectPageInit` em `tom-select.js` como modelo).
+Assim o dev da pagina exportada le e edita o init sem abrir runtime generico. Devolva `null`
+nos casos em que o runtime continua necessario.
 
 ## Layouts de Menu
 
@@ -272,8 +345,9 @@ conforme o layout escolhido em `state.page.props.menuLayout`:
   `exportMenuNavSections` (1 coluna => um `<ul>`; varias => varios `<ul>` com
   `me-auto`/`mx-auto` para espalhar esquerda/centro/direita).
 - **CSS:** `public/components/css/layouts/`. **Runtime:** `pill-layout.js` (combo-pill e
-  module-rail). Todos os layouts respeitam tema claro/escuro (`menuTheme`) e posicao do
-  sidebar (`menuPosition`).
+  module-rail). Todos os layouts respeitam o tema do menu (`menuTheme`: claro, escuro, cor do
+  tema `--tblr-primary` ou cor informada via `menuThemeColor`) e posicao do sidebar
+  (`menuPosition`).
 
 ## Conceitos Importantes
 
@@ -306,15 +380,21 @@ Define componentes que podem receber outros componentes dentro deles. Exemplos: 
 
 A ordem importa:
 
-1. `helpers.js`
-2. `export-html.js`
-3. `drag-drop.js`
-4. `properties.js`
-5. `renderers/registry.js`
-6. renderers especificos
-7. `builder.js`
+1. `core/helpers.js`
+2. `data/pattern-templates.js`
+3. `core/parsers.js`
+4. `core/history-storage.js`
+5. `core/preview-libs.js`
+6. `core/properties-panel.js`
+7. `core/export-html.js`
+8. `core/drag-drop.js`
+9. `core/properties.js`
+10. `renderers/registry.js`
+11. renderers especificos
+12. `builder.js`
 
-O `builder.js` precisa ser carregado depois dos modulos que ele usa.
+O `builder.js` precisa ser carregado depois dos modulos que ele usa (ele destrutura
+os globais `window.TemplateBuilderXxx` no topo do arquivo).
 
 ## Regras de Manutencao
 

@@ -2,6 +2,49 @@
   "use strict";
 
   window.TemplateBuilderRenderers.register({ datePicker: renderDatePickerComponent });
+  window.TemplateBuilderRenderers.registerInlineInits({ litepicker: renderDatePickerPageInit });
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib (new Litepicker({...})), com os
+  // valores do componente ja resolvidos — legivel e editavel no bloco "Scripts da pagina".
+  function renderDatePickerPageInit(component, context) {
+    const props = component.props || {};
+    const id = context.getDatePickerId(component);
+    const js = context.toJsString;
+    const inline = context.toBooleanValue(props.inline);
+    const mode = props.mode || "date";
+    const isRange = !inline && (mode === "daterange" || mode === "datetimerange");
+    const hasTime = !inline && (mode === "datetime" || mode === "datetimerange");
+    const format = props.format || (hasTime ? "YYYY-MM-DD HH:mm" : "YYYY-MM-DD");
+    const lang = props.lang || "pt-BR";
+    const timeStep = parseInt(props.timeStep, 10) || 5;
+
+    const lines = [];
+    lines.push("$(function () {");
+    lines.push(`  var el = document.getElementById(${js(id)});`);
+    lines.push("  if (!el || el._litepicker) return;");
+    lines.push("");
+    lines.push("  el._litepicker = new Litepicker({");
+    lines.push("    element: el,");
+    lines.push(`    inlineMode: ${inline ? "true" : "false"},`);
+    lines.push(`    singleMode: ${isRange ? "false" : "true"},`);
+    lines.push(`    format: ${js(format)},`);
+    if (hasTime) {
+      lines.push(`    lang: ${js(lang)},`);
+      lines.push("    timePicker: true,");
+      lines.push(`    timePickerMinutes: ${timeStep}${isRange ? "," : ""}`);
+    } else {
+      lines.push(`    lang: ${js(lang)}${isRange ? "," : ""}`);
+    }
+    if (isRange) {
+      lines.push("    // Intervalo: o campo final e o input de id \"" + id + "-end\"");
+      lines.push(`    elementEnd: document.getElementById(${js(id + "-end")})`);
+    }
+    lines.push("  });");
+    lines.push("});");
+
+    return { title: "Date Picker (Litepicker) #" + id, code: lines.join("\n") };
+  }
 
   function renderDatePickerComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};

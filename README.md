@@ -68,84 +68,85 @@ Editor visual baseado no ecossistema do Template Tabler.
 
 ### Componentes Disponíveis
 
-Mais de 60 componentes prontos para uso:
+Mais de 60 componentes prontos para uso, organizados na paleta por **propósito** (não por
+dependência técnica — ex.: TomSelect, Datepicker e Dropzone ficam junto dos demais campos de
+formulário, não separados só por precisarem de uma lib):
 
 **Layout**
-* Form Container (com aviso de alterações não salvas ao sair)
-* Card / Card Personalizado
-* Divisor de Seção
-* Page Header
+* Linhas de colunas (1 a 4, combinações 4-8/8-4 e customizável)
 
-**Conteúdo**
-* Título (H1–H3, com pretitle e alinhamento)
-* Parágrafo (alinhamento, muted)
-* Imagem (forma, lazy, link)
-* Lista (ordenada/não-ordenada, list-group, flush)
-* Badge (variante, pill, outline)
-* Alert
-* Progress Bar
-* Spinner
-* Avatar
-* Stat Card (KPI visual)
-* Empty State
-* Callout
-* Timeline
-* Stepper
-* Skeleton (placeholder animado)
-* KPI / Info KPI (ícone, tendência)
-* Tabela (striped, hover, bordered, responsive, thead/tfoot configuráveis)
-
-**Formulário**
-* Campo Texto (prefix/suffix addon, máscara, toggle senha)
-* Número
-* Textarea
-* Select
-* Checkbox / Radio / Switch
-* Floating Label Input
-* Rating (estrelas interativas)
-* Separated Input
-* Input com Ícone
+**Campos de Formulário**
+* Campo Texto (prefix/suffix addon, máscara, toggle senha, botão copiar)
+* Número, Textarea, Rich Text Editor (HugeRTE), Select, Checkbox / Radio / Switch
+* Data, Arquivo, Color Picker, Input Hidden
+* Input com Ícone, Input com Tooltip, Floating Label Input
+* Select Group, Payment Method, Button Group
+* Input com Select (dois campos lado a lado)
 * Quantity Stepper
-* Payment Method
+* **Input Button Group Action** — input + 1 ou mais botões de ação (AJAX Fill, geolocalização),
+  com a propriedade "Layout dos botões" alternando entre **agrupado** (botão dentro do
+  input-group) e **separado** (botão ao lado, em coluna — substitui o antigo componente
+  "Separated Input", removido da paleta por ser o mesmo componente)
+* Rating (estrelas interativas)
 * Código 2FA / OTP (quantidade de dígitos configurável, auto-avanço e colar)
-
-**Interação**
-* Botão (variante, outline, tamanho, disabled, link)
-* Grupo de Botões
-* Button Dropdown
-* Input + Botão (AJAX Fill)
-* Input + Select
-* Modal (com trigger)
-* Offcanvas (com trigger e ID gerado)
-* Tabs (com badge por aba)
-* Accordion
-* Breadcrumb
-* FAB — Botão flutuante de ajuda/suporte (link único ou *speed-dial* com subitens; ícone, cor, raio e posição configuráveis)
-
-**Navegação**
-* Navbar / Sidebar (sistema de menus visuais)
-* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer, Tela Cheia, **Alternar Tema (claro/escuro)**
-
-**Avançados**
-* DataTable (client-side, AJAX, server-side, seleção por checkbox)
 * Tom Select / Tags Input (busca remota server-side, botão "criar" via modal/iframe ou nova aba)
-* Litepicker
-* ApexCharts (linha, barra, pizza, donut, área...)
-* FullCalendar
-* Gantt / Timeline (reservas, agendamentos — modos Timeline e Agenda, mobile-first, dados via AJAX)
+* Litepicker (Datepicker normal e inline)
 * Dropzone Upload
-* Rich Text Editor (HugeRTE)
-* Signature Pad
-* Máscaras de Entrada
-* Toggle de Senha
-* Listas Dinâmicas (FieldList: clonar, excluir e mover linha ↑/↓)
-* Script JS (jQuery com templates)
-* HTML Raw
+* Scanner de QR / Código de Barras
+* Gravador de Áudio
+* Leitor de Fala (Voz)
+* Signature Pad (assinatura)
 
-**Mídia / Documentos**
-* PWA (app instalável — manifest, service worker, offline e notificações)
+**Botões e Ações**
+* Botão (variante, outline, tamanho, disabled, link)
+* Button Dropdown
+* FAB — Botão flutuante de ajuda/suporte (link único ou *speed-dial* com subitens; ícone, cor, raio e posição configuráveis)
+* Link
+
+**Estrutura e Containers**
+* Form Container (com aviso de alterações não salvas ao sair)
+* Listas Dinâmicas (FieldList: clonar, excluir e mover linha ↑/↓)
+* Accordion, Tabs (com badge por aba)
+* Modal (com trigger), Offcanvas (com trigger e ID gerado)
+* Card Personalizado / Container (arraste componentes dentro)
+* Div, Span, Page Header, Page Footer
+
+**Conteúdo e Mídia**
+* Label, Lista (ordenada/não-ordenada, list-group, flush), Breadcrumb
+* Título (H1–H3, com pretitle e alinhamento), Parágrafo (alinhamento, muted)
+* Imagem (forma, lazy, link), Player de Áudio, Player de Vídeo
+* Vídeo YouTube/Vimeo, Iframe (incorporar página)
 * Documento Office (Word/Excel/PPT via visualizador online — Microsoft/Google)
 * PDF (PDF.js inline, mobile-first, renderiza no `<canvas>`)
+* Card (texto pronto), HTML Raw, Skeleton (placeholder animado), Divisor de Seção
+
+**Indicadores e Feedback**
+* Alert, Callout, Empty State
+* Badge (variante, pill, outline)
+* Progress Bar, Spinner, Avatar
+* **KPI / Info KPI / Stat Card** — mesmo componente-base, 3 presets prontos (ícone solto, card com
+  destaque colorido, ou avatar circular + tendência com descrição)
+* Timeline, Stepper
+
+**Tabelas**
+* Tabela estática (striped, hover, bordered, responsive, thead/tfoot configuráveis)
+* DataTable (client-side, AJAX, server-side, seleção por checkbox)
+* Tabela em Árvore (categorias/subcategorias expansíveis, ex.: plano de contas, profundidade livre)
+
+**Gráficos**
+* ApexCharts — linha, área, barra, barras distribuídas, pizza, donut
+
+**Calendário**
+* FullCalendar
+* Gantt / Timeline (reservas, agendamentos — modos Timeline e Agenda, mobile-first, dados via AJAX)
+
+**Automação**
+* Script JS (jQuery com templates)
+* PWA (app instalável — manifest, service worker, offline e notificações)
+
+**Menu**
+* Navbar / Sidebar (sistema de menus visuais)
+* Menu Item, Dropdown, Divider, Label, Badge Item, User, Search, Spacer, Tela Cheia, **Alternar Tema (claro/escuro)**
 
 ### Tipos de Menu (Layouts de Navegação)
 
@@ -169,6 +170,8 @@ Recursos comuns aos layouts: tema **claro/escuro**, **posição do sidebar** (es
 * **Cor primária, radius e fonte** ajustáveis em um único arquivo (`theme-config.css`).
 * **Superfícies tingíveis** (`--tblr-surface-base`): cards/sidebars acompanham o tema, não só o fundo.
 * **Modo claro/escuro** com persistência no navegador (componente de menu **Alternar Tema**).
+* **Ícones por biblioteca:** todo campo de ícone pode escolher, individualmente, entre Tabler,
+  Lineicons (Regular/Solid) e Font Awesome (Solid/Regular/Brands) — ver [`docs/ICONES.md`](docs/ICONES.md).
 
 Como tudo se conecta: [`docs/TEMAS_E_CSS.md`](docs/TEMAS_E_CSS.md).
 
@@ -512,7 +515,10 @@ docs/
 Documentação para desenvolvedores:
 
 * [Guia do Desenvolvedor (arquitetura)](docs/GUIA_DESENVOLVEDOR.md)
+* [Ícones (Tabler, Lineicons, Font Awesome)](docs/ICONES.md)
 * [Temas & Funcionamento do CSS](docs/TEMAS_E_CSS.md)
+* [Database Builder (DDL multi-banco)](docs/DATABASE_BUILDER.md)
+* [Referência dos data-* dos runtimes](docs/RUNTIMES_DATA_ATTRIBUTES.md)
 * Como Criar Componentes
 * Exemplos de Componentes
 * Contrato do components.json

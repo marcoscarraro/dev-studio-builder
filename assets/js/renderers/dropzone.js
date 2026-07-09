@@ -9,6 +9,74 @@
   "use strict";
 
   window.TemplateBuilderRenderers.register({ dropzone: renderDropzone });
+  window.TemplateBuilderRenderers.registerInlineInits({ dropzone: renderDropzonePageInit });
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib (new Dropzone(el, options)), com os
+  // valores resolvidos. No modo "junto com o form" tambem gera a sincronizacao dos
+  // arquivos aceitos para o input file oculto (que vai no submit do formulario).
+  function renderDropzonePageInit(component, context) {
+    var props = component.props || {};
+    var id = getDropzoneId(props, component, context);
+    var js = context.toJsString;
+    var multiple = props.multiple === true || props.multiple === "true";
+    var autoProcess = context.toBooleanValue(props.autoProcess);
+    var storeId = String(props.storeId || "").trim() || (id + "-store");
+    var acceptedFiles = (props.acceptedFiles || "").trim();
+
+    var lines = [];
+    lines.push("// O Dropzone tenta se auto-inicializar em elementos .dropzone; desligamos");
+    lines.push("// porque a inicializacao e feita explicitamente abaixo.");
+    lines.push("Dropzone.autoDiscover = false;");
+    lines.push("");
+    lines.push("$(function () {");
+    lines.push("  var el = document.getElementById(" + js(id) + ");");
+    lines.push("  if (!el || el._dropzone) return;");
+    lines.push("");
+    lines.push("  var options = {");
+    if (autoProcess) {
+      lines.push("    autoProcessQueue: true,   // o Dropzone envia cada arquivo sozinho para a URL");
+    } else {
+      lines.push("    autoProcessQueue: false,  // os arquivos vao JUNTO no submit do form (input oculto)");
+    }
+    lines.push("    url: " + js((props.action || "#")) + ",");
+    lines.push("    maxFiles: " + (multiple ? (context.toPositiveInteger(props.maxFiles) || 10) : 1) + ",");
+    lines.push("    maxFilesize: " + (context.toPositiveInteger(props.maxFileSizeMb) || 10) + ",  // MB");
+    if (acceptedFiles) {
+      lines.push("    acceptedFiles: " + js(acceptedFiles) + ",");
+    }
+    lines.push("    addRemoveLinks: true");
+    lines.push("  };");
+    lines.push("");
+    lines.push("  // Laravel: envia o token CSRF junto (se existir a <meta name=\"csrf-token\">)");
+    lines.push("  var csrfMeta = document.querySelector('meta[name=\"csrf-token\"]');");
+    lines.push("  if (csrfMeta && csrfMeta.content) {");
+    lines.push('    options.headers = { "X-CSRF-TOKEN": csrfMeta.content };');
+    lines.push("  }");
+    lines.push("");
+    lines.push("  var dz = new Dropzone(el, options);");
+    lines.push("  el._dropzone = dz;");
+    if (!autoProcess) {
+      lines.push("");
+      lines.push("  // Copia os arquivos aceitos para o input file oculto #" + storeId + " — assim");
+      lines.push("  // eles vao junto no submit do formulario (FormData / multipart).");
+      lines.push("  var store = document.getElementById(" + js(storeId) + ");");
+      lines.push("  if (store && window.DataTransfer) {");
+      lines.push("    var syncStore = function () {");
+      lines.push("      var dt = new DataTransfer();");
+      lines.push("      dz.getAcceptedFiles().forEach(function (file) { dt.items.add(file); });");
+      lines.push("      store.files = dt.files;");
+      lines.push("    };");
+      lines.push("    // addedfile dispara antes da validacao terminar; o setTimeout(0) espera ela.");
+      lines.push("    dz.on(\"addedfile\", function () { setTimeout(syncStore, 0); });");
+      lines.push("    dz.on(\"removedfile\", syncStore);");
+      lines.push("    dz.on(\"error\", function () { setTimeout(syncStore, 0); });");
+      lines.push("  }");
+    }
+    lines.push("});");
+
+    return { title: "Dropzone #" + id, code: lines.join("\n") };
+  }
 
   function renderDropzone(component, cssClassAttr, definition, context) {
     var props = component.props || {};

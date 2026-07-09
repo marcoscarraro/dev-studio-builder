@@ -39,6 +39,7 @@ Exemplo de componente simples:
 {
   "id": "alert-info",
   "label": "Alerta Info",
+  "description": "Mensagem de aviso colorida (info, sucesso, erro) com icone opcional.",
   "kind": "alert",
   "icon": "block-icon paragraph",
   "defaultCssClass": "alert alert-info",
@@ -55,6 +56,9 @@ Campos minimos:
 
 - `id`: unico no arquivo.
 - `label`: texto exibido na lista de componentes.
+- `description`: frase curta (uma linha) explicando o que o componente e/faz — aparece na
+  paleta abaixo do label, para o desenvolvedor entender o componente sem precisar arrasta-lo.
+  Todo componente novo deve vir com uma.
 - `kind`: tipo logico usado pelo renderer.
 - `defaultCssClass`: classe CSS padrao.
 - `defaults`: valores iniciais de `props`.

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Cadastro de Pessoa</title>
+  <title>Nova pagina</title>
   <link rel="icon" href="public/components/icons/outline/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="public/components/libs/inter/inter.css">
   <link rel="stylesheet" href="public/tabler/css/tabler.css">
@@ -12,10 +12,8 @@
   <link rel="stylesheet" href="public/tabler/css/tabler-themes.css">
   <link rel="stylesheet" href="public/components/css/base.css">
   <link rel="stylesheet" href="public/components/css/theme.css">
-  <link rel="stylesheet" href="public/components/css/components/menu-submenu.css">
   <link rel="stylesheet" href="public/components/css/components/fab.css">
-  <link rel="stylesheet" href="public/components/libs/tom-select/dist/css/tom-select.bootstrap5.min.css">
-  <link rel="stylesheet" href="public/components/css/components/tom-select.css">
+  <link rel="stylesheet" href="public/components/css/components/tree-table.css">
   <link rel="stylesheet" href="public/components/css/layouts/pill-layout.css">
 </head>
 <body class="layout-fluid">
@@ -23,48 +21,6 @@
   <div class="page">
     <aside class="app-icon-sidebar" id="appIconSidebar">
       <ul class="side-nav">
-        <li class="side-item">
-          <a class="side-link" href="#" data-sub data-bs-toggle="tooltip" data-bs-placement="right" title="Reservas">
-            <span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/calendar-week.svg&quot;);mask-image:url(&quot;public/components/icons/outline/calendar-week.svg&quot;)" aria-hidden="true"></span></span>
-            <span class="side-text">Reservas</span>
-            <span class="side-caret"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></span>
-          </a>
-          <ul class="side-sub">
-        <li><a class="side-sublink" href="#" data-leaf>Calendário semanal</a></li>
-        <li><a class="side-sublink" href="#" data-leaf>Calendário completo</a></li>
-        <li><a class="side-sublink" href="#" data-leaf>Reservas</a></li>
-        <li class="side-item">
-          <a class="side-link side-link-sub" href="#" data-sub><span class="side-text">Relatórios</span><span class="side-caret"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></span></a>
-          <ul class="side-sub">
-            <li><a class="side-sublink" href="#" data-leaf>Faturamento por tipo</a></li>
-            <li><a class="side-sublink" href="#" data-leaf>Reservas por período</a></li>
-          </ul>
-        </li>
-          </ul>
-        </li>
-        <li class="side-item">
-          <a class="side-link" href="#" data-sub data-bs-toggle="tooltip" data-bs-placement="right" title="Financeiro">
-            <span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/dollar-symbol_icon.svg&quot;);mask-image:url(&quot;public/components/icons/outline/dollar-symbol_icon.svg&quot;)" aria-hidden="true"></span></span>
-            <span class="side-text">Financeiro</span>
-            <span class="side-caret"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></span>
-          </a>
-          <ul class="side-sub">
-        <li><a class="side-sublink" href="#" data-leaf>Contas à receber</a></li>
-        <li><a class="side-sublink" href="#" data-leaf>Contas a pagar</a></li>
-          </ul>
-        </li>
-        <li class="side-item">
-          <a class="side-link" href="#" data-leaf data-bs-toggle="tooltip" data-bs-placement="right" title="Pessoas">
-            <span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/users-group.svg&quot;);mask-image:url(&quot;public/components/icons/outline/users-group.svg&quot;)" aria-hidden="true"></span></span>
-            <span class="side-text">Pessoas</span>
-          </a>
-        </li>
-        <li class="side-item">
-          <a class="side-link" href="#" data-leaf data-bs-toggle="tooltip" data-bs-placement="right" title="Produtos">
-            <span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/packages.svg&quot;);mask-image:url(&quot;public/components/icons/outline/packages.svg&quot;)" aria-hidden="true"></span></span>
-            <span class="side-text">Produtos</span>
-          </a>
-        </li>
       </ul>
     </aside>
     <header class="navbar navbar-expand-md app-pill-navbar d-print-none">
@@ -80,38 +36,22 @@
           </div>
           <div class="offcanvas-body">
             <ul class="navbar-nav me-auto">
-            <div class="navbar-brand navbar-brand-autodark"><a href="#"><span class="navbar-brand-text">Minha Marca</span></a></div>
-            </ul>
-            <ul class="navbar-nav mx-auto">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_gtp9f2_mr93m9zb" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                <span class="nav-link-title">Dropdown</span>
+              <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Trocar empresa ou sistema" aria-expanded="false">
+                <span class="avatar avatar-sm bg-blue-lt">EM</span>
+                <div class="d-none d-xl-block"><div style="font-weight:600">Empresa Matriz</div><div class="small text-secondary">Unidade Centro</div></div>
               </a>
-              <div class="dropdown-menu" id="dd-menu-dropdown_gtp9f2_mr93m9zb">
-                <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 1</a>
-                <a class="dropdown-item d-flex align-items-center" href="#">Sub-item 2</a>
-              </div>
-            </li>
-            </ul>
-            <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#" role="button" data-theme-toggle data-icon-light="sun" data-icon-dark="moon">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/sun.svg&quot;);mask-image:url(&quot;public/components/icons/outline/sun.svg&quot;)" aria-hidden="true"></span></span>
-                <span class="nav-link-title">Tema</span>
-              </a>
-            </li>
-            </ul>
-            <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Menu do usuario" aria-expanded="false">
-                <span class="avatar avatar-sm bg-blue-lt">JS</span>
-                <div class="d-none d-xl-block"><div style="font-weight:600">Joao Silva</div><div class="small text-secondary">Administrador</div></div>
-                <span class="button-icon ms-auto" style="-webkit-mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;);mask-image:url(&quot;public/components/icons/outline/selector.svg&quot;)" aria-hidden="true"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end" id="user-dd-menu-user_li468w_mr3rnxt8">
-                <a class="dropdown-item" href="#">Perfil</a>
-                <a class="dropdown-item" href="#">Configuracoes</a>
-                <a class="dropdown-item" href="#">Sair</a>
+              <div class="dropdown-menu" id="switcher-dd-menu-switcher_8zvbuj_mrdsuyac">
+                <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                  <span style="line-height:1.2"><span style="display:block">Empresa Matriz</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Centro</span></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10"/></svg>
+                </a>
+                <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                  <span style="line-height:1.2"><span style="display:block">Filial Norte</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Norte</span></span>
+                </a>
+                <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                  <span style="line-height:1.2"><span style="display:block">Filial Sul</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Sul</span></span>
+                </a>
               </div>
             </li>
             </ul>
@@ -119,34 +59,22 @@
             <div class="app-mobile-modules-label">Menu</div>
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_bsy6xa_mr3rvmvc" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
-                  <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/calendar-week.svg&quot;);mask-image:url(&quot;public/components/icons/outline/calendar-week.svg&quot;)" aria-hidden="true"></span></span><span class="nav-link-title">Reservas</span>
+                <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Trocar empresa ou sistema" aria-expanded="false">
+                  <span class="avatar avatar-sm bg-blue-lt">EM</span>
+                  <div class="d-none d-xl-block"><div style="font-weight:600">Empresa Matriz</div><div class="small text-secondary">Unidade Centro</div></div>
                 </a>
-                <div class="dropdown-menu" id="dd-menu-dropdown_bsy6xa_mr3rvmvc">
-                  <a class="dropdown-item d-flex align-items-center" href="#">Calendário semanal</a>
-                  <a class="dropdown-item d-flex align-items-center" href="#">Calendário completo</a>
-                  <a class="dropdown-item d-flex align-items-center" href="#">Reservas</a>
-                  <button type="button" class="dropdown-item dsb-submenu-toggle" aria-expanded="false"><span>Relatórios</span><span class="dsb-submenu-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></span></button>
-                  <div class="dsb-submenu">
-                    <a class="dropdown-item dsb-submenu-link d-flex align-items-center" href="#">Faturamento por tipo</a>
-                    <a class="dropdown-item dsb-submenu-link d-flex align-items-center" href="#">Reservas por período</a>
-                  </div>
+                <div class="dropdown-menu" id="switcher-dd-menu-switcher_977frd_mrdsv0f0">
+                  <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                    <span style="line-height:1.2"><span style="display:block">Empresa Matriz</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Centro</span></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10"/></svg>
+                  </a>
+                  <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                    <span style="line-height:1.2"><span style="display:block">Filial Norte</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Norte</span></span>
+                  </a>
+                  <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="#">
+                    <span style="line-height:1.2"><span style="display:block">Filial Sul</span><span style="display:block;font-size:.75rem;opacity:.7">Unidade Sul</span></span>
+                  </a>
                 </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#dd-menu-dropdown_1nyqt2_mr3rxe07" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                  <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/dollar-symbol_icon.svg&quot;);mask-image:url(&quot;public/components/icons/outline/dollar-symbol_icon.svg&quot;)" aria-hidden="true"></span></span><span class="nav-link-title">Financeiro</span>
-                </a>
-                <div class="dropdown-menu" id="dd-menu-dropdown_1nyqt2_mr3rxe07">
-                  <a class="dropdown-item d-flex align-items-center" href="#">Contas à receber</a>
-                  <a class="dropdown-item d-flex align-items-center" href="#">Contas a pagar</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/users-group.svg&quot;);mask-image:url(&quot;public/components/icons/outline/users-group.svg&quot;)" aria-hidden="true"></span></span><span class="nav-link-title">Pessoas</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/packages.svg&quot;);mask-image:url(&quot;public/components/icons/outline/packages.svg&quot;)" aria-hidden="true"></span></span><span class="nav-link-title">Produtos</span></a>
               </li>
             </ul>
           </div>
@@ -160,98 +88,174 @@
           <div class="export-page">
           <section class="row g-3 mb-3">
               <div class="col-12 col-md-12">
-                <div class="export-component"><form class="space-y" id="form_ga7mew_mr3rso10" method="post" autocomplete="off" novalidate>
-                  <section class="row g-3 mb-3">
-                      <div class="col-12 col-md-12">
-                        <div class="export-component"><article class="card">
-                          <header class="card-header custom-card-header-content">
-
-                          </header>
-                          <div class="card-body">
-                            <section class="row g-3 mb-3">
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">Nome <span class="required-mark">*</span></label><input class="form-control" type="text" id="nome" name="nome" required></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">CPF ou CNPJ</label><input class="form-control" type="text" id="cpf_cnpj" name="cpf_cnpj" pattern="^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2})$"></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">RG ou IE</label><input class="form-control" type="text" id="rg_ie" name="rg_ie"></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">Relação comercial</label>
-                                  <select class="form-select" id="tom-select_ycot35_mr3whood" data-tomselect="" data-value-field="id" data-label-field="text" data-search-field="text" data-allow-empty-option="false" data-sort-field="text" data-sort-direction="asc" data-max-options="100" data-checkbox-options="true" multiple><option value="C" selected>Cliente</option><option value="F">Fornecedor</option></select></div>
-                                </div>
-                            </section>
-                            <section class="row g-3 mb-3">
-                                <div class="col-12 col-md-6">
-                                  <div class="export-component"><label class="form-label">Telefone</label><input class="form-control" type="tel" id="telefone" name="telefone" pattern="^\(?[1-9]{2}\)?\s?[2-9][0-9]{3,4}-?[0-9]{4}$"></div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                  <div class="export-component"><label class="form-label">E-mail</label><input class="form-control" type="email" id="email" name="email"></div>
-                                </div>
-                            </section>
-                            <section class="row g-3 mb-3">
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">CEP</label>
-                                  <div class="input-group" data-ajax-input-group>
-                                    <input class="form-control" type="text" id="cep" name="cep" data-ajax-source>
-                                    <button type="button" class="btn btn-outline-secondary" data-ajax-fill="1" data-ajax-url-template="https://viacep.com.br/ws/{{value}}/json" data-ajax-method="GET" data-ajax-mappings="[{&quot;key&quot;:&quot;logradouro&quot;,&quot;value&quot;:&quot;endereco&quot;},{&quot;key&quot;:&quot;bairro&quot;,&quot;value&quot;:&quot;bairro&quot;},{&quot;key&quot;:&quot;localidade&quot;,&quot;value&quot;:&quot;cidade&quot;},{&quot;key&quot;:&quot;estado&quot;,&quot;value&quot;:&quot;estado&quot;}]"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span></button>
-                                  </div>
-                                  <div class="invalid-feedback">Informe um valor valido.</div></div>
-                                  <div class="export-component"><label class="form-label">Input com Botoes</label>
-                                  <div class="input-group" data-ajax-input-group>
-                                    <input class="form-control" type="text" id="input_com_botao-j12rmr9bvi0f" name="input_com_botao-j12rmr9bvi0f" placeholder="Digite um valor" data-ajax-source>
-                                    <button type="button" class="btn btn-outline-secondary" data-ajax-fill="1" data-ajax-url-template="https://brasilapi.com.br/api/banks/v1/{{value}}" data-ajax-method="GET" data-ajax-mappings="[{&quot;key&quot;:&quot;name&quot;,&quot;value&quot;:&quot;banco_nome&quot;},{&quot;key&quot;:&quot;fullName&quot;,&quot;value&quot;:&quot;banco_nome_completo&quot;},{&quot;key&quot;:&quot;code&quot;,&quot;value&quot;:&quot;banco_codigo&quot;},{&quot;key&quot;:&quot;ispb&quot;,&quot;value&quot;:&quot;banco_ispb&quot;}]"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span>Buscar</button>
-                                  </div>
-                                  <div class="invalid-feedback">Informe um valor valido.</div></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">Estado</label><input class="form-control" type="text" id="estado" name="estado"></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">Cidade</label><input class="form-control" type="text" id="cidade" name="cidade"></div>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                  <div class="export-component"><label class="form-label">Bairro</label><input class="form-control" type="text" id="bairro" name="bairro"></div>
-                                </div>
-                            </section>
-                            <section class="row g-3 mb-3">
-                                <div class="col-12 col-md-6">
-                                  <div class="export-component"><label class="form-label">Endereço</label><input class="form-control" type="text" id="endereco" name="endereco"></div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <div class="export-component"><label class="form-label">Número</label><input class="form-control" type="text" id="numero" name="numero"></div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                  <div class="export-component"><label class="form-label">Complemento</label><input class="form-control" type="text" id="complemento" name="complemento"></div>
-                                </div>
-                            </section>
-                            <section class="row g-3 mb-3">
-                                <div class="col-12 col-md-12">
-                                  <div class="export-component"><div class="page-footer">
-                                  <div class="container-xl">
-                                  <div class="row align-items-center">
-                                  <div class="col-auto ms-auto"><div class="btn-list">
-                                  <button type="submit" class="btn btn-primary"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/device-floppy.svg&quot;);mask-image:url(&quot;public/components/icons/outline/device-floppy.svg&quot;)" aria-hidden="true"></span>Salvar</button>
-                                  <a href="#" class="btn btn-secondary"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/arrow-left.svg&quot;);mask-image:url(&quot;public/components/icons/outline/arrow-left.svg&quot;)" aria-hidden="true"></span>Voltar</a>
-                                  <button type="button" class="btn btn-secondary"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/x.svg&quot;);mask-image:url(&quot;public/components/icons/outline/x.svg&quot;)" aria-hidden="true"></span>Cancelar</button>
-                                  </div></div>
-                                  </div></div></div></div>
-                                </div>
-                            </section>
-                          </div>
-                        </article></div>
-                        <div class="export-component"><div class="dsb-fab dsb-fab-bottom-right" data-fab style="--dsb-fab-radius:16px;--dsb-fab-fg:#ffffff">
-                          <ul class="dsb-fab-items">
-                            <li class="dsb-fab-item"><a class="dsb-fab-sub" href="#"><span class="dsb-fab-sub-label">asasdasd</span><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/a-b-off.svg&quot;);mask-image:url(&quot;public/components/icons/outline/a-b-off.svg&quot;)" aria-hidden="true"></span></span></a></li>
-                            <li class="dsb-fab-item"><a class="dsb-fab-sub" href="#"><span class="dsb-fab-sub-label">a123123</span><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/ai-agent.svg&quot;);mask-image:url(&quot;public/components/icons/outline/ai-agent.svg&quot;)" aria-hidden="true"></span></span></a></li>
-                          </ul>
-                          <button class="dsb-fab-btn" type="button" data-fab-toggle data-icon="help" data-icon-open="x" aria-expanded="false" aria-label="Ajuda"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/help.svg&quot;);mask-image:url(&quot;public/components/icons/outline/help.svg&quot;)" aria-hidden="true"></span></button>
-                        </div></div>
+                <div class="export-component"></div>
+              </div>
+          </section>
+          <section class="row g-3 mb-3">
+              <div class="col-12 col-md-12">
+                <div class="export-component"><label class="form-label">Input com Botoes</label>
+                <div class="input-group" data-ajax-input-group>
+                  <input class="form-control" type="text" id="input_com_botao-gie6mrdqerww" name="input_com_botao-gie6mrdqerww" placeholder="Digite um valor" data-ajax-source>
+                  <button type="button" class="btn btn-outline-secondary"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/search.svg&quot;);mask-image:url(&quot;public/components/icons/outline/search.svg&quot;)" aria-hidden="true"></span>Buscar</button>
+                </div>
+                <div class="invalid-feedback">Informe um valor valido.</div></div>
+              </div>
+          </section>
+          <section class="row g-3 mb-3">
+              <div class="col-12 col-md-12">
+                <div class="export-component"><div style="text-align:left"><button type="button" class="button-preview btn btn-primary">Botao</button></div></div>
+                <div class="export-component"><label class="form-label">Label do campo</label></div>
+                <div class="export-component"><article class="content-card card"><header class="card-header"><h3 class="card-title">Card</h3></header><div class="card-body">Conteudo do card.</div></article></div>
+                <div class="export-component"><div><div class="placeholder-glow"><span class="placeholder col-12 d-block mt-1"></span>
+                <span class="placeholder col-12 d-block mt-1"></span>
+                <span class="placeholder col-8 d-block mt-1"></span></div></div></div>
+                <div class="export-component"><div>HTML personalizado</div></div>
+                <div class="export-component"><hr class="my-2"></div>
+                <div class="export-component"><div class="card card-sm">
+                  <div class="card-body">
+                      <div class="subheader">Total pedidos</div>
+                      <div class="h2 mb-0" id="kpiTotalPedidos">0</div>
+                  </div>
+                </div></div>
+                <div class="export-component"><div class="timeline">
+                <div class="timeline-event">
+                  <div class="timeline-event-icon"><span class="avatar avatar-xs bg-primary-lt"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/shopping-cart.svg&quot;);mask-image:url(&quot;public/components/icons/outline/shopping-cart.svg&quot;)" aria-hidden="true"></span></span></div>
+                  <div class="card timeline-event-card">
+                    <div class="card-body">
+                <div class="timeline-time text-secondary">10/06/2025 09:00</div>
+                      <h4>Pedido criado</h4>
+                <div class="text-secondary">Pedido recebido pelo sistema.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="timeline-event">
+                  <div class="timeline-event-icon"><span class="avatar avatar-xs bg-success-lt"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/check.svg&quot;);mask-image:url(&quot;public/components/icons/outline/check.svg&quot;)" aria-hidden="true"></span></span></div>
+                  <div class="card timeline-event-card">
+                    <div class="card-body">
+                <div class="timeline-time text-secondary">10/06/2025 10:30</div>
+                      <h4>Pagamento confirmado</h4>
+                <div class="text-secondary">Pagamento processado com sucesso.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="timeline-event">
+                  <div class="timeline-event-icon"><span class="avatar avatar-xs bg-warning-lt"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/package.svg&quot;);mask-image:url(&quot;public/components/icons/outline/package.svg&quot;)" aria-hidden="true"></span></span></div>
+                  <div class="card timeline-event-card">
+                    <div class="card-body">
+                <div class="timeline-time text-secondary">11/06/2025 08:00</div>
+                      <h4>Em separacao</h4>
+                <div class="text-secondary">Produto sendo separado no estoque.</div>
+                    </div>
+                  </div>
+                </div>
+                </div></div>
+                <div class="export-component"><div class="steps">
+                <a class="steps-item steps-item-completed" href="#"><span class="steps-item-icon"></span><span class="steps-item-title">Dados pessoais</span></a>
+                <a class="steps-item active" href="#"><span class="steps-item-icon"></span><span class="steps-item-title">Endereco</span></a>
+                <a class="steps-item" href="#"><span class="steps-item-icon"></span><span class="steps-item-title">Revisao</span></a>
+                </div></div>
+                <div class="export-component"><div class="card card-sm">
+                  <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-auto"><span class="avatar bg-primary-lt"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/shopping-cart.svg&quot;);mask-image:url(&quot;public/components/icons/outline/shopping-cart.svg&quot;)" aria-hidden="true"></span></span></div>
+                        <div class="col">
+                          <div class="font-weight-medium">Total de vendas</div>
+                          <div class="h2 mb-0" id="stat-card_p0dykp_mrdqi2tw">R$ 12.400 <small class="text-success">↑ +12%</small> <span class="text-secondary">vs mes anterior</span></div>
+                        </div>
                       </div>
-                  </section>
-                </form></div>
+                  </div>
+                </div></div>
+                <div class="export-component"><span class="avatar bg-primary-lt text-primary"><span class="avatar-initials">JS</span></span></div>
+                <div class="export-component"><div class="bg-primary-lt rounded p-3">
+                  <div class="subheader">Total geral</div>
+                  <div class="display-6" id="totalGeral">R$ 0,00</div>
+                </div></div>
+                <div class="export-component"><ul class="list-group"><li class="list-group-item">Item 1</li><li class="list-group-item">Item 2</li><li class="list-group-item">Item 3</li></ul></div>
+                <div class="export-component"><div class="mb-3">Conteudo da div.</div></div>
+                <div class="export-component"><h2 class="content-heading">Titulo</h2></div>
+                <div class="export-component"><p class="content-paragraph">Texto da pagina.</p></div>
+                <div class="export-component"><span class="text-secondary">Texto inline</span></div>
+                <div class="export-component"><article class="card">
+                  <header class="card-header custom-card-header-content">
+                    <section class="row g-3 mb-3">
+                        <div class="col-12 col-md-12">
+                          <div class="export-component"><span class="text-secondary">Texto inline</span></div>
+                        </div>
+                    </section>
+                  </header>
+                  <div class="card-body">
+
+                  </div>
+                </article></div>
+                <div class="export-component"><span class="text-secondary">Texto inline</span></div>
+                <div class="export-component"><article class="card">
+                  <div class="card-body">
+
+                  </div>
+                </article></div>
+                <div class="export-component"><div class="dsb-fab dsb-fab-bottom-right" data-fab style="--dsb-fab-radius:50%;--dsb-fab-bg:#4263eb;--dsb-fab-fg:#ffffff">
+                  <ul class="dsb-fab-items">
+                    <li class="dsb-fab-item"><a class="dsb-fab-sub dsb-fab-sub--icon" href="#"><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/message-circle.svg&quot;);mask-image:url(&quot;public/components/icons/outline/message-circle.svg&quot;)" aria-hidden="true"></span></span></a></li>
+                    <li class="dsb-fab-item"><a class="dsb-fab-sub dsb-fab-sub--icon" href="#"><span class="dsb-fab-sub-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/phone.svg&quot;);mask-image:url(&quot;public/components/icons/outline/phone.svg&quot;)" aria-hidden="true"></span></span></a></li>
+                  </ul>
+                  <button class="dsb-fab-btn" type="button" data-fab-toggle data-icon="help" data-icon-open="x" aria-expanded="false" aria-label="Ajuda"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/help.svg&quot;);mask-image:url(&quot;public/components/icons/outline/help.svg&quot;)" aria-hidden="true"></span></button>
+                </div></div>
+                <div class="export-component"><div style="text-align:left"><a class="btn btn-link" href="#">Abrir link</a></div></div>
+                <div class="export-component"><div class="btn-list">
+                  <div class="dropdown">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Acoes</button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <a href="#" class="dropdown-item" id="btnExportar">Exportar</a>
+                      <a href="./pedido-compra-form.html" class="dropdown-item" id="btnImportarXml">Importar XML</a>
+                      <a href="#" class="dropdown-item" id="btnRelatorios">Relatorios</a>
+                    </div>
+                  </div>
+                </div></div>
+                <div class="export-component"><div class="card">
+                  <div class="card-header"><h3 class="card-title">Categoria</h3></div>
+                  <div class="table-responsive">
+                    <table class="table table-vcenter card-table tree-table" data-tree-table>
+                      <tbody>
+                        <tr class="tree-row" data-tree-row data-tree-id="cat-21" data-tree-parent="" data-tree-collapsed="false">
+                          <td>
+                            <div class="tree-row-inner">
+                              <div class="tree-row-main" style="padding-left:0rem"><button type="button" class="tree-toggle" data-tree-toggle aria-expanded="true" aria-label="Expandir/recolher">  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6"/></svg></button><strong>2.1 Custos com Materiais</strong></div>
+                              <div class="tree-row-actions btn-list"><a href="#" class="btn btn-primary">Acao 1</a></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="tree-row" data-tree-row data-tree-id="emb" data-tree-parent="cat-21" data-tree-collapsed="false">
+                          <td>
+                            <div class="tree-row-inner">
+                              <div class="tree-row-main" style="padding-left:1.75rem"><span class="tree-leaf-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;);mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;)" aria-hidden="true"></span></span><span><span class="d-block">Compra de Embalagens</span><span class="d-block text-secondary small">DRE: Custos variaveis</span></span></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="tree-row" data-tree-row data-tree-id="mp" data-tree-parent="cat-21" data-tree-collapsed="false">
+                          <td>
+                            <div class="tree-row-inner">
+                              <div class="tree-row-main" style="padding-left:1.75rem"><span class="tree-leaf-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;);mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;)" aria-hidden="true"></span></span><span><span class="d-block">Compra de Materia Prima</span><span class="d-block text-secondary small">DRE: Custos variaveis</span></span></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="tree-row" data-tree-row data-tree-id="cat-22" data-tree-parent="" data-tree-collapsed="false">
+                          <td>
+                            <div class="tree-row-inner">
+                              <div class="tree-row-main" style="padding-left:0rem"><button type="button" class="tree-toggle" data-tree-toggle aria-expanded="true" aria-label="Expandir/recolher">  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6"/></svg></button><strong>2.2 Custos e Despesas Fixas</strong></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="tree-row" data-tree-row data-tree-id="agua" data-tree-parent="cat-22" data-tree-collapsed="false">
+                          <td>
+                            <div class="tree-row-inner">
+                              <div class="tree-row-main" style="padding-left:1.75rem"><span class="tree-leaf-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;);mask-image:url(&quot;public/components/icons/outline/corner-down-right.svg&quot;)" aria-hidden="true"></span></span><span><span class="d-block">Agua</span><span class="d-block text-secondary small">DRE: Despesas operacionais</span></span></div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div></div>
               </div>
           </section>
           </div>
@@ -259,13 +263,9 @@
       </div>
     </div>
   </div>
-  <script src="public/components/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="public/tabler/js/tabler.js" defer></script>
-  <script src="public/components/js/theme-toggle-runtime.js"></script>
-  <script src="public/components/js/menu-submenu-runtime.js"></script>
   <script src="public/components/js/fab-runtime.js"></script>
-  <script src="public/components/js/tomselect-runtime.js?v=2"></script>
-  <script src="public/components/js/ajax-fill-runtime.js"></script>
+  <script src="public/components/js/tree-table-runtime.js"></script>
   <script src="public/components/js/pill-layout.js?v=9" defer></script>
 </body>
 </html>

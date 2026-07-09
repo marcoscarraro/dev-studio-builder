@@ -9,6 +9,45 @@
     wysiwyg: renderWysiwygPreview
   });
 
+  window.TemplateBuilderRenderers.registerInlineInits({ hugerte: renderWysiwygPageInit });
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib (hugeRTE.init({...})), com plugins e
+  // barra de ferramentas abertos — o dev da pagina pode enxugar/estender a vontade.
+  function renderWysiwygPageInit(component, context) {
+    const props = component.props || {};
+    const id = context.sanitizeElementId(props.inputId, context.sanitizeElementId(component.id, "wysiwyg"));
+    const js = context.toJsString;
+    const height = Math.max(100, context.toPositiveInteger(props.height) || 300);
+
+    const lines = [];
+    lines.push("$(function () {");
+    lines.push(`  var textarea = document.getElementById(${js(id)});`);
+    lines.push('  if (!textarea || textarea.getAttribute("data-hugerte-ready") === "1") return;');
+    lines.push('  textarea.setAttribute("data-hugerte-ready", "1");');
+    lines.push("");
+    lines.push("  var options = {");
+    lines.push(`    selector: ${js("#" + id)},`);
+    lines.push(`    height: ${height},`);
+    lines.push("    menubar: false,");
+    lines.push("    statusbar: false,");
+    lines.push('    plugins: ["advlist", "autolink", "lists", "link", "charmap", "anchor", "searchreplace", "visualblocks", "code", "fullscreen", "insertdatetime", "media", "table", "help", "wordcount"],');
+    lines.push('    toolbar: "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat",');
+    lines.push("    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif; font-size: 14px; }'");
+    lines.push("  };");
+    lines.push("");
+    lines.push("  // Tema escuro do Tabler: acompanha o data-bs-theme aplicado no <html>");
+    lines.push('  if (document.documentElement.getAttribute("data-bs-theme") === "dark") {');
+    lines.push('    options.skin = "oxide-dark";');
+    lines.push('    options.content_css = "dark";');
+    lines.push("  }");
+    lines.push("");
+    lines.push("  hugeRTE.init(options);");
+    lines.push("});");
+
+    return { title: "Editor WYSIWYG (hugeRTE) #" + id, code: lines.join("\n") };
+  }
+
   function renderWysiwygPreview(component, context) {
     const props = component.props || {};
     const label = context.escapeHtml(props.label || "");

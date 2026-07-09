@@ -34,6 +34,88 @@
   window.TemplateBuilderChartHelpers = { buildApexOptions: buildApexOptions };
 
   window.TemplateBuilderRenderers.register({ chart: renderChart });
+  window.TemplateBuilderRenderers.registerInlineInits({ apexchart: renderChartPageInit });
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib (new ApexCharts(el, options).render()),
+  // com as opcoes do grafico ja resolvidas — legivel e editavel no bloco "Scripts da
+  // pagina". Com ajaxUrl, gera o fetch que injeta series/categorias antes de renderizar.
+  function renderChartPageInit(component, context) {
+    var props = component.props || {};
+    var chartId = getChartId(props, component, context);
+    var js = context.toJsString;
+    var options = buildApexOptions(props);
+    var ajaxUrl = (props.ajaxUrl || "").trim();
+    var chartType = props.chartType || "";
+    var isPieDonut = chartType === "pie" || chartType === "donut";
+
+    var lines = [];
+    lines.push("$(function () {");
+    lines.push("  var el = document.getElementById(" + js(chartId) + ");");
+    lines.push('  if (!el || el.dataset.apexChartReady === "1") return;');
+    lines.push('  el.dataset.apexChartReady = "1";');
+    lines.push("");
+    lines.push("  // Opcoes do grafico (edite a vontade — doc: https://apexcharts.com/docs/)");
+    lines.push("  var options = " + indentJsonLiteral(JSON.stringify(options, null, 2), "  ") + ";");
+    lines.push("");
+
+    if (!ajaxUrl) {
+      lines.push("  new ApexCharts(el, options).render();");
+    } else {
+      var headers = buildChartAuthHeaders(props);
+      lines.push("  // Busca os dados no servidor e injeta no grafico antes de renderizar");
+      if (headers) {
+        lines.push("  fetch(" + js(ajaxUrl) + ", { headers: " + JSON.stringify(headers) + " })");
+      } else {
+        lines.push("  fetch(" + js(ajaxUrl) + ")");
+      }
+      lines.push("    .then(function (r) { return r.ok ? r.json() : null; })");
+      lines.push("    .then(function (data) {");
+      lines.push("      if (data) {");
+      if (isPieDonut) {
+        lines.push("        if (Array.isArray(data.values)) { options.series = data.values; }");
+        lines.push("        if (Array.isArray(data.labels)) { options.labels = data.labels; }");
+      } else {
+        lines.push("        if (Array.isArray(data.series)) { options.series = data.series; }");
+        lines.push("        if (Array.isArray(data.categories)) {");
+        lines.push("          options.xaxis = options.xaxis || {};");
+        lines.push("          options.xaxis.categories = data.categories;");
+        lines.push("        }");
+      }
+      lines.push("      }");
+      lines.push("      new ApexCharts(el, options).render();");
+      lines.push("    })");
+      lines.push("    .catch(function () {");
+      lines.push("      new ApexCharts(el, options).render();");
+      lines.push("    });");
+    }
+    lines.push("});");
+
+    return { title: "Grafico (ApexCharts) #" + chartId, code: lines.join("\n") };
+  }
+
+  // Headers de autenticacao do fetch (mesma regra do apexchart-runtime.js), ja resolvidos.
+  function buildChartAuthHeaders(props) {
+    var authType = (props.ajaxAuthType || "none").trim();
+    var token = (props.ajaxAuthToken || "").trim();
+    if (authType === "bearer" && token) {
+      return { Authorization: "Bearer " + token };
+    }
+    if (authType === "header" && token) {
+      var headers = {};
+      headers[(props.ajaxAuthHeader || "X-API-Key").trim()] = token;
+      return headers;
+    }
+    return null;
+  }
+
+  // Re-indenta um JSON.stringify multi-linha para alinhar dentro do bloco gerado.
+  function indentJsonLiteral(jsonText, indent) {
+    return jsonText.split("\n").map(function (line, index) {
+      if (index === 0) { return line; }
+      return indent + line;
+    }).join("\n");
+  }
 
   // renderChart: gera um card com um <div id="..." data-apex-chart data-chart-options="...">
   // As opcoes do grafico ficam em data-chart-options (JSON) para que builder.js possa

@@ -343,7 +343,7 @@ Quando alterar `tom-select.js` (renderer), `tomselect-runtime.js`, `initializePr
 
 ## 13. Componente Script JS
 
-- arrastar "Script JS" da paleta (grupo Componentes JS): badge "JS" aparece no canvas;
+- arrastar "Script JS" da paleta (grupo Automacao): badge "JS" aparece no canvas;
 - o textarea de codigo vem preenchido com o template "Calculo entre campos";
 - trocar o Template no select: confirmacao aparece se o codigo foi editado; textarea atualiza;
 - exportar: o codigo sai num `<script>` unico no FIM do body (depois das libs), nada na posicao do componente;

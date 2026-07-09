@@ -28,31 +28,56 @@
     try { localStorage.setItem(STORAGE_KEY, value); } catch (e) {}
   }
 
-  // Icone que reflete o tema ATUAL: claro -> data-icon-light (padrao "sun");
-  // escuro -> data-icon-dark (padrao "moon").
-  function iconName(toggle, theme) {
-    return theme === "dark"
-      ? (toggle.getAttribute("data-icon-dark") || "moon")
-      : (toggle.getAttribute("data-icon-light") || "sun");
+  // Icone salvo em data-icon-light/-dark e sempre uma string "<biblioteca>:<nome>"
+  // (ver core/parsers.js parseIconValue); sem prefixo reconhecido = Tabler.
+  var ICON_LIBRARIES = ["lineicons-regular", "lineicons-solid", "fa-solid", "fa-regular", "fa-brands"];
+  function parseIconAttr(raw, fallback) {
+    var str = (raw || fallback || "").trim();
+    var sep = str.indexOf(":");
+    if (sep > 0 && ICON_LIBRARIES.indexOf(str.slice(0, sep)) !== -1) {
+      return { lib: str.slice(0, sep), name: str.slice(sep + 1) };
+    }
+    return { lib: "tabler", name: str };
+  }
+  function fontIconClass(lib, name) {
+    if (lib === "lineicons-regular") return "lni lni-" + name;
+    if (lib === "lineicons-solid") return "lni lnis-" + name;
+    if (lib === "fa-solid") return "fa-solid fa-" + name;
+    if (lib === "fa-regular") return "fa-regular fa-" + name;
+    if (lib === "fa-brands") return "fa-brands fa-" + name;
+    return "";
   }
 
-  // Suporta os dois formatos de icone da exportacao: fonte Tabler (<i class="ti ti-...">)
-  // e mascara SVG (<span class="button-icon" style="mask-image:url(...)">).
+  // Icone que reflete o tema ATUAL: claro -> data-icon-light (padrao "sun");
+  // escuro -> data-icon-dark (padrao "moon").
+  function iconAttr(toggle, theme) {
+    return theme === "dark"
+      ? parseIconAttr(toggle.getAttribute("data-icon-dark"), "moon")
+      : parseIconAttr(toggle.getAttribute("data-icon-light"), "sun");
+  }
+
+  // Suporta os dois formatos de icone da exportacao:
+  //   - mascara SVG (Tabler): <span class="button-icon" style="mask-image:url(...)">
+  //   - fonte (Lineicons/Font Awesome): <i class="lni lni-...">, <i class="fa-solid fa-...">
   function updateToggle(toggle, theme) {
-    var name = iconName(toggle, theme);
+    var parsed = iconAttr(toggle, theme);
+    var name = parsed.name;
 
-    var fontIcon = toggle.querySelector("i.ti");
-    if (fontIcon) {
-      fontIcon.className = fontIcon.className.replace(/ti-[A-Za-z0-9_-]+/, "ti-" + name);
-    }
-
-    var masked = toggle.querySelectorAll(".button-icon");
-    if (masked.length) {
-      var url = 'url("public/components/icons/outline/' + name + '.svg")';
-      Array.prototype.forEach.call(masked, function (el) {
-        el.style.webkitMaskImage = url;
-        el.style.maskImage = url;
-      });
+    if (parsed.lib === "tabler") {
+      var masked = toggle.querySelectorAll(".button-icon");
+      if (masked.length) {
+        var url = 'url("public/components/icons/outline/' + name + '.svg")';
+        Array.prototype.forEach.call(masked, function (el) {
+          el.style.webkitMaskImage = url;
+          el.style.maskImage = url;
+        });
+      }
+    } else {
+      var fontIcon = toggle.querySelector(".lni, [class*='fa-']");
+      var cls = fontIconClass(parsed.lib, name);
+      if (fontIcon && cls) {
+        fontIcon.className = cls;
+      }
     }
   }
 

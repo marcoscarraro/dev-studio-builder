@@ -1,20 +1,39 @@
-# Mapa do `builder.js`
+# Mapa do `builder.js` (e dos modulos extraidos)
 
-`assets/js/builder.js` e o orquestrador principal do editor (~4.100 linhas). Ele
-concentra o estado, a renderizacao do canvas, o painel de propriedades, o historico e
-a ponte para a exportacao. Este documento mostra **onde cada coisa esta por nome de
-funcao** (sem numeros de linha, que envelhecem rapido) e como navegar.
+`assets/js/builder.js` e o orquestrador principal do editor (~3.400 linhas). Em jul/2026
+ele foi **dividido por assunto**: os blocos tematicos viraram arquivos proprios em
+`assets/js/core/` e `assets/js/data/`, no mesmo padrao IIFE + `window.X` + `create(context)`
+(sem build step). Este documento mostra **em qual arquivo e funcao** cada coisa esta.
 
 Dica: no editor, use "Ir para simbolo" / busca por nome de funcao (`Ctrl+F`) com os
 nomes abaixo.
 
 ---
 
-## Estrutura em Secoes (por nome)
+## Onde esta cada assunto (arquivo primeiro!)
+
+| Assunto | Arquivo | Funcoes-chave |
+|---|---|---|
+| Helpers de HTML/string | `core/helpers.js` | `escapeHtml`, `attr`, `classAttr`, `sanitizeElementId` |
+| Dados constantes | `data/pattern-templates.js` | `PATTERN_TEMPLATES`, `AJAX_PRESETS` |
+| Parsers de dados | `core/parsers.js` | `parseOptions`, `parseChoiceItems`, `parseTableColumns`, `parseDropdownItems`, `normalizeKeyValueEntries` |
+| Historico + localStorage | `core/history-storage.js` | `commitHistory`, `debounceHistory`, `undo`, `redo`, `saveToStorage`, `loadStoredPage` |
+| Preview "vivo" das libs no canvas | `core/preview-libs.js` | `initializePreviewComponents`, `initializePreviewTomSelects`, `loadPreviewAsset` |
+| Painel de propriedades (render + controles) | `core/properties-panel.js` | `renderProperties`, `renderPropertyField`, `fieldRepeater`, `fieldMatrix`, `matchesShowWhen`, `updateRepeaterProperty` |
+| Eventos do painel | `core/properties.js` | `bind` (roteia input/click por `data-*`) |
+| Drag-drop do canvas | `core/drag-drop.js` | `bindCanvas`, `dropOnColumn`, `canDrop` |
+| Export da pagina | `core/export-html.js` | `exportDocument`, `collectExportAssets`, `renderFormAjaxScript` |
+| **Todo o resto** | `builder.js` | ver tabela abaixo |
+
+Os modulos com estado recebem um `context` do builder via `create(context)`
+(`history-storage`, `preview-libs`, `properties-panel`) — o proprio builder mostra
+exatamente o que cada um enxerga, na secao de imports do topo do arquivo.
+
+## Estrutura em Secoes do `builder.js` (por nome)
 
 | Secao | Funcoes-chave |
 |---|---|
-| Constantes e estado | `STORAGE_KEY`, `HISTORY_LIMIT`, objeto `state` |
+| Constantes e estado | `STORAGE_KEY`, `HISTORY_LIMIT`, objeto `state`, imports dos modulos |
 | Inicializacao | `init` — ponto de entrada ao carregar a pagina |
 | Criacao de pagina | `createEmptyPage`, `createStarterPage` |
 | Catalogo de componentes | `loadComponentRegistry`, `loadTablerIcons`, `setComponentRegistry` |
@@ -24,22 +43,17 @@ nomes abaixo.
 | Navegacao no estado | `getSectionRows`, `getContainerRows`, indices de drop |
 | Selecao / duplicar / remover | `selectNode`, `duplicateSelected`, `removeRow`, `removeComponent` |
 | Busca de nos | `findNode`, `findColumn`, `findComponentLocation`, `findRowLocation`, `getAllRows` |
-| Renderizacao do canvas | `render`, `initializePreviewComponents`, `initializePreview*` |
+| Renderizacao do canvas | `render` (chama `initializePreviewComponents` do preview-libs) |
 | Renderizacao das secoes | `renderPageHeader`, `renderPageFooter`, `renderCanvas`, `renderRow` |
 | Renderizacao de componentes | `renderComponent`, containers (`renderFormContainer*`, `renderCustomCard*`, `renderFieldList*`) |
 | Despacho de renderers | `componentHtmlRenderers`, `getComponentHtmlRenderer`, `getRendererContext` |
 | FieldList: templates de index | `applyFieldListIndexTemplates`, `createFieldListNameTemplate` |
 | Helpers de CSS e definicao | `getComponentClass`, `isFieldListComponent`, `getRowContainerConfig` |
 | Helpers de renderizacao | `renderCustomAttributes`, `renderButtonContent`, `renderTablerIcon`, `renderSelectOption` |
-| Painel de propriedades | `renderProperties`, `renderComponentProperties`, `getComponentPropertySchema`, `getFallbackPropertySchema` |
-| Campos condicionais do painel | `matchesShowWhen` (showWhen), `interpolatePropertyTemplate` + `fieldInfo` (field "info") |
-| Controles do painel | `renderPropertyField`, `fieldInput`, `fieldSelect`, `fieldKeyValue`, `fieldRepeater`, `fieldMatrix` |
 | Envio AJAX do formulario | `renderFormContainerAttributes` (suprime action/method no modo AJAX), `generateFormAjaxCode` (preenche o textarea "Codigo JS") |
 | Normalizacao e migracao | `normalizePage`, `normalizeComponent`, `migrateLegacyExampleProps` |
 | Geracao automatica de IDs | `applyGeneratedComponentProps`, `getGeneratedControlFields` |
 | Saida: export HTML / JSON | `exportHtmlDocument`, `copyOutput`, `downloadOutput`, `getExportHtmlContext` |
-| Historico undo/redo | `commitHistory`, `debounceHistory`, `undo`, `redo` |
-| Parsers de dados | `parseOptions`, `parseChoiceItems`, `parseTableColumns`, `parseDropdownItems` |
 | Utilidades | `uid`, `toast`, `sanitizeEditorHtml` |
 
 ---
@@ -49,10 +63,15 @@ nomes abaixo.
 `builder.js` nao exporta um objeto global proprio — ele e o consumidor dos modulos:
 
 - `window.TemplateBuilderHelpers` — helpers de HTML (de `core/helpers.js`)
+- `window.TemplateBuilderData` — dados constantes (de `data/pattern-templates.js`)
+- `window.TemplateBuilderParsers` — parsers de dados (de `core/parsers.js`)
+- `window.TemplateBuilderHistory` — historico/persistencia (de `core/history-storage.js`)
+- `window.TemplateBuilderPreviewLibs` — preview das libs no canvas (de `core/preview-libs.js`)
+- `window.TemplateBuilderPropertiesPanel` — painel de propriedades (de `core/properties-panel.js`)
 - `window.TemplateBuilderDragDrop` — drag-drop (de `core/drag-drop.js`)
-- `window.TemplateBuilderProperties` — painel de propriedades (de `core/properties.js`)
+- `window.TemplateBuilderProperties` — eventos do painel (de `core/properties.js`)
 - `window.TemplateBuilderExportHtml` — exportacao HTML (de `core/export-html.js`)
-- `window.TemplateBuilderRenderers` — registro de renderers (de `renderers/registry.js`)
+- `window.TemplateBuilderRenderers` — registro de renderers + geradores de init inline (de `renderers/registry.js`)
 - `window.TemplateBuilderChartHelpers` — opcoes de grafico (de `renderers/chart.js`)
 
 ---
@@ -129,17 +148,16 @@ no `builder.js`.
 
 ### "Quero modificar o painel de propriedades de um componente"
 
-1. Se o componente tem `properties` no `components.json`, o painel vem de
-   `getComponentPropertySchema`.
-2. Para tipos sem `properties` no JSON, ha um fallback por `kind` em
-   `getFallbackPropertySchema` (cada `if (kind === "...")` define os campos).
-3. Para adicionar um **tipo de campo novo**, veja `COMO_CRIAR_FEATURE.md`
+1. O painel vem SEMPRE de `components.json` (`properties` + `propertySets` do bloco),
+   resolvido por `getComponentPropertySchema`. Bloco sem `properties`/`propertySets` =
+   painel vazio (nao existe mais fallback em JS — fonte unica).
+2. Para adicionar um **tipo de campo novo**, veja `COMO_CRIAR_FEATURE.md`
    (`renderPropertyField` + `fieldXxx`).
-4. **Campo condicional**: `"showWhen": { "prop": "x", "equals": v }` no components.json
+3. **Campo condicional**: `"showWhen": { "prop": "x", "equals": v }` no components.json
    (filtrado por `matchesShowWhen`; checkbox re-renderiza o painel na hora). **Campo
    informativo**: `"field": "info"` + `valueTemplate` com `{{prop}}` (somente leitura).
    Exemplo real: Dropzone (URL de upload vs id do input oculto).
-5. **Ganchos especiais** em `core/properties.js`: `syncFormAjaxCode` (regenera o codigo
+4. **Ganchos especiais** em `core/properties.js`: `syncFormAjaxCode` (regenera o codigo
    do Envio AJAX enquanto nao editado) e `applySnippetTemplate` (template do Script JS).
 
 ### "Quero modificar as regras de drag-drop"

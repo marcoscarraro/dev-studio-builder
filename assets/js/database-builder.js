@@ -14,9 +14,21 @@
 (function () {
   "use strict";
 
+  // Chave unica do localStorage (mesmo formato/chave do original).
+  const STORAGE_KEY = "database_designer";
+
   // ============================================
   // CONFIGURACAO DOS BANCOS (portado do original)
   // ============================================
+  // GUIA DOS DIALETOS — para ajustar o SQL de um banco (ou adicionar um novo),
+  // estes sao os 6 pontos do arquivo que conhecem o dialeto (busque pelo nome):
+  //   1. dbConfig        (abaixo)      - flags do banco: quotes, autoIncrement, engine...
+  //   2. typeMappings    (abaixo)      - tipos de coluna disponiveis no select
+  //   3. Column.toSQL()                - tipo/default/auto-increment por coluna
+  //   4. Table.toSQL()                 - PK, indices, unique, FKs, ENGINE/CHARSET
+  //   5. View.toSQL()                  - LIMIT/COMMENT conforme o banco
+  //   6. triggerToSQL() e exportSQL()  - delimitadores de trigger e cabecalho do .sql
+  // Todos usam "if (currentDatabase === ...)" — ajuste banco por banco, sem abstracao.
   let currentDatabase = "mysql";
 
   const dbConfig = {
@@ -1623,6 +1635,28 @@
     els.importInput.focus();
   }
 
+  // Divide a definicao de colunas em linhas SEM quebrar tipos que tem virgula
+  // dentro de parenteses, ex.: DECIMAL(10,2) ou ENUM('a','b').
+  // (Um split(",") simples quebraria "DECIMAL(10" / "2)".)
+  function splitColumnsDef(def) {
+    const parts = [];
+    let depth = 0;
+    let current = "";
+    for (let i = 0; i < def.length; i++) {
+      const ch = def[i];
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+      if (ch === "," && depth === 0) {
+        parts.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    if (current.trim()) parts.push(current);
+    return parts;
+  }
+
   function importSQL() {
     const sql = els.importInput.value.trim();
     if (!sql) {
@@ -1654,7 +1688,7 @@
       }
       const tableId = nextTableId++;
       const table = new Table(tableId, tableName, 100, 100, tableComment, engine, charset, collation);
-      const columnLines = columnsDef.split(",");
+      const columnLines = splitColumnsDef(columnsDef);
       let hasPK = false;
       columnLines.forEach((line) => {
         line = line.trim();
@@ -1732,11 +1766,11 @@
     Object.values(views).forEach((view) => {
       data.views[view.id] = { id: view.id, name: view.name, mode: view.mode, sql: view.sql, sourceTables: view.sourceTables, selectedColumns: view.selectedColumns, joins: view.joins, where: view.where, orderBy: view.orderBy, limit: view.limit, comment: view.comment, x: view.x, y: view.y };
     });
-    localStorage.setItem("database_designer", JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
   function loadFromLocalStorage() {
-    const saved = localStorage.getItem("database_designer");
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return false;
     try {
       const data = JSON.parse(saved);

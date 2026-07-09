@@ -1,0 +1,47 @@
+/* Tabela em Arvore (tree-table): linhas com recuo por nivel (padding-left inline) e um
+   botao de expandir/recolher nas linhas que tem filhos. O runtime tree-table-runtime.js
+   alterna data-tree-collapsed/aria-expanded e esconde/mostra as linhas descendentes.
+   tree-row-actions (editar/excluir, opcional por item) fica encostado a direita via
+   justify-content:space-between no wrapper. */
+
+.tree-table .tree-row-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .5rem;
+}
+
+.tree-table .tree-row-main {
+	display: flex;
+	align-items: flex-start;
+	gap: .5rem;
+	min-width: 0;
+}
+
+.tree-table .tree-row-actions {
+	flex-shrink: 0;
+}
+
+.tree-toggle {
+	display: inline-flex;
+	align-items: center;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	cursor: pointer;
+	color: inherit;
+}
+
+.tree-toggle svg {
+	transition: transform .15s ease;
+}
+
+.tree-toggle[aria-expanded="false"] svg {
+	transform: rotate(-90deg);
+}
+
+.tree-table .tree-leaf-icon {
+	opacity: .5;
+	display: inline-flex;
+	align-items: center;
+}

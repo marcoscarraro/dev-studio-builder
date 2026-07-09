@@ -7,8 +7,12 @@
 (function () {
   "use strict";
 
+  // Guarda de re-carga no padrao dos demais runtimes: se o script for injetado de
+  // novo (ex.: preview do builder), re-chama init() e sai. O init e idempotente
+  // (delegacao unica no document via flag "bound").
   var RUNTIME = "TemplateBuilderFabRuntime";
   if (window[RUNTIME] && window[RUNTIME].init) {
+    window[RUNTIME].init();
     return;
   }
 

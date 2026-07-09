@@ -33,7 +33,13 @@
     const menuLayout = context.state.page.props.menuLayout || "none";
     const menuTheme = context.state.page.props.menuTheme || "dark";
     const menuPosition = context.state.page.props.menuPosition || "left";
-    const themeAttr = menuTheme === "dark" ? ' data-bs-theme="dark"' : "";
+    const menuThemeColorValue = menuTheme === "primary"
+      ? "var(--tblr-primary)"
+      : menuTheme === "custom"
+        ? context.escapeAttr(context.state.page.props.menuThemeColor || "#206bc4")
+        : "";
+    const standardThemeAttrs = getStandardMenuThemeAttrs(menuTheme, menuThemeColorValue);
+    const railThemeAttr = getRailMenuThemeAttr(menuTheme, menuThemeColorValue);
     const isPillLayout = !isLoginPage && menuLayout === "combo-pill";
     const isModuleRail = !isLoginPage && menuLayout === "module-rail";
     const isCombo = !isLoginPage && menuLayout === "combo";
@@ -44,8 +50,8 @@
     // Collapse (recolher a sidebar Tabler) so existe nos layouts vertical/combo e quando o dev nao desativou. Default: ativado.
     const menuCollapsibleProp = context.state.page.props.menuCollapsible;
     const sidebarCollapsible = hasSidebar && !usesIconRail && !(menuCollapsibleProp === false || menuCollapsibleProp === "false");
-    const sidebarHtml = hasSidebar ? (usesIconRail ? exportIconSidebar(context, themeAttr) : exportSidebar(context, menuPosition, themeAttr, sidebarCollapsible, isCombo)) : "";
-    const navbarHtml = hasNavbar ? (isModuleRail ? exportModuleRailNavbar(context, themeAttr) : (isPillLayout ? exportPillNavbar(context, themeAttr) : exportNavbar(context, themeAttr, isCombo))) : "";
+    const sidebarHtml = hasSidebar ? (usesIconRail ? exportIconSidebar(context, railThemeAttr) : exportSidebar(context, menuPosition, standardThemeAttrs, sidebarCollapsible, isCombo)) : "";
+    const navbarHtml = hasNavbar ? (isModuleRail ? exportModuleRailNavbar(context, standardThemeAttrs) : (isPillLayout ? exportPillNavbar(context, standardThemeAttrs) : exportNavbar(context, standardThemeAttrs, isCombo))) : "";
 
     const title = context.escapeHtml(context.state.page.props.title || "Pagina");
 
@@ -226,6 +232,31 @@
     return lines.join("\n");
   }
 
+  // Tema do menu (navbar/sidebar): "dark"/"light" (padrao) ou "primary"/"custom" (fundo
+  // colorido). Duas variantes porque o texto usa familias de variavel CSS diferentes:
+  // navbar/sidebar padrao (classe .navbar) usa --tblr-navbar-color (via .navbar-dark);
+  // o rail de icones (.app-icon-sidebar, sem classe .navbar) usa --tblr-body-color/--tblr-secondary
+  // direto. O fundo em ambos os casos e --tblr-bg-surface (confirmado em todos os layouts).
+  function getStandardMenuThemeAttrs(menuTheme, colorValue) {
+    if (menuTheme === "dark") {
+      return { classExtra: "", attr: ' data-bs-theme="dark"' };
+    }
+    if (menuTheme === "primary" || menuTheme === "custom") {
+      return { classExtra: " navbar-dark", attr: ` style="--tblr-bg-surface:${colorValue}"` };
+    }
+    return { classExtra: "", attr: "" };
+  }
+
+  function getRailMenuThemeAttr(menuTheme, colorValue) {
+    if (menuTheme === "dark") {
+      return ' data-bs-theme="dark"';
+    }
+    if (menuTheme === "primary" || menuTheme === "custom") {
+      return ` style="--tblr-bg-surface:${colorValue};--tblr-body-color:#fff;--tblr-secondary:rgba(255,255,255,.7)"`;
+    }
+    return "";
+  }
+
   // Componentes de menu que, no sidebar, sao fixados no rodape (ex.: perfil do usuario, tela cheia).
   const SIDEBAR_BOTTOM_TYPES = { "menu-user": true, "menu-fullscreen": true };
 
@@ -250,7 +281,7 @@
     return { top: top.join("\n"), bottom: bottom.join("\n") };
   }
 
-  function exportSidebar(context, position, themeAttr, collapsible, isCombo) {
+  function exportSidebar(context, position, themeAttrs, collapsible, isCombo) {
     const posClass = position === "right" ? " navbar-end" : "";
     const sidebarWidth = context.state.page.props.menuSidebarWidth || "normal";
     const widthClass = sidebarWidth === "compact" ? " navbar-vertical-sm" : "";
@@ -261,7 +292,7 @@
     const menuControls = isCombo ? "sidebar-menu navbar-menu" : "sidebar-menu";
     const comboCollapse = isCombo ? " combo-menu-collapse" : "";
     return [
-      `<aside class="navbar navbar-vertical navbar-expand-lg${posClass}${widthClass}"${themeAttr}>`,
+      `<aside class="navbar navbar-vertical navbar-expand-lg${posClass}${widthClass}${themeAttrs.classExtra}"${themeAttrs.attr}>`,
       '  <div class="container-xl">',
       `    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="${menuTarget}" aria-controls="${menuControls}" aria-expanded="false" aria-label="Toggle navigation">`,
       '      <span class="navbar-toggler-icon"></span>',
@@ -283,7 +314,7 @@
     ].filter((line) => line !== '').join("\n");
   }
 
-  function exportNavbar(context, themeAttr, isCombo) {
+  function exportNavbar(context, themeAttrs, isCombo) {
     const sticky = context.toBooleanValue(context.state.page.props.menuSticky);
     const stickyClass = sticky ? " navbar-sticky" : "";
     const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav flex-row order-md-no-order");
@@ -291,7 +322,7 @@
     // classe compartilhada para ser aberto pelo unico hamburguer do sidebar.
     const comboCollapse = isCombo ? " combo-menu-collapse" : "";
     return [
-      `<header class="navbar navbar-expand-md d-print-none${stickyClass}"${themeAttr}>`,
+      `<header class="navbar navbar-expand-md d-print-none${stickyClass}${themeAttrs.classExtra}"${themeAttrs.attr}>`,
       '  <div class="container-xl">',
       '    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">',
       '      <span class="navbar-toggler-icon"></span>',
@@ -392,8 +423,11 @@
 
   function menuIconSpan(context, icon, extraClass) {
     if (!icon) return "";
-    const url = `public/components/icons/outline/${context.escapeAttr(String(icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
-    return `<span class="button-icon ${extraClass}" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span>`;
+    const iconHtml = context.renderTablerIcon(icon, "");
+    // Injeta a classe extra (ex.: "me-2") no primeiro atributo class="..." — funciona
+    // tanto para o <span class="button-icon"> do Tabler quanto para o <i class="..."> das
+    // bibliotecas de fonte (Lineicons/Font Awesome).
+    return iconHtml ? iconHtml.replace(/ class="/, ` class="${extraClass} `) : "";
   }
 
   const MENU_SUBMENU_CARET = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>';
@@ -432,10 +466,8 @@
       const label = html(props.label || "Item");
       const href = esc(props.href || "#");
       const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-      const iconHtml = iconUrl
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
-        : "";
+      const iconInner = context.renderTablerIcon(props.icon, "");
+      const iconHtml = iconInner ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${iconInner}</span>` : "";
       return [
         '<li class="nav-item">',
         `  <a class="nav-link" href="${href}"${target}>${iconHtml}<span class="nav-link-title">${label}</span></a>`,
@@ -446,40 +478,40 @@
     if (component.type === "menu-fullscreen") {
       const props = component.props || {};
       const label = html(props.label || "Tela cheia");
-      const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
-      const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
+      const iconEnterValue = props.icon || "maximize";
+      const iconExitValue = props.iconExit || "minimize";
+      const iconInner = context.renderTablerIcon(iconEnterValue, "");
       return [
         '<li class="nav-item">',
-        `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}">`,
-        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/${iconEnter}.svg&quot;);mask-image:url(&quot;public/components/icons/outline/${iconEnter}.svg&quot;)" aria-hidden="true"></span></span>`,
+        `  <a class="nav-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${esc(iconEnterValue)}" data-icon-exit="${esc(iconExitValue)}">`,
+        iconInner ? `    <span class="nav-link-icon d-md-none d-lg-inline-block">${iconInner}</span>` : '',
         `    <span class="nav-link-title">${label}</span>`,
         '  </a>',
         '</li>'
-      ].join("\n");
+      ].filter((line) => line !== '').join("\n");
     }
 
     if (component.type === "menu-theme-toggle") {
       const props = component.props || {};
       const label = html(props.label || "Tema");
-      const iconLight = esc((props.iconLight || "sun").replace(/[^A-Za-z0-9_-]/g, ""));
-      const iconDark = esc((props.iconDark || "moon").replace(/[^A-Za-z0-9_-]/g, ""));
+      const iconLightValue = props.iconLight || "sun";
+      const iconDarkValue = props.iconDark || "moon";
+      const iconInner = context.renderTablerIcon(iconLightValue, "");
       return [
         '<li class="nav-item">',
-        `  <a class="nav-link" href="#" role="button" data-theme-toggle data-icon-light="${iconLight}" data-icon-dark="${iconDark}">`,
-        `    <span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;public/components/icons/outline/${iconLight}.svg&quot;);mask-image:url(&quot;public/components/icons/outline/${iconLight}.svg&quot;)" aria-hidden="true"></span></span>`,
+        `  <a class="nav-link" href="#" role="button" data-theme-toggle data-icon-light="${esc(iconLightValue)}" data-icon-dark="${esc(iconDarkValue)}">`,
+        iconInner ? `    <span class="nav-link-icon d-md-none d-lg-inline-block">${iconInner}</span>` : '',
         `    <span class="nav-link-title">${label}</span>`,
         '  </a>',
         '</li>'
-      ].join("\n");
+      ].filter((line) => line !== '').join("\n");
     }
 
     if (component.type === "menu-dropdown") {
       const props = component.props || {};
       const label = html(props.label || "Dropdown");
-      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-      const iconHtml = iconUrl
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
-        : "";
+      const iconInner = context.renderTablerIcon(props.icon, "");
+      const iconHtml = iconInner ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${iconInner}</span>` : "";
       const items = Array.isArray(props.items) ? props.items : [];
       const subItemsHtml = renderDropdownSubItems(context, items);
       // Com submenu: mantem o dropdown aberto ao clicar no cabecalho do 2o nivel.
@@ -526,10 +558,8 @@
       const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
       const badgeText = html(props.badgeText || "");
       const badgeColor = esc(props.badgeColor || "red");
-      const iconUrl = props.icon ? `public/components/icons/outline/${esc(String(props.icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg` : "";
-      const iconHtml = iconUrl
-        ? `<span class="nav-link-icon d-md-none d-lg-inline-block"><span class="button-icon" style="-webkit-mask-image:url(&quot;${iconUrl}&quot;);mask-image:url(&quot;${iconUrl}&quot;)" aria-hidden="true"></span></span>`
-        : "";
+      const iconInner = context.renderTablerIcon(props.icon, "");
+      const iconHtml = iconInner ? `<span class="nav-link-icon d-md-none d-lg-inline-block">${iconInner}</span>` : "";
       const badgeHtml = badgeText ? `<span class="badge bg-${badgeColor} ms-auto badge-sm">${badgeText}</span>` : "";
       return [
         '<li class="nav-item">',
@@ -563,6 +593,43 @@
         `    ${selectorHtml}`,
         `  </a>`,
         `  <div class="dropdown-menu dropdown-menu-end" id="${dropdownId}">`,
+        subItemsHtml,
+        `  </div>`,
+        '</li>'
+      ].join("\n");
+    }
+
+    if (component.type === "menu-switcher") {
+      const props = component.props || {};
+      const currentLabel = html(props.currentLabel || "Empresa");
+      const currentSublabel = html(props.currentSublabel || "");
+      const logoUrl = esc(props.logoUrl || "");
+      const initials = html((props.badgeText || (props.currentLabel || "E").substring(0, 2)).toUpperCase());
+      const color = esc(props.badgeColor || "blue");
+      const items = Array.isArray(props.items) ? props.items : [];
+      const badgeHtml = logoUrl
+        ? `<span class="avatar avatar-sm" style="background-image:url('${logoUrl}')"></span>`
+        : `<span class="avatar avatar-sm bg-${color}-lt">${initials}</span>`;
+      const checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10"/></svg>';
+      const subItemsHtml = items.map((item) => {
+        const label = html(item.label || "");
+        const sublabel = html(item.sublabel || "");
+        const active = context.toBooleanValue(item.active);
+        return [
+          `    <a class="dropdown-item d-flex align-items-center justify-content-between gap-2" href="${esc(item.href || "#")}">`,
+          `      <span style="line-height:1.2"><span style="display:block">${label}</span>${sublabel ? `<span style="display:block;font-size:.75rem;opacity:.7">${sublabel}</span>` : ""}</span>`,
+          active ? `      ${checkSvg}` : "",
+          `    </a>`
+        ].filter(Boolean).join("\n");
+      }).join("\n");
+      const dropdownId = `switcher-dd-${component.id}`;
+      return [
+        '<li class="nav-item dropdown">',
+        `  <a href="#" class="nav-link d-flex align-items-center gap-2 px-1" data-bs-toggle="dropdown" aria-label="Trocar empresa ou sistema" aria-expanded="false">`,
+        `    ${badgeHtml}`,
+        `    <div class="d-none d-xl-block"><div style="font-weight:600">${currentLabel}</div>${currentSublabel ? `<div class="small text-secondary">${currentSublabel}</div>` : ""}</div>`,
+        '  </a>',
+        `  <div class="dropdown-menu" id="${dropdownId}">`,
         subItemsHtml,
         `  </div>`,
         '</li>'
@@ -658,8 +725,14 @@
 
     appendUniqueAssets(assets.styles, seenStyles, registryAssets.styles, "href");
     appendUniqueAssets(assets.headScripts, seenHeadScripts, registryAssets.headScripts, "src");
+    appendUniqueAssets(assets.styles, seenStyles, collectIconLibraryStyles(context), "href");
 
-    collectExportComponents(context).forEach((component) => {
+    const exportComponents = collectExportComponents(context);
+    // FieldList na pagina: TomSelect fica no runtime generico (as linhas clonadas
+    // precisam de re-init via o evento fieldlist:row-added).
+    const pageHasFieldList = exportComponents.some((c) => context.isFieldListComponent(c));
+
+    exportComponents.forEach((component) => {
       const definition = context.getComponentDefinition(component.type);
       const componentAssets = definition.assets || {};
       const props = component.props || {};
@@ -667,21 +740,35 @@
       appendUniqueAssets(assets.headScripts, seenHeadScripts, componentAssets.headScripts, "src");
       appendUniqueAssets(assets.scripts, seenScripts, componentAssets.scripts, "src");
 
-      // assets.init: "xxx" => precisa do runtime de mesmo nome (chave em assets.runtimes).
-      if (componentAssets.init === "datatable") { neededRuntimes.add("datatable"); }
-      if (componentAssets.init === "tomselect") { neededRuntimes.add("tomselect"); }
-      if (componentAssets.init === "litepicker") { neededRuntimes.add("litepicker"); }
-      if (componentAssets.init === "signature") { neededRuntimes.add("signature"); }
-      if (componentAssets.init === "hugerte") { neededRuntimes.add("hugerte"); }
-      if (componentAssets.init === "apexchart") { neededRuntimes.add("apexchart"); }
-      if (componentAssets.init === "fullcalendar") { neededRuntimes.add("fullcalendar"); }
-      if (componentAssets.init === "dropzone") { neededRuntimes.add("dropzone"); }
-      if (componentAssets.init === "barcodeScanner") { neededRuntimes.add("barcodeScanner"); }
-      if (componentAssets.init === "audioRecorder") { neededRuntimes.add("audioRecorder"); }
-      if (componentAssets.init === "speechReader") { neededRuntimes.add("speechReader"); }
-      if (componentAssets.init === "pdfViewer") { neededRuntimes.add("pdfViewer"); }
-      if (componentAssets.init === "gantt") { neededRuntimes.add("gantt"); }
-      if (componentAssets.init === "fab") { neededRuntimes.add("fab"); }
+      // assets.init: "xxx" => o componente e "vivo". Dois caminhos:
+      //   1. Init INLINE: se o renderer registrou um gerador (registerInlineInits), o
+      //      export emite codigo legivel DIRETO na lib no bloco "Scripts da pagina",
+      //      com os valores resolvidos — o dev edita ali. O runtime nao e incluido.
+      //   2. Runtime generico: sem gerador, ou quando o gerador devolve null (casos com
+      //      maquinario: selecao de linhas, criar via modal, pagina com FieldList).
+      // Componente novo com JS: basta declarar assets.init no components.json + a chave
+      // em assets.runtimes — NAO precisa editar este arquivo.
+      // Excecoes (tratadas adiante, nao entram aqui):
+      //   - "mask": depende de props.dataMask e inclui lib imask + runtime em par (needsMask);
+      //   - "passwordToggle": condicional ao tipo do campo (so password com toggle ativo).
+      const initKey = componentAssets.init;
+      if (initKey && initKey !== "mask" && initKey !== "passwordToggle") {
+        const registry = window.TemplateBuilderRenderers;
+        const inlineInitFn = (registry && registry.getInlineInit) ? registry.getInlineInit(initKey) : null;
+        let inline = null;
+        if (inlineInitFn && !(initKey === "tomselect" && pageHasFieldList)) {
+          inline = inlineInitFn(component, context);
+        }
+        if (inline && inline.code) {
+          needsJquery = true; // os blocos gerados usam o idioma $(function () { ... })
+          assets.pageScripts.push({
+            title: inline.title || definition.label || initKey,
+            code: inline.code
+          });
+        } else {
+          neededRuntimes.add(initKey);
+        }
+      }
       if (context.toBooleanValue(props.showCopy)) { neededRuntimes.add("clipboard"); }
       if (componentAssets.init === "passwordToggle") {
         const inputType = props.inputType || definition.inputType || component.type || "text";
@@ -1070,6 +1157,30 @@
     return components;
   }
 
+  // Detecta quais bibliotecas de icone de FONTE (Lineicons/Font Awesome) a pagina usa
+  // e devolve so os CSS necessarios. A escolha e por campo (qualquer prop de icone
+  // pode usar uma lib diferente), entao em vez de enumerar cada uma das ~44 props de
+  // icone (incl. dentro de repeaters/sub-repeaters aninhados: dropdown, timeline,
+  // menu-dropdown com filhos...), a pagina inteira e serializada uma vez e procurada
+  // pelos prefixos reconhecidos (ver core/parsers.js ICON_LIBRARIES) — simples e
+  // robusto, sem precisar percorrer a arvore de props manualmente.
+  // Tabler nao entra aqui (usa apenas base.css, sempre incluido). Font Awesome tem
+  // um unico CSS (all.min.css) que ja cobre os 3 estilos (solid/regular/brands).
+  function collectIconLibraryStyles(context) {
+    const pageJson = JSON.stringify(context.state.page);
+    const styles = [];
+    if (pageJson.indexOf('"lineicons-regular:') !== -1) {
+      styles.push("public/components/libs/lineicons-5.1-free/free-regular-font/lineicons-free.css");
+    }
+    if (pageJson.indexOf('"lineicons-solid:') !== -1) {
+      styles.push("public/components/libs/lineicons-5.1-free/free-solid-fonts/lineicons-free-solid.css");
+    }
+    if (pageJson.indexOf('"fa-solid:') !== -1 || pageJson.indexOf('"fa-regular:') !== -1 || pageJson.indexOf('"fa-brands:') !== -1) {
+      styles.push("public/components/libs/fontawesome-free-7.3.0-web/css/all.min.css");
+    }
+    return styles;
+  }
+
   function appendUniqueAssets(target, seen, values, urlKey) {
     (Array.isArray(values) ? values : []).forEach((value) => {
       const url = getAssetUrl(value, urlKey);
@@ -1140,7 +1251,7 @@
 
   // === LAYOUT COMBO-PILL: navbar flutuante (pill) + sidebar de icones ===
 
-  function exportPillNavbar(context, themeAttr) {
+  function exportPillNavbar(context, themeAttrs) {
     const navContent = exportMenuNavSections(context, context.state.page.navbar, "navbar-nav me-auto");
     const mobileModules = exportMenuItems(context, context.state.page.sidebar);
     const mobileSection = mobileModules
@@ -1154,7 +1265,7 @@
         ].join("\n")
       : '';
     return [
-      `<header class="navbar navbar-expand-md app-pill-navbar d-print-none"${themeAttr}>`,
+      `<header class="navbar navbar-expand-md app-pill-navbar d-print-none${themeAttrs.classExtra}"${themeAttrs.attr}>`,
       '  <div class="container-fluid">',
       '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#pillNavOffcanvas" aria-controls="pillNavOffcanvas" aria-expanded="false" aria-label="Abrir menu">',
       '      <span class="navbar-toggler-icon"></span>',
@@ -1178,7 +1289,7 @@
   // Navbar do layout "module-rail": itens do topo SEMPRE visiveis (rolagem horizontal no
   // mobile) + hamburguer que abre um off-canvas SO com os modulos (o rail vira sanduiche).
   // Difere do pill (que esconde os itens no off-canvas).
-  function exportModuleRailNavbar(context, themeAttr) {
+  function exportModuleRailNavbar(context, themeAttrs) {
     // Respeita colunas (igual ao pill/combo): 1 coluna => 1 <ul class="navbar-nav app-rail-topitems">;
     // varias => varios <ul navbar-nav> (me-auto/mx-auto) que o CSS dispoe em linha dentro do
     // .app-rail-topwrap (rolavel na horizontal se nao couber).
@@ -1204,7 +1315,7 @@
         ].join("\n")
       : '';
     return [
-      `<header class="navbar navbar-expand-md app-pill-navbar app-rail-navbar d-print-none"${themeAttr}>`,
+      `<header class="navbar navbar-expand-md app-pill-navbar app-rail-navbar d-print-none${themeAttrs.classExtra}"${themeAttrs.attr}>`,
       '  <div class="container-fluid">',
       togglerHtml,
       '    <div class="app-rail-topwrap">',
@@ -1231,10 +1342,9 @@
     ].filter((line) => line !== '').join("\n");
   }
 
-  function makeSideIconHtml(iconName, esc) {
-    const name = esc((iconName || "circle").replace(/[^A-Za-z0-9_-]/g, ""));
-    const url = `public/components/icons/outline/${name}.svg`;
-    return `<span class="side-icon"><span class="button-icon" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span></span>`;
+  function makeSideIconHtml(context, iconValue) {
+    const iconHtml = context.renderTablerIcon(iconValue || "circle", "");
+    return iconHtml ? `<span class="side-icon">${iconHtml}</span>` : "";
   }
 
   // Itens do 2o nivel dentro de um .side-sub do rail: link simples ou grupo aninhado
@@ -1244,8 +1354,8 @@
     const html = context.escapeHtml;
     const iconSpan = (icon) => {
       if (!icon) return "";
-      const url = `public/components/icons/outline/${esc(String(icon).replace(/[^A-Za-z0-9_-]/g, ""))}.svg`;
-      return `<span class="button-icon me-1" style="-webkit-mask-image:url(&quot;${url}&quot;);mask-image:url(&quot;${url}&quot;)" aria-hidden="true"></span>`;
+      const iconHtml = context.renderTablerIcon(icon, "");
+      return iconHtml ? iconHtml.replace(/ class="/, ' class="me-1 ') : "";
     };
     const out = [];
     (Array.isArray(items) ? items : []).forEach((item) => {
@@ -1286,7 +1396,7 @@
             const label = html(props.label || "Item");
             const href = esc(props.href || "#");
             const target = props.target === "_blank" ? ' target="_blank" rel="noopener noreferrer"' : "";
-            const iconHtml = makeSideIconHtml(props.icon, esc);
+            const iconHtml = makeSideIconHtml(context, props.icon);
             lines.push(
               '<li class="side-item">',
               `  <a class="side-link" href="${href}"${target} data-leaf data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
@@ -1297,7 +1407,7 @@
             );
           } else if (component.type === "menu-dropdown") {
             const label = html(props.label || "Dropdown");
-            const iconHtml = makeSideIconHtml(props.icon, esc);
+            const iconHtml = makeSideIconHtml(context, props.icon);
             const subItems = Array.isArray(props.items) ? props.items : [];
             const subHtml = renderRailSubItems(context, subItems, caretSvg);
             lines.push(
@@ -1314,12 +1424,12 @@
             );
           } else if (component.type === "menu-fullscreen") {
             const label = html(props.label || "Tela cheia");
-            const iconEnter = esc((props.icon || "maximize").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconExit = esc((props.iconExit || "minimize").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconHtml = makeSideIconHtml(iconEnter, esc);
+            const iconEnterValue = props.icon || "maximize";
+            const iconExitValue = props.iconExit || "minimize";
+            const iconHtml = makeSideIconHtml(context, iconEnterValue);
             lines.push(
               '<li class="side-item">',
-              `  <a class="side-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${iconEnter}" data-icon-exit="${iconExit}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `  <a class="side-link" href="#" role="button" data-fullscreen-toggle data-icon-enter="${esc(iconEnterValue)}" data-icon-exit="${esc(iconExitValue)}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
               `    ${iconHtml}`,
               `    <span class="side-text">${label}</span>`,
               '  </a>',
@@ -1327,12 +1437,12 @@
             );
           } else if (component.type === "menu-theme-toggle") {
             const label = html(props.label || "Tema");
-            const iconLight = esc((props.iconLight || "sun").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconDark = esc((props.iconDark || "moon").replace(/[^A-Za-z0-9_-]/g, ""));
-            const iconHtml = makeSideIconHtml(iconLight, esc);
+            const iconLightValue = props.iconLight || "sun";
+            const iconDarkValue = props.iconDark || "moon";
+            const iconHtml = makeSideIconHtml(context, iconLightValue);
             lines.push(
               '<li class="side-item">',
-              `  <a class="side-link" href="#" role="button" data-theme-toggle data-icon-light="${iconLight}" data-icon-dark="${iconDark}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
+              `  <a class="side-link" href="#" role="button" data-theme-toggle data-icon-light="${esc(iconLightValue)}" data-icon-dark="${esc(iconDarkValue)}" data-bs-toggle="tooltip" data-bs-placement="right" title="${label}">`,
               `    ${iconHtml}`,
               `    <span class="side-text">${label}</span>`,
               '  </a>',

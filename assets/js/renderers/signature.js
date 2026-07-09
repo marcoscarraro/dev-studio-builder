@@ -9,6 +9,64 @@
     signature: renderSignaturePreview
   });
 
+  window.TemplateBuilderRenderers.registerInlineInits({ signature: renderSignaturePageInit });
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib (new SignaturePad(canvas, {...})), com
+  // limpar, ajuste de resolucao e gravacao no input oculto — tudo aberto para edicao.
+  function renderSignaturePageInit(component, context) {
+    const props = component.props || {};
+    const canvasId = getCanvasId(component, props, context);
+    const js = context.toJsString;
+    const penColor = (props.penColor || "").trim();
+    const hasHidden = Boolean(props.inputName);
+
+    const lines = [];
+    lines.push("$(function () {");
+    lines.push(`  var canvas = document.getElementById(${js(canvasId)});`);
+    lines.push("  if (!canvas || canvas._signaturePad) return;");
+    lines.push("");
+    lines.push("  var pad = new SignaturePad(canvas, {");
+    lines.push(`    backgroundColor: ${js(props.backgroundColor || "transparent")},`);
+    if (penColor) {
+      lines.push(`    penColor: ${js(penColor)}`);
+    } else {
+      lines.push("    penColor: window.getComputedStyle(canvas).color  // acompanha o tema");
+    }
+    lines.push("  });");
+    lines.push("  canvas._signaturePad = pad;");
+    lines.push("");
+    lines.push("  // Botao de limpar a assinatura");
+    lines.push(`  var clearBtn = document.getElementById(${js(canvasId + "-clear")});`);
+    lines.push("  if (clearBtn) {");
+    lines.push("    clearBtn.addEventListener(\"click\", function () { pad.clear(); });");
+    lines.push("  }");
+    lines.push("");
+    lines.push("  // Ajusta a resolucao do canvas ao tamanho exibido (telas retina incluidas)");
+    lines.push("  function resizeCanvas() {");
+    lines.push("    var ratio = Math.max(window.devicePixelRatio || 1, 1);");
+    lines.push("    canvas.width = canvas.offsetWidth * ratio;");
+    lines.push("    canvas.height = canvas.offsetHeight * ratio;");
+    lines.push('    canvas.getContext("2d").scale(ratio, ratio);');
+    lines.push("    pad.fromData(pad.toData());");
+    lines.push("  }");
+    lines.push('  window.addEventListener("resize", resizeCanvas);');
+    lines.push("  resizeCanvas();");
+    if (hasHidden) {
+      lines.push("");
+      lines.push("  // Grava a assinatura (data URL) no input oculto que vai no submit do form");
+      lines.push(`  var hidden = document.getElementById(${js(canvasId + "-value")});`);
+      lines.push("  if (hidden) {");
+      lines.push('    pad.addEventListener("endStroke", function () {');
+      lines.push('      hidden.value = pad.isEmpty() ? "" : pad.toDataURL();');
+      lines.push("    });");
+      lines.push("  }");
+    }
+    lines.push("});");
+
+    return { title: "Assinatura (SignaturePad) #" + canvasId, code: lines.join("\n") };
+  }
+
   function renderSignaturePreview(component, context) {
     const props = component.props || {};
     const wrapperClass = context.getComponentClass(component) || "signature position-relative";

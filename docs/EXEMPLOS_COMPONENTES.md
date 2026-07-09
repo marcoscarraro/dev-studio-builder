@@ -406,7 +406,7 @@ Todo renderer recebe `context` com os seguintes helpers:
 
 | Helper | Uso |
 |---|---|
-| `context.renderTablerIcon(name, color)` | Retorna HTML do icone Tabler ou `""` se sem nome |
+| `context.renderTablerIcon(value, color)` | Retorna HTML do icone (Tabler, Lineicons ou Font Awesome — ver [ICONES.md](ICONES.md)) ou `""` se vazio |
 | `context.renderButtonContent(text, icon, iconPosition, iconColor)` | Monta o interior de um botao (texto + icone posicionado) |
 | `context.getSafeButtonType(value)` | Retorna `"button"`, `"submit"` ou `"reset"` validado |
 | `context.fieldListActionAttr(value)` | Retorna atributo `data-fieldlist-action` para botoes de FieldList |

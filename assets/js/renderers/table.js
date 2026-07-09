@@ -5,6 +5,108 @@
     table: renderTableComponent,
     datatable: renderDataTableComponent
   });
+  window.TemplateBuilderRenderers.registerInlineInits({ datatable: renderDataTablePageInit });
+
+  // Layout do DataTable no padrao Tabler (mesma string do datatable-runtime.js).
+  const DT_DOM_LAYOUT = "<'card-body border-bottom py-3'<'d-flex flex-wrap gap-2 align-items-center justify-content-between'<'text-secondary'l><'d-flex flex-wrap gap-2 align-items-center'Bf>>>rt<'card-footer d-flex align-items-center justify-content-between flex-wrap gap-2'ip>";
+
+  // === INIT INLINE DA PAGINA EXPORTADA ===
+  // Gera o codigo de inicializacao DIRETO na lib ($("#id").DataTable({...})), com os
+  // valores do componente ja resolvidos — legivel e editavel no bloco "Scripts da
+  // pagina". Devolve null quando a tabela usa selecao de linhas (padrao Gmail), que
+  // fica no runtime generico (datatable-runtime.js) por ser maquinario complexo.
+  function renderDataTablePageInit(component, context) {
+    const props = component.props || {};
+    if (context.toBooleanValue(props.rowSelect)) {
+      return null; // selecao de linhas: usa o runtime generico
+    }
+
+    const tableId = context.getDataTableId(component);
+    const js = context.toJsString;
+    const ajaxUrl = props.ajaxUrl && String(props.ajaxUrl).trim() ? String(props.ajaxUrl).trim() : "";
+    const serverSide = context.toBooleanValue(props.serverSide) && Boolean(ajaxUrl);
+    const ajaxMethod = getDataTableAjaxMethod(props.ajaxMethod, context.toBooleanValue(props.serverSide));
+    const ajaxBodyFormat = getDataTableAjaxBodyFormat(props.ajaxBodyFormat);
+    const ajaxDataSrc = String(props.ajaxDataSrc || "data").trim() || "data";
+    const ajaxHeaders = buildDataTableAjaxHeaders(props, context);
+    const emptyText = props.emptyText || "Nenhum registro encontrado";
+    const rawColumns = Array.isArray(props.columns) ? props.columns : [];
+    const columnsConfig = buildDataTableColumnsConfig(rawColumns.map((column) => ({
+      data: column && column.data ? String(column.data).trim() : ""
+    })));
+
+    const lines = [];
+    lines.push("$(function () {");
+    lines.push(`  if ($.fn.DataTable.isDataTable(${js("#" + tableId)})) return;`);
+    lines.push("");
+    lines.push(`  $(${js("#" + tableId)}).DataTable({`);
+    lines.push(`    pageLength: ${context.toPositiveInteger(props.pageLength, 10)},`);
+    lines.push(`    responsive: ${context.toBooleanValue(props.responsive) ? "true" : "false"},`);
+    lines.push(`    colReorder: ${context.toBooleanValue(props.colReorder) ? "true" : "false"},`);
+    lines.push(`    searching: ${context.toBooleanValue(props.searching) ? "true" : "false"},`);
+    lines.push(`    lengthChange: ${context.toBooleanValue(props.lengthChange) ? "true" : "false"},`);
+    if (serverSide) {
+      lines.push("    // Processamento no servidor (paginacao/busca/ordenacao via backend)");
+      lines.push("    serverSide: true,");
+      lines.push("    processing: true,");
+    }
+    if (columnsConfig) {
+      lines.push(`    columns: ${columnsConfig},`);
+    }
+    if (ajaxUrl) {
+      lines.push("    ajax: {");
+      lines.push(`      url: ${js(ajaxUrl)},`);
+      lines.push(`      type: ${js(ajaxMethod)},`);
+      lines.push('      dataType: "json",');
+      if (Object.keys(ajaxHeaders).length) {
+        lines.push(`      headers: ${JSON.stringify(ajaxHeaders)},`);
+      }
+      if (ajaxMethod === "POST" && ajaxBodyFormat === "json") {
+        lines.push('      contentType: "application/json; charset=utf-8",');
+        lines.push("      data: function (data) { return JSON.stringify(data); },");
+      }
+      lines.push("      // Caminho dos registros dentro do JSON de resposta");
+      lines.push("      dataSrc: function (response) {");
+      lines.push(`        return ${dataSrcExpr("response", ajaxDataSrc)};`);
+      lines.push("      }");
+      lines.push("    },");
+    }
+    if (context.toBooleanValue(props.buttons)) {
+      lines.push("    // Layout Tabler (cards) + botao de escolher colunas visiveis");
+      lines.push(`    dom: ${js(DT_DOM_LAYOUT)},`);
+      lines.push('    buttons: [{ extend: "colvis", text: "Colunas", className: "btn btn-outline-secondary" }],');
+    }
+    lines.push("    language: {");
+    lines.push('      search: "Buscar:",');
+    lines.push('      lengthMenu: "_MENU_ registros por pagina",');
+    lines.push('      info: "Mostrando _START_ ate _END_ de _TOTAL_ registros",');
+    lines.push(`      infoEmpty: ${js(emptyText)},`);
+    lines.push(`      zeroRecords: ${js(emptyText)},`);
+    lines.push('      paginate: { previous: "Anterior", next: "Proximo" }');
+    lines.push("    }");
+    lines.push("  });");
+    lines.push("});");
+
+    return { title: "DataTable #" + tableId, code: lines.join("\n") };
+  }
+
+  // "data" -> "response && response.data || []"; "" ou "." -> "response"
+  function dataSrcExpr(base, jsonPath) {
+    if (!jsonPath || jsonPath === ".") {
+      return base;
+    }
+    let expr = base;
+    const guards = [base];
+    jsonPath.split(".").forEach((segment) => {
+      if (/^[A-Za-z_$][\w$]*$/.test(segment)) {
+        expr += "." + segment;
+      } else {
+        expr += "[" + JSON.stringify(segment) + "]";
+      }
+      guards.push(expr);
+    });
+    return guards.join(" && ") + " || []";
+  }
 
   function renderTableComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};

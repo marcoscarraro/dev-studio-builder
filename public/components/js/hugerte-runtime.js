@@ -51,7 +51,10 @@
       content_style: CONTENT_STYLE
     };
 
-    if (window.localStorage && localStorage.getItem("tablerTheme") === "dark") {
+    // Tema escuro: segue o data-bs-theme aplicado no <html> pelo tabler-theme.js
+    // (a chave antiga "tablerTheme" no localStorage estava errada — a real e "tabler-theme",
+    // e conferir o atributo cobre tambem o tema vindo de parametro de URL).
+    if (document.documentElement.getAttribute("data-bs-theme") === "dark") {
       options.skin = "oxide-dark";
       options.content_css = "dark";
     }
