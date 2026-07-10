@@ -24,10 +24,7 @@
       const variant = props.variant || "primary";
       const outline = context.toBooleanValue(props.outline);
       const size = props.size || "";
-      const variantClass = outline ? `btn-outline-${variant}` : `btn-${variant}`;
-      let cls = `button-preview btn ${variantClass}`;
-      if (size) cls += ` ${size}`;
-      btnClassAttr = context.classAttr(cls);
+      btnClassAttr = context.classAttr(context.buildButtonClass("button-preview btn", variant, outline, size, ""));
     }
 
     if (href) {

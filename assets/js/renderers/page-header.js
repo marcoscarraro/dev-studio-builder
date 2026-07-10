@@ -19,7 +19,7 @@
       const btns = actions.map(function (action) {
         const text = action.text || "Acao";
         const href = action.href || "#";
-        const cls = action.cssClass || "btn btn-primary";
+        const cls = context.buildButtonClass("btn", action.variant, context.toBooleanValue(action.outline), action.size, action.cssClass);
         const content = context.renderButtonContent(text, action.icon, action.iconPosition || "left", action.iconColor);
         return `<a href="${context.escapeAttr(href)}"${context.classAttr(cls)}>${content}</a>`;
       }).join("\n");

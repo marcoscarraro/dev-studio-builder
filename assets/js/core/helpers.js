@@ -61,6 +61,18 @@
     return Array.from(arguments).map(normalizeCssClass).filter(Boolean).join(" ");
   }
 
+  // Monta a classe de um botao a partir de cor/outline/tamanho (padrao Tabler
+  // btn-{variant} / btn-outline-{variant} / btn-sm|btn-lg|btn-xl). Se cssClassOverride
+  // vier preenchido, o dev sobrescreveu manualmente e ele vence sem calculo nenhum —
+  // mesma regra usada em todo lugar que monta botao neste projeto (button.js e o molde).
+  function buildButtonClass(base, variant, outline, size, cssClassOverride) {
+    if (cssClassOverride) {
+      return cssClassOverride;
+    }
+    const variantClass = variant ? (outline ? `btn-outline-${variant}` : `btn-${variant}`) : "";
+    return [base, variantClass, size].filter(Boolean).join(" ");
+  }
+
   function normalizeCssClass(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
   }
@@ -101,6 +113,7 @@
 
   window.TemplateBuilderHelpers = {
     attr: attr,
+    buildButtonClass: buildButtonClass,
     classAttr: classAttr,
     escapeAttr: escapeAttr,
     escapeHtml: escapeHtml,

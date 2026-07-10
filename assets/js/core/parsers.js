@@ -281,7 +281,12 @@
           text: String(action.text || (action.icon ? "" : `Acao ${index + 1}`)),
           href: String(action.href || "#"),
           id: String(action.id || ""),
-          cssClass: String(action.cssClass || (type === "link" ? "btn btn-primary" : "btn btn-outline-secondary")),
+          // cssClass vazio (nao um fallback fixo) — deixa buildButtonClass computar
+          // btn-{variant}/btn-outline-{variant}+tamanho; cssClass so vence se o dev preencher.
+          cssClass: String(action.cssClass || ""),
+          variant: String(action.variant || ""),
+          outline: toBooleanValue(action.outline),
+          size: String(action.size || ""),
           icon: String(action.icon || ""),
           iconColor: String(action.iconColor || ""),
           iconPosition: action.iconPosition === "right" ? "right" : "left",
@@ -313,6 +318,9 @@
         href: parts[offset + 1] || "#",
         id: parts[offset + 2] || "",
         cssClass: parts[offset + 3] || (type === "link" ? "btn btn-primary" : "btn btn-outline-secondary"),
+        variant: "",
+        outline: false,
+        size: "",
         icon: "",
         iconColor: "",
         iconPosition: "left",

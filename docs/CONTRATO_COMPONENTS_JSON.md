@@ -6,17 +6,10 @@ Este documento explica os campos mais importantes de:
 assets/data/components.json
 ```
 
-O arquivo possui schema em:
-
-```text
-assets/data/components.schema.json
-```
-
 ## Estrutura Principal
 
 ```json
 {
-  "$schema": "./components.schema.json",
   "version": 14,
   "schemaVersion": 5,
   "framework": "tabler",

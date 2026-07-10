@@ -27,6 +27,7 @@
   // propriedades (core/properties-panel.js) via window.TemplateBuilderData.
   const helpers = window.TemplateBuilderHelpers || {};
   const attr = helpers.attr;
+  const buildButtonClass = helpers.buildButtonClass;
   const classAttr = helpers.classAttr;
   const escapeAttr = helpers.escapeAttr;
   const escapeHtml = helpers.escapeHtml;
@@ -2031,6 +2032,7 @@
   function getRendererContext() {
     return {
       attr,
+      buildButtonClass,
       classAttr,
       escapeAttr,
       escapeHtml,
@@ -2146,10 +2148,11 @@
       idAttr = "";
     }
     const actionText = action.text || (action.icon ? "" : "Acao");
+    const actionClass = buildButtonClass("btn", action.variant, action.outline, action.size, action.cssClass);
     if (action.type === "link") {
-      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(action.cssClass || "btn btn-primary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</a>`;
+      return `<a href="${escapeAttr(action.href || "#")}"${classAttr(actionClass)}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</a>`;
     }
-    return `<button type="button"${classAttr(action.cssClass || "btn btn-outline-secondary")}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</button>`;
+    return `<button type="button"${classAttr(actionClass)}${idAttr}${fieldListActionAttr(action.fieldListAction)}${ajaxFillAttrs(action)}${geoFillAttrs(action)}>${renderButtonContent(actionText, action.icon, action.iconPosition, action.iconColor)}</button>`;
   }
 
   function renderSelectOption(option) {
@@ -3421,6 +3424,7 @@
 
   function getExportHtmlContext() {
     return {
+      buildButtonClass,
       classAttr,
       escapeAttr,
       escapeHtml,

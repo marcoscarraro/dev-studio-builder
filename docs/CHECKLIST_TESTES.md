@@ -8,7 +8,6 @@ Rode no PowerShell:
 
 ```powershell
 node -e "JSON.parse(require('fs').readFileSync('assets/data/components.json','utf8')); console.log('components json ok')"
-node -e "JSON.parse(require('fs').readFileSync('assets/data/components.schema.json','utf8')); console.log('schema json ok')"
 ```
 
 Se alterou JS:

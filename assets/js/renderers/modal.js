@@ -20,7 +20,7 @@
   }
 
   function renderTriggerButton(modalId, props, context) {
-    const cssClass = props.triggerCssClass || "btn btn-primary";
+    const cssClass = context.buildButtonClass("btn", props.triggerVariant, context.toBooleanValue(props.triggerOutline), props.triggerSize, props.triggerCssClass);
     const icon = context.renderTablerIcon(props.triggerIcon, props.triggerIconColor);
     const text = context.escapeHtml(props.triggerText || "Abrir modal");
     let content;
@@ -165,16 +165,16 @@
   }
 
   function renderFooterButton(btn, context) {
-    const cssClass = btn.cssClass || "btn";
+    const cssClass = context.buildButtonClass("btn", btn.variant, context.toBooleanValue(btn.outline), btn.size, btn.cssClass);
     const dismiss = context.toBooleanValue(btn.dismiss) ? ' data-bs-dismiss="modal"' : "";
-    const text = context.escapeHtml(btn.text || "Botao");
+    const content = context.renderButtonContent(btn.text || "Botao", btn.icon || "", btn.iconPosition || "left", btn.iconColor || "");
     const href = btn.href || "";
 
     if (href) {
-      return `<a href="${context.escapeAttr(href)}"${context.classAttr(cssClass)}${dismiss}>${text}</a>`;
+      return `<a href="${context.escapeAttr(href)}"${context.classAttr(cssClass)}${dismiss}>${content}</a>`;
     }
 
-    return `<button type="button"${context.classAttr(cssClass)}${dismiss}>${text}</button>`;
+    return `<button type="button"${context.classAttr(cssClass)}${dismiss}>${content}</button>`;
   }
 
   function getModalId(component, props, context) {

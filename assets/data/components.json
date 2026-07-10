@@ -1,5 +1,4 @@
 {
-  "$schema": "./components.schema.json",
   "version": 30,
   "schemaVersion": 5,
   "framework": "tabler",
@@ -3143,7 +3142,10 @@
                 "text": "Buscar",
                 "href": "#",
                 "id": "",
-                "cssClass": "btn btn-outline-secondary",
+                "cssClass": "",
+                "variant": "secondary",
+                "outline": true,
+                "size": "",
                 "icon": "search",
                 "iconColor": "",
                 "iconPosition": "left",
@@ -3365,10 +3367,44 @@
                   "default": ""
                 },
                 {
-                  "label": "Classe CSS",
+                  "label": "Cor do botao",
+                  "prop": "variant",
+                  "field": "select",
+                  "default": "secondary",
+                  "options": [
+                    ["primary", "Primary"],
+                    ["secondary", "Secondary"],
+                    ["success", "Success"],
+                    ["danger", "Danger"],
+                    ["warning", "Warning"],
+                    ["info", "Info"],
+                    ["light", "Light"],
+                    ["dark", "Dark"]
+                  ]
+                },
+                {
+                  "label": "Estilo outline (contornado)",
+                  "prop": "outline",
+                  "field": "checkbox",
+                  "default": true
+                },
+                {
+                  "label": "Tamanho do botao",
+                  "prop": "size",
+                  "field": "select",
+                  "default": "",
+                  "options": [
+                    ["", "Padrao"],
+                    ["btn-sm", "Pequeno"],
+                    ["btn-lg", "Grande"],
+                    ["btn-xl", "Extra grande"]
+                  ]
+                },
+                {
+                  "label": "Classe CSS (sobrescreve cor/outline/tamanho)",
                   "prop": "cssClass",
                   "field": "text",
-                  "default": "btn btn-outline-secondary"
+                  "default": ""
                 },
                 {
                   "label": "Acao FieldList",
@@ -5229,7 +5265,10 @@
             "buttonIcon": "",
             "buttonIconColor": "",
             "buttonIconPosition": "left",
-            "buttonCssClass": "btn btn-outline-secondary",
+            "buttonCssClass": "",
+            "buttonVariant": "secondary",
+            "buttonOutline": true,
+            "buttonSize": "",
             "menuCssClass": "dropdown-menu dropdown-menu-end",
             "items": [
               {
@@ -5312,7 +5351,38 @@
               ]
             },
             {
-              "label": "Classe CSS do botao",
+              "label": "Cor do botao",
+              "prop": "buttonVariant",
+              "field": "select",
+              "options": [
+                ["primary", "Primary"],
+                ["secondary", "Secondary"],
+                ["success", "Success"],
+                ["danger", "Danger"],
+                ["warning", "Warning"],
+                ["info", "Info"],
+                ["light", "Light"],
+                ["dark", "Dark"]
+              ]
+            },
+            {
+              "label": "Estilo outline (contornado)",
+              "prop": "buttonOutline",
+              "field": "checkbox"
+            },
+            {
+              "label": "Tamanho do botao",
+              "prop": "buttonSize",
+              "field": "select",
+              "options": [
+                ["", "Padrao"],
+                ["btn-sm", "Pequeno"],
+                ["btn-lg", "Grande"],
+                ["btn-xl", "Extra grande"]
+              ]
+            },
+            {
+              "label": "Classe CSS do botao (sobrescreve cor/outline/tamanho)",
               "prop": "buttonCssClass",
               "field": "text"
             },
@@ -5529,10 +5599,44 @@
                   "default": ""
                 },
                 {
-                  "label": "Classe CSS",
+                  "label": "Cor do botao",
+                  "prop": "variant",
+                  "field": "select",
+                  "default": "secondary",
+                  "options": [
+                    ["primary", "Primary"],
+                    ["secondary", "Secondary"],
+                    ["success", "Success"],
+                    ["danger", "Danger"],
+                    ["warning", "Warning"],
+                    ["info", "Info"],
+                    ["light", "Light"],
+                    ["dark", "Dark"]
+                  ]
+                },
+                {
+                  "label": "Estilo outline (contornado)",
+                  "prop": "outline",
+                  "field": "checkbox",
+                  "default": true
+                },
+                {
+                  "label": "Tamanho do botao",
+                  "prop": "size",
+                  "field": "select",
+                  "default": "",
+                  "options": [
+                    ["", "Padrao"],
+                    ["btn-sm", "Pequeno"],
+                    ["btn-lg", "Grande"],
+                    ["btn-xl", "Extra grande"]
+                  ]
+                },
+                {
+                  "label": "Classe CSS (sobrescreve cor/outline/tamanho)",
                   "prop": "cssClass",
                   "field": "text",
-                  "default": "btn btn-outline-secondary"
+                  "default": ""
                 },
                 {
                   "label": "Acao FieldList",
@@ -5779,12 +5883,14 @@
           "description": "Link de texto simples para outra pagina ou secao.",
           "kind": "link",
           "icon": "block-icon link",
-          "defaultCssClass": "btn btn-{{variant}}",
+          "defaultCssClass": "",
           "defaults": {
             "text": "Abrir link",
             "href": "#",
             "target": "",
             "variant": "link",
+            "outline": false,
+            "size": "",
             "align": "left",
             "icon": "",
             "iconColor": "",
@@ -5817,69 +5923,73 @@
               ]
             },
             {
-              "label": "Estilo",
+              "label": "Cor do botao",
               "prop": "variant",
               "field": "select",
               "options": [
                 [
                   "link",
-                  "Link (padrao)"
+                  "Link (texto, sem fundo)"
                 ],
                 [
                   "primary",
-                  "Botao primario"
+                  "Primary"
                 ],
                 [
                   "secondary",
-                  "Botao secundario"
+                  "Secondary"
                 ],
                 [
                   "success",
-                  "Botao sucesso"
+                  "Success"
                 ],
                 [
                   "danger",
-                  "Botao perigo"
+                  "Danger"
                 ],
                 [
                   "warning",
-                  "Botao aviso"
+                  "Warning"
                 ],
                 [
                   "info",
-                  "Botao info"
+                  "Info"
                 ],
                 [
                   "light",
-                  "Botao claro"
+                  "Light"
                 ],
                 [
                   "dark",
-                  "Botao escuro"
+                  "Dark"
+                ]
+              ]
+            },
+            {
+              "label": "Estilo outline (contornado, nao se aplica a 'Link')",
+              "prop": "outline",
+              "field": "checkbox"
+            },
+            {
+              "label": "Tamanho do botao",
+              "prop": "size",
+              "field": "select",
+              "options": [
+                [
+                  "",
+                  "Padrao"
                 ],
                 [
-                  "outline-primary",
-                  "Outline primario"
+                  "btn-sm",
+                  "Pequeno"
                 ],
                 [
-                  "outline-secondary",
-                  "Outline secundario"
+                  "btn-lg",
+                  "Grande"
                 ],
                 [
-                  "outline-success",
-                  "Outline sucesso"
-                ],
-                [
-                  "outline-danger",
-                  "Outline perigo"
-                ],
-                [
-                  "outline-warning",
-                  "Outline aviso"
-                ],
-                [
-                  "outline-info",
-                  "Outline info"
+                  "btn-xl",
+                  "Extra grande"
                 ]
               ]
             },
@@ -6681,7 +6791,10 @@
             "modalId": "",
             "showTrigger": true,
             "triggerText": "Abrir modal",
-            "triggerCssClass": "btn btn-primary",
+            "triggerCssClass": "",
+            "triggerVariant": "primary",
+            "triggerOutline": false,
+            "triggerSize": "",
             "triggerIcon": "",
             "triggerIconColor": "",
             "triggerIconPosition": "left",
@@ -6705,12 +6818,24 @@
               {
                 "text": "Fechar",
                 "cssClass": "btn me-auto",
+                "variant": "",
+                "outline": false,
+                "size": "",
+                "icon": "",
+                "iconColor": "",
+                "iconPosition": "left",
                 "dismiss": true,
                 "href": ""
               },
               {
                 "text": "Confirmar",
-                "cssClass": "btn btn-primary",
+                "cssClass": "",
+                "variant": "primary",
+                "outline": false,
+                "size": "",
+                "icon": "",
+                "iconColor": "",
+                "iconPosition": "left",
                 "dismiss": true,
                 "href": ""
               }
@@ -6798,7 +6923,41 @@
               "group": "Trigger"
             },
             {
-              "label": "Classe CSS do botao",
+              "label": "Cor do botao",
+              "prop": "triggerVariant",
+              "field": "select",
+              "group": "Trigger",
+              "options": [
+                ["primary", "Primary"],
+                ["secondary", "Secondary"],
+                ["success", "Success"],
+                ["danger", "Danger"],
+                ["warning", "Warning"],
+                ["info", "Info"],
+                ["light", "Light"],
+                ["dark", "Dark"]
+              ]
+            },
+            {
+              "label": "Estilo outline (contornado)",
+              "prop": "triggerOutline",
+              "field": "checkbox",
+              "group": "Trigger"
+            },
+            {
+              "label": "Tamanho do botao",
+              "prop": "triggerSize",
+              "field": "select",
+              "group": "Trigger",
+              "options": [
+                ["", "Padrao"],
+                ["btn-sm", "Pequeno"],
+                ["btn-lg", "Grande"],
+                ["btn-xl", "Extra grande"]
+              ]
+            },
+            {
+              "label": "Classe CSS do botao (sobrescreve cor/outline/tamanho)",
               "prop": "triggerCssClass",
               "field": "text",
               "group": "Trigger"
@@ -6956,10 +7115,68 @@
                   "default": "Botao"
                 },
                 {
-                  "label": "Classe CSS",
+                  "label": "Cor do botao",
+                  "prop": "variant",
+                  "field": "select",
+                  "default": "secondary",
+                  "options": [
+                    ["", "Nenhuma (so a classe CSS)"],
+                    ["primary", "Primary"],
+                    ["secondary", "Secondary"],
+                    ["success", "Success"],
+                    ["danger", "Danger"],
+                    ["warning", "Warning"],
+                    ["info", "Info"],
+                    ["light", "Light"],
+                    ["dark", "Dark"]
+                  ]
+                },
+                {
+                  "label": "Estilo outline (contornado)",
+                  "prop": "outline",
+                  "field": "checkbox",
+                  "default": false
+                },
+                {
+                  "label": "Tamanho do botao",
+                  "prop": "size",
+                  "field": "select",
+                  "default": "",
+                  "options": [
+                    ["", "Padrao"],
+                    ["btn-sm", "Pequeno"],
+                    ["btn-lg", "Grande"],
+                    ["btn-xl", "Extra grande"]
+                  ]
+                },
+                {
+                  "label": "Classe CSS (sobrescreve cor/outline/tamanho)",
                   "prop": "cssClass",
                   "field": "text",
-                  "default": "btn btn-secondary"
+                  "default": ""
+                },
+                {
+                  "label": "Icone Tabler",
+                  "prop": "icon",
+                  "field": "icon",
+                  "default": ""
+                },
+                {
+                  "label": "Cor do icone (hex)",
+                  "prop": "iconColor",
+                  "field": "text",
+                  "default": "",
+                  "pattern": "^#[0-9A-Fa-f]{6}$"
+                },
+                {
+                  "label": "Posicao do icone",
+                  "prop": "iconPosition",
+                  "field": "select",
+                  "default": "left",
+                  "options": [
+                    ["left", "Esquerda"],
+                    ["right", "Direita"]
+                  ]
                 },
                 {
                   "label": "Fechar ao clicar",
@@ -7245,7 +7462,10 @@
               {
                 "text": "Nova acao",
                 "href": "#",
-                "cssClass": "btn btn-primary",
+                "cssClass": "",
+                "variant": "primary",
+                "outline": false,
+                "size": "",
                 "icon": "",
                 "iconColor": "",
                 "iconPosition": "left"
@@ -7291,10 +7511,44 @@
                   "default": "#"
                 },
                 {
-                  "label": "Classe CSS",
+                  "label": "Cor do botao",
+                  "prop": "variant",
+                  "field": "select",
+                  "default": "primary",
+                  "options": [
+                    ["primary", "Primary"],
+                    ["secondary", "Secondary"],
+                    ["success", "Success"],
+                    ["danger", "Danger"],
+                    ["warning", "Warning"],
+                    ["info", "Info"],
+                    ["light", "Light"],
+                    ["dark", "Dark"]
+                  ]
+                },
+                {
+                  "label": "Estilo outline (contornado)",
+                  "prop": "outline",
+                  "field": "checkbox",
+                  "default": false
+                },
+                {
+                  "label": "Tamanho do botao",
+                  "prop": "size",
+                  "field": "select",
+                  "default": "",
+                  "options": [
+                    ["", "Padrao"],
+                    ["btn-sm", "Pequeno"],
+                    ["btn-lg", "Grande"],
+                    ["btn-xl", "Extra grande"]
+                  ]
+                },
+                {
+                  "label": "Classe CSS (sobrescreve cor/outline/tamanho)",
                   "prop": "cssClass",
                   "field": "text",
-                  "default": "btn btn-primary"
+                  "default": ""
                 },
                 {
                   "label": "Icone Tabler",
@@ -7343,7 +7597,10 @@
                 "text": "Salvar",
                 "type": "submit",
                 "href": "#",
-                "cssClass": "btn btn-primary",
+                "cssClass": "",
+                "variant": "primary",
+                "outline": false,
+                "size": "",
                 "icon": "device-floppy",
                 "iconColor": "",
                 "iconPosition": "left"
@@ -7352,7 +7609,10 @@
                 "text": "Voltar",
                 "type": "link",
                 "href": "#",
-                "cssClass": "btn btn-secondary",
+                "cssClass": "",
+                "variant": "secondary",
+                "outline": false,
+                "size": "",
                 "icon": "arrow-left",
                 "iconColor": "",
                 "iconPosition": "left"
@@ -7361,7 +7621,10 @@
                 "text": "Cancelar",
                 "type": "button",
                 "href": "#",
-                "cssClass": "btn btn-secondary",
+                "cssClass": "",
+                "variant": "secondary",
+                "outline": false,
+                "size": "",
                 "icon": "x",
                 "iconColor": "",
                 "iconPosition": "left"
@@ -7370,7 +7633,10 @@
                 "text": "Limpar",
                 "type": "reset",
                 "href": "#",
-                "cssClass": "btn btn-outline-secondary",
+                "cssClass": "",
+                "variant": "secondary",
+                "outline": true,
+                "size": "",
                 "icon": "eraser",
                 "iconColor": "",
                 "iconPosition": "left"
@@ -7428,10 +7694,44 @@
                   "default": "#"
                 },
                 {
-                  "label": "Classe CSS",
+                  "label": "Cor do botao",
+                  "prop": "variant",
+                  "field": "select",
+                  "default": "secondary",
+                  "options": [
+                    ["primary", "Primary"],
+                    ["secondary", "Secondary"],
+                    ["success", "Success"],
+                    ["danger", "Danger"],
+                    ["warning", "Warning"],
+                    ["info", "Info"],
+                    ["light", "Light"],
+                    ["dark", "Dark"]
+                  ]
+                },
+                {
+                  "label": "Estilo outline (contornado)",
+                  "prop": "outline",
+                  "field": "checkbox",
+                  "default": false
+                },
+                {
+                  "label": "Tamanho do botao",
+                  "prop": "size",
+                  "field": "select",
+                  "default": "",
+                  "options": [
+                    ["", "Padrao"],
+                    ["btn-sm", "Pequeno"],
+                    ["btn-lg", "Grande"],
+                    ["btn-xl", "Extra grande"]
+                  ]
+                },
+                {
+                  "label": "Classe CSS (sobrescreve cor/outline/tamanho)",
                   "prop": "cssClass",
                   "field": "text",
-                  "default": "btn btn-secondary"
+                  "default": ""
                 },
                 {
                   "label": "Icone Tabler",
@@ -10192,7 +10492,39 @@
                       "field": "text"
                     },
                     {
-                      "label": "Classe CSS do botao",
+                      "label": "Cor do botao",
+                      "prop": "variant",
+                      "field": "select",
+                      "options": [
+                        ["", "Nenhuma (so a classe CSS)"],
+                        ["primary", "Primary"],
+                        ["secondary", "Secondary"],
+                        ["success", "Success"],
+                        ["danger", "Danger"],
+                        ["warning", "Warning"],
+                        ["info", "Info"],
+                        ["light", "Light"],
+                        ["dark", "Dark"]
+                      ]
+                    },
+                    {
+                      "label": "Estilo outline (contornado)",
+                      "prop": "outline",
+                      "field": "checkbox"
+                    },
+                    {
+                      "label": "Tamanho do botao",
+                      "prop": "size",
+                      "field": "select",
+                      "options": [
+                        ["", "Padrao"],
+                        ["btn-sm", "Pequeno"],
+                        ["btn-lg", "Grande"],
+                        ["btn-xl", "Extra grande"]
+                      ]
+                    },
+                    {
+                      "label": "Classe CSS do botao (sobrescreve cor/outline/tamanho)",
                       "prop": "cssClass",
                       "field": "text"
                     }

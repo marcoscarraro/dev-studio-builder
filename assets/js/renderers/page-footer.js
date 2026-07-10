@@ -14,7 +14,7 @@
       const text = btn.text || "Acao";
       const type = btn.type || "button";
       const href = btn.href || "#";
-      const cls = btn.cssClass || "btn btn-secondary";
+      const cls = context.buildButtonClass("btn", btn.variant, context.toBooleanValue(btn.outline), btn.size, btn.cssClass);
       const content = context.renderButtonContent(text, btn.icon || "", btn.iconPosition || "left", btn.iconColor || "");
 
       if (type === "link") {

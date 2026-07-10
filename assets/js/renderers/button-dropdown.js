@@ -5,7 +5,10 @@
 
   function renderButtonDropdownComponent(component, cssClassAttr, definition, context) {
     const props = component.props || {};
-    const buttonClass = context.mergeClassNames(props.buttonCssClass || "btn btn-outline-secondary", "dropdown-toggle");
+    const buttonClass = context.mergeClassNames(
+      context.buildButtonClass("btn", props.buttonVariant, context.toBooleanValue(props.buttonOutline), props.buttonSize, props.buttonCssClass),
+      "dropdown-toggle"
+    );
     const menuClass = props.menuCssClass || "dropdown-menu dropdown-menu-end";
     const items = context.parseDropdownItems(props.items).map(context.renderDropdownItem).join("\n");
     const extraActions = context.parseDropdownActions(props.extraActions).map(context.renderDropdownAction).join("\n");
