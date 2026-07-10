@@ -212,7 +212,11 @@
         menuSidebarWidth: "normal",
         pageType: "normal",
         loginSideColor: "#206bc4",
-        loginSideImage: ""
+        loginSideImage: "",
+        buttonDefaultVariant: "",
+        buttonDefaultOutline: "",
+        buttonDefaultSize: "",
+        buttonDefaultIconColor: ""
       },
       navbar: [],
       sidebar: [],
@@ -234,7 +238,11 @@
         menuTheme: "dark",
         menuThemeColor: "#206bc4",
         menuSticky: false,
-        menuSidebarWidth: "normal"
+        menuSidebarWidth: "normal",
+        buttonDefaultVariant: "",
+        buttonDefaultOutline: "",
+        buttonDefaultSize: "",
+        buttonDefaultIconColor: ""
       },
       navbar: [],
       sidebar: [],
@@ -460,13 +468,38 @@
     });
   }
 
+  // Padrao de botao por pagina (properties da pagina, secao "Padrao de botoes"): se o dev
+  // preencher, todo componente-botao NOVO (arrastado da paleta) ja nasce com esses valores —
+  // so afeta criacao, nunca botoes ja existentes no canvas. Mapa por kind porque cada um usa
+  // nomes de prop diferentes pro botao principal (button/link vs. o gatilho de dropdown/modal).
+  const BUTTON_KIND_PROP_MAP = {
+    button: { variant: "variant", outline: "outline", size: "size", iconColor: "iconColor" },
+    link: { variant: "variant", outline: "outline", size: "size", iconColor: "iconColor" },
+    buttonDropdown: { variant: "buttonVariant", outline: "buttonOutline", size: "buttonSize", iconColor: "buttonIconColor" },
+    modal: { variant: "triggerVariant", outline: "triggerOutline", size: "triggerSize", iconColor: "triggerIconColor" }
+  };
+
+  function getPageButtonDefaultOverrides(kind) {
+    const map = BUTTON_KIND_PROP_MAP[kind];
+    if (!map) {
+      return {};
+    }
+    const pageProps = (state.page && state.page.props) || {};
+    const overrides = {};
+    if (pageProps.buttonDefaultVariant) overrides[map.variant] = pageProps.buttonDefaultVariant;
+    if (pageProps.buttonDefaultOutline) overrides[map.outline] = toBooleanValue(pageProps.buttonDefaultOutline);
+    if (pageProps.buttonDefaultSize) overrides[map.size] = pageProps.buttonDefaultSize;
+    if (pageProps.buttonDefaultIconColor) overrides[map.iconColor] = pageProps.buttonDefaultIconColor;
+    return overrides;
+  }
+
   function createComponent(type, overrides) {
     const definition = getComponentDefinition(type);
 
     const component = {
       id: uid(type),
       type,
-      props: Object.assign({}, deepClone(definition.defaults || {}), overrides || {})
+      props: Object.assign({}, deepClone(definition.defaults || {}), getPageButtonDefaultOverrides(definition.kind), overrides || {})
     };
     applyGeneratedComponentProps(component, definition, false);
     normalizeStructuredComponentProps(component, definition);
@@ -2986,6 +3019,10 @@
     page.props.pageType = page.props.pageType || "normal";
     page.props.loginSideColor = page.props.loginSideColor || "#206bc4";
     if (page.props.loginSideImage === undefined) page.props.loginSideImage = "";
+    if (page.props.buttonDefaultVariant === undefined) page.props.buttonDefaultVariant = "";
+    if (page.props.buttonDefaultOutline === undefined) page.props.buttonDefaultOutline = "";
+    if (page.props.buttonDefaultSize === undefined) page.props.buttonDefaultSize = "";
+    if (page.props.buttonDefaultIconColor === undefined) page.props.buttonDefaultIconColor = "";
     if (!Array.isArray(page.header)) {
       page.header = createLegacyHeaderRows(page.props);
     }

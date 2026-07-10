@@ -165,6 +165,32 @@
       isLoginSplit ? fieldInput("Cor do painel esquerdo", "loginSideColor", page.props.loginSideColor || "#206bc4", "color") : "",
       isLoginSplit ? fieldInput("Imagem do painel esquerdo (URL)", "loginSideImage", page.props.loginSideImage || "") : "",
       '</section>',
+      '<section class="property-group"><h3>Padrao de botoes</h3>',
+      '<p class="properties-note">So afeta botoes NOVOS (arrastados ou adicionados depois desta configuracao). Nao muda botoes ja existentes no canvas.</p>',
+      fieldSelect("Cor padrao dos botoes", "buttonDefaultVariant", page.props.buttonDefaultVariant || "", [
+        ["", "Nao definir"],
+        ["primary", "Primary"],
+        ["secondary", "Secondary"],
+        ["success", "Success"],
+        ["danger", "Danger"],
+        ["warning", "Warning"],
+        ["info", "Info"],
+        ["light", "Light"],
+        ["dark", "Dark"]
+      ]),
+      fieldSelect("Estilo padrao dos botoes", "buttonDefaultOutline", page.props.buttonDefaultOutline || "", [
+        ["", "Nao definir"],
+        ["true", "Outline (contornado)"],
+        ["false", "Normal (preenchido)"]
+      ]),
+      fieldSelect("Tamanho padrao dos botoes", "buttonDefaultSize", page.props.buttonDefaultSize || "", [
+        ["", "Nao definir"],
+        ["btn-sm", "Pequeno"],
+        ["btn-lg", "Grande"],
+        ["btn-xl", "Extra grande"]
+      ]),
+      fieldInput("Cor padrao do icone (hex)", "buttonDefaultIconColor", page.props.buttonDefaultIconColor || ""),
+      '</section>',
       menuSection
     ].join("");
   }
@@ -948,7 +974,8 @@
   }
 
   function createRepeaterItem(field) {
-    return getRepeaterItemFields(field).reduce((item, itemField) => {
+    const itemFields = getRepeaterItemFields(field);
+    const item = itemFields.reduce((item, itemField) => {
       if (ctx.hasOwn(itemField, "default")) {
         item[itemField.prop] = ctx.deepClone(itemField.default);
       } else {
@@ -956,6 +983,28 @@
       }
       return item;
     }, {});
+    return Object.assign(item, getPageButtonDefaultOverridesForItem(itemFields));
+  }
+
+  // Padrao de botao por pagina (properties da pagina, secao "Padrao de botoes"): se o item de
+  // repeater tem os props variant+outline juntos (a "forma" de todo botao padronizado nesta
+  // paleta), aplica o padrao da pagina nos campos que ela realmente definiu. So afeta itens
+  // NOVOS (o botao ja existente no repeater nao muda).
+  function getPageButtonDefaultOverridesForItem(itemFields) {
+    const hasVariant = itemFields.some((f) => f.prop === "variant");
+    const hasOutline = itemFields.some((f) => f.prop === "outline");
+    if (!hasVariant || !hasOutline) {
+      return {};
+    }
+    const pageProps = (ctx.state.page && ctx.state.page.props) || {};
+    const overrides = {};
+    if (pageProps.buttonDefaultVariant) overrides.variant = pageProps.buttonDefaultVariant;
+    if (pageProps.buttonDefaultOutline) overrides.outline = toBooleanValue(pageProps.buttonDefaultOutline);
+    if (pageProps.buttonDefaultSize) overrides.size = pageProps.buttonDefaultSize;
+    if (pageProps.buttonDefaultIconColor && itemFields.some((f) => f.prop === "iconColor")) {
+      overrides.iconColor = pageProps.buttonDefaultIconColor;
+    }
+    return overrides;
   }
 
   function getDefaultPropertyFieldValue(field) {
